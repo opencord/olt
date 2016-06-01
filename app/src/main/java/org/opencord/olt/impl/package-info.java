@@ -17,4 +17,4 @@
 /**
  * OLT application handling PMC OLT hardware.
  */
-package org.onosproject.olt.impl;
+package org.opencord.olt.impl;

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.onosproject.olt.cli;
+package org.opencord.olt.cli;
 
 import org.apache.karaf.shell.commands.Command;
 import org.onlab.packet.VlanId;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.ConnectPoint;
-import org.onosproject.olt.AccessDeviceService;
+import org.opencord.olt.AccessDeviceService;
 
 import java.util.Map;
 

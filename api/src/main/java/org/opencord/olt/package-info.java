@@ -15,6 +15,6 @@
  */
 
 /**
- * REST APIs for the OLT application.
+ * OLT application api.
  */
-package org.onosproject.olt.rest;
+package org.opencord.olt;

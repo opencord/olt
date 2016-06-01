@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.onosproject.olt.impl;
+package org.opencord.olt.impl;
 
 import com.google.common.collect.Maps;
 import org.apache.felix.scr.annotations.Activate;
@@ -58,9 +58,9 @@ import org.onosproject.net.flowobjective.ForwardingObjective;
 import org.onosproject.net.flowobjective.Objective;
 import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
-import org.onosproject.olt.AccessDeviceEvent;
-import org.onosproject.olt.AccessDeviceListener;
-import org.onosproject.olt.AccessDeviceService;
+import org.opencord.olt.AccessDeviceEvent;
+import org.opencord.olt.AccessDeviceListener;
+import org.opencord.olt.AccessDeviceService;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;

@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package org.onosproject.olt.cli;
+package org.opencord.olt.cli;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
-import org.onlab.packet.VlanId;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
-import org.onosproject.olt.AccessDeviceService;
+import org.opencord.olt.AccessDeviceService;
 
 /**
  * Adds a subscriber to an access device.
  */
-@Command(scope = "onos", name = "add-subscriber-access",
+@Command(scope = "onos", name = "remove-subscriber-access",
         description = "Adds a subscriber to an access device")
-public class SubscriberAddCommand extends AbstractShellCommand {
+public class SubscriberRemoveCommand extends AbstractShellCommand {
 
     @Argument(index = 0, name = "deviceId", description = "Access device ID",
             required = true, multiValued = false)
@@ -40,20 +39,15 @@ public class SubscriberAddCommand extends AbstractShellCommand {
             required = true, multiValued = false)
     private String strPort = null;
 
-    @Argument(index = 2, name = "vlanId",
-            description = "VLAN ID to add",
-            required = true, multiValued = false)
-    private String strVlanId = null;
-
     @Override
     protected void execute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
 
         DeviceId deviceId = DeviceId.deviceId(strDeviceId);
         PortNumber port = PortNumber.portNumber(strPort);
-        VlanId vlan = VlanId.vlanId(Short.parseShort(strVlanId));
         ConnectPoint connectPoint = new ConnectPoint(deviceId, port);
 
-        service.provisionSubscriber(connectPoint, vlan);
+        service.removeSubscriber(connectPoint);
+
     }
 }

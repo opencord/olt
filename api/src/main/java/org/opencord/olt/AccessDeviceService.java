@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.onosproject.olt;
+package org.opencord.olt;
 
 import org.onlab.packet.VlanId;
 import org.onosproject.cordconfig.access.AccessDeviceData;

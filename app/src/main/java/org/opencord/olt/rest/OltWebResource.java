@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.onosproject.olt.rest;
+package org.opencord.olt.rest;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -27,7 +27,7 @@ import org.onlab.packet.VlanId;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
-import org.onosproject.olt.AccessDeviceService;
+import org.opencord.olt.AccessDeviceService;
 import org.onosproject.rest.AbstractWebResource;
 
 /**

@@ -17,28 +17,28 @@
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
         <command>
-            <action class="org.onosproject.olt.cli.SubscriberAddCommand"/>
+            <action class="org.opencord.olt.cli.SubscriberAddCommand"/>
             <completers>
                 <ref component-id="deviceIdCompleter"/>
                 <null/>
             </completers>
         </command>
         <command>
-            <action class="org.onosproject.olt.cli.SubscriberRemoveCommand"/>
+            <action class="org.opencord.olt.cli.SubscriberRemoveCommand"/>
             <completers>
                 <ref component-id="deviceIdCompleter"/>
                 <null/>
             </completers>
         </command>
         <command>
-            <action class="org.onosproject.olt.cli.ShowOltCommand"/>
+            <action class="org.opencord.olt.cli.ShowOltCommand"/>
             <completers>
                 <ref component-id="deviceIdCompleter"/>
                 <null/>
             </completers>
         </command>
         <command>
-            <action class="org.onosproject.olt.cli.ShowSubscribersCommand"/>
+            <action class="org.opencord.olt.cli.ShowSubscribersCommand"/>
         </command>
     </command-bundle>
 

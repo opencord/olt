@@ -18,14 +18,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.onosproject</groupId>
-        <artifactId>onos-olt</artifactId>
-        <version>1.7.0-SNAPSHOT</version>
+        <groupId>org.opencord</groupId>
+        <artifactId>olt</artifactId>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>onos-app-olt</artifactId>
+    <artifactId>olt-app</artifactId>
 
     <packaging>bundle</packaging>
     <description>OLT application for CORD</description>
@@ -42,20 +42,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.onosproject</groupId>
-            <artifactId>onos-cord-config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.onosproject</groupId>
-            <artifactId>onos-app-olt-api</artifactId>
+            <groupId>org.opencord</groupId>
+            <artifactId>olt-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.onosproject</groupId>
             <artifactId>onos-cli</artifactId>
-            <version>${project.version}</version>
+            <version>${onos.version}</version>
         </dependency>
 
         <dependency>
@@ -65,12 +60,7 @@
         <dependency>
             <groupId>org.onosproject</groupId>
             <artifactId>onos-rest</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.onosproject</groupId>
-            <artifactId>onlab-rest</artifactId>
-            <version>${project.version}</version>
+            <version>${onos.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -99,10 +89,18 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
         </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.scr.annotations</artifactId>
+            </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.onosproject</groupId>
+                <artifactId>onos-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>

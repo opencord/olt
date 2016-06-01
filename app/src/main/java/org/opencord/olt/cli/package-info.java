@@ -15,6 +15,6 @@
  */
 
 /**
- * OLT application api.
+ * OLT application handling PMC OLT hardware.
  */
-package org.onosproject.olt;
+package org.opencord.olt.cli;
