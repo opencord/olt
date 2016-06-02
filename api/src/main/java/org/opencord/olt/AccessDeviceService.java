@@ -17,10 +17,10 @@
 package org.opencord.olt;
 
 import org.onlab.packet.VlanId;
-import org.onosproject.cordconfig.access.AccessDeviceData;
 import org.onosproject.event.ListenerService;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
+import org.opencord.cordconfig.access.AccessDeviceData;
 
 import java.util.Collection;
 import java.util.Map;

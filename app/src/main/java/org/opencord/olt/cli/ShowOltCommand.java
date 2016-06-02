@@ -19,8 +19,8 @@ package org.opencord.olt.cli;
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.onosproject.cli.AbstractShellCommand;
-import org.onosproject.cordconfig.access.AccessDeviceData;
 import org.onosproject.net.DeviceId;
+import org.opencord.cordconfig.access.AccessDeviceData;
 import org.opencord.olt.AccessDeviceService;
 
 import java.util.Map;
