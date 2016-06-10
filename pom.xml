@@ -38,7 +38,7 @@
           <name>OSS Staging</name>
           <url>https://oss.sonatype.org/content/groups/staging</url>
         </repository>
-      </repositories> 
+      </repositories>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
