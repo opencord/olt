@@ -122,6 +122,25 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>1.21.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-scr-srcdescriptor</id>
+                        <goals>
+                            <goal>scr</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <supportedProjectTypes>
+                        <supportedProjectType>bundle</supportedProjectType>
+                        <supportedProjectType>war</supportedProjectType>
+                    </supportedProjectTypes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
