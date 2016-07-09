@@ -31,14 +31,15 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-        <!--FIXME remove this one the released bits are out-->
-      <repositories>
+<!--      
+    <repositories>
         <repository>
           <id>oss-staging</id>
           <name>OSS Staging</name>
           <url>https://oss.sonatype.org/content/groups/staging</url>
         </repository>
       </repositories>
+-->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
