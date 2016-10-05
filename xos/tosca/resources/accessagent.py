@@ -2,9 +2,8 @@ import os
 import pdb
 import sys
 import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
 
+from toscaparser.tosca_template import ToscaTemplate
 from services.volt.models import AccessAgent, VOLTDevice, VOLTService, AgentPortMapping
 from xosresource import XOSResource
 
