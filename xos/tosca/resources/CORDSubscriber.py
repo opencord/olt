@@ -2,13 +2,10 @@ import os
 import pdb
 import sys
 import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-import pdb
 
+from toscaparser.tosca_template import ToscaTemplate
 from core.models import User, TenantRootPrivilege, TenantRootRole
 from services.volt.models import CordSubscriberRoot
-
 from xosresource import XOSResource
 
 class XOSCORDSubscriber(XOSResource):
