@@ -80,4 +80,32 @@ public class OltWebResource extends AbstractWebResource {
         service.removeSubscriber(connectPoint);
         return Response.noContent().build();
     }
+
+    /**
+     * Get the vlan for a subscriber.
+     *
+     * @param device device id
+     * @param port port number
+     * @return vlan or NO CONTENT
+     */
+    @GET
+    @Path("{device}/{port}")
+    public Response getSubscriber(
+            @PathParam("device")String device,
+            @PathParam("port")long port) {
+        AccessDeviceService service = get(AccessDeviceService.class);
+        DeviceId deviceId = DeviceId.deviceId(device);
+        PortNumber portNumber = PortNumber.portNumber(port);
+        ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
+        Iterator<Map.Entry<ConnectPoint, VlanId>> it = service.getSubscribers().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry<ConnectPoint, VlanId> map = it.next();
+            if (map.getKey().equals(connectPoint)) {
+                return Response.ok(map.getValue().toString()).build();
+            }
+        }
+        return Response.noContent().build();
+    }
+
 }
