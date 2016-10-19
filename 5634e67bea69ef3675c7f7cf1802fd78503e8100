@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a014df3_735c3626",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-10-19T09:33:14Z",
+      "side": 1,
+      "message": "Rather than returning just the vlan value here, I think it would be better to return a \u0027subscriber\u0027 object. This object might just contain the vlan for now, but this way we can easily add more details about the subscriber later if need be.\n\nE.g.\n\n {\n    \"vlan\" : 2\n }",
+      "revId": "5634e67bea69ef3675c7f7cf1802fd78503e8100",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
