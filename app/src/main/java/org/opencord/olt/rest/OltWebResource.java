@@ -16,6 +16,7 @@
 package org.opencord.olt.rest;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,6 +24,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.onlab.packet.VlanId;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
@@ -79,5 +81,71 @@ public class OltWebResource extends AbstractWebResource {
         ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
         service.removeSubscriber(connectPoint);
         return Response.noContent().build();
+    }
+
+    /**
+     *  get subscriber vlan id for given device id and port .
+     *
+     * @param device device id
+     * @param port port number
+     * @return vlanid or just "{}"
+     * e.g. {"vlan":"20"}:
+     */
+    @GET
+    @Path("{device}/{port}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSubscriber(
+            @PathParam("device")String device,
+            @PathParam("port")long port) {
+        AccessDeviceService service = get(AccessDeviceService.class);
+        ConnectPoint connectPoint = new ConnectPoint(
+                DeviceId.deviceId(device),
+                PortNumber.portNumber(port));
+        ObjectNode root = mapper().createObjectNode();
+
+        service.getSubscribers().forEach(map-> {
+            if (map.getKey().equals(connectPoint)) {
+                root.put("vlan", map.getValue().toString());
+            }
+        });
+
+        return Response.ok(root).build();
+    }
+
+    /**
+     *  get subscriber vlan id for given device id and port .
+     *
+     * @return all subscribers infomation as json format
+     * e.g.
+     * {"of:000008002704dc82":
+     *      {"mapping":
+     *          [{"port":"2","vlan":"15"},
+     *          {"port":"200","vlan":"20"},
+     *          {"port":"1","vlan":"15"}]},
+     * "of:00112233445566":
+     *      {"mapping":
+     *          [{"port":"8","vlan":"9"},
+     *          {"port":"9","vlan":"10"}]},
+     * "of:00112233445567":
+     *      {"mapping":
+     *          [{"port":"10","vlan":"11"},
+     *          {"port":"11","vlan":"12"}]}}
+     */
+    @GET
+    @Path("/subscribers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSubscriber() {
+        ObjectNode root = mapper().createObjectNode();
+
+        AccessDeviceService service = get(AccessDeviceService.class);
+
+        service.getSubscribers().forEach(map ->
+                        root.with(map.getKey().deviceId().toString()).withArray("mapping").add(
+                                mapper().createObjectNode()
+                                        .put("port", map.getKey().port().toString())
+                                        .put("vlan", map.getValue().toString()))
+        );
+
+        return ok(root).build();
     }
 }
