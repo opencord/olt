@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a014df3_53893ac9",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebApplication.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-10-25T12:43:30Z",
+      "side": 1,
+      "message": "Needs accurate javadoc.",
+      "revId": "728d72801c260e1da707b0b08bf128ac5e9a650f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a014df3_1393b2fb",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-10-25T12:43:30Z",
+      "side": 1,
+      "message": "Capitalize the first word, no space before the period, VLAN and ID are acronyms so should be capitalized.",
+      "revId": "728d72801c260e1da707b0b08bf128ac5e9a650f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a014df3_3386aeba",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-10-25T12:43:30Z",
+      "side": 1,
+      "message": "If the subscriber is not found the API should return 404 Not Found, not just an empty result.",
+      "revId": "728d72801c260e1da707b0b08bf128ac5e9a650f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a014df3_d3bc2a6f",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-10-25T12:43:30Z",
+      "side": 1,
+      "message": "Now that you have a /subscribers API that returns all subscribers, I think this API that returns a single subscriber should have the JSON format match the one of the /subscribers API. So you should return a JSON object that contains all the information for a subscriber, not just the VLAN.",
+      "revId": "728d72801c260e1da707b0b08bf128ac5e9a650f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a014df3_f38f26cb",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-10-25T12:43:30Z",
+      "side": 1,
+      "message": "I\u0027d suggest returning a JSON that looks more like this. The point is that it is a list of \u0027subscriber\u0027 records, and each record contains all the information for the subscriber.\n\n [\n   {\n     \"deviceId\" : \"of:000008002704dc82\",\n     \"port\" : 2,\n     \"vlan\" : 15\n   },\n   {\n     \"deviceId\" : \"of:0011223344556677\",\n     \"port\" : 8,\n     \"vlan\" : 9\n   }\n }",
+      "revId": "728d72801c260e1da707b0b08bf128ac5e9a650f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
