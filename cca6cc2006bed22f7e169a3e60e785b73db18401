@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a014df3_fcac938e",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebApplication.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-11-07T18:55:52Z",
+      "side": 1,
+      "message": "Change this to a real javadoc comment.",
+      "revId": "cca6cc2006bed22f7e169a3e60e785b73db18401",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a014df3_9cbb4fc4",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-11-07T18:55:52Z",
+      "side": 1,
+      "message": "The best way to document the JSON format is using the Swagger doc generator like we do in the core ONOS REST APIs.",
+      "revId": "cca6cc2006bed22f7e169a3e60e785b73db18401",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a014df3_dca9d77c",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-11-07T18:55:52Z",
+      "side": 1,
+      "message": "This should be updated.",
+      "range": {
+        "startLine": 139,
+        "startChar": 25,
+        "endLine": 139,
+        "endChar": 34
+      },
+      "revId": "cca6cc2006bed22f7e169a3e60e785b73db18401",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a014df3_bcb60bdb",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2016-11-07T18:55:52Z",
+      "side": 1,
+      "message": "extra character here.",
+      "range": {
+        "startLine": 172,
+        "startChar": 14,
+        "endLine": 172,
+        "endChar": 15
+      },
+      "revId": "cca6cc2006bed22f7e169a3e60e785b73db18401",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
