@@ -34,13 +34,13 @@
     <description>OLT application API</description>
 
     <dependencies>
-
         <dependency>
             <groupId>org.onosproject</groupId>
             <artifactId>onlab-junit</artifactId>
             <version>${onos.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.onosproject</groupId>
             <artifactId>onos-core-serializers</artifactId>
