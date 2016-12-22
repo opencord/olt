@@ -26,6 +26,8 @@ import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.Service;
 import org.onlab.packet.EthType;
 import org.onlab.packet.VlanId;
+import org.onlab.packet.TpPort;
+import org.onlab.packet.IPv4;
 import org.onosproject.cfg.ComponentConfigService;
 
 import org.onosproject.core.ApplicationId;
@@ -222,6 +224,8 @@ public class Olt
 
         provisionVlans(olt.deviceId(), olt.uplink(), port.port(), vlan, olt.vlan(),
                        olt.defaultVlan());
+
+        processDhcpFilteringObjectives(olt.deviceId(), port.port(), true);
     }
 
     @Override
@@ -243,6 +247,7 @@ public class Olt
         unprovisionSubscriber(olt.deviceId(), olt.uplink(), port.port(), subscriberVlan,
                               olt.vlan(), olt.defaultVlan());
 
+        processDhcpFilteringObjectives(olt.deviceId(), port.port(), false);
     }
 
     @Override
@@ -459,6 +464,38 @@ public class Olt
                 });
 
         flowObjectiveService.filter(devId, eapol);
+
+    }
+
+    private void processDhcpFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
+        if (!mastershipService.isLocalMaster(devId)) {
+            return;
+        }
+        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+
+        FilteringObjective dhcpUpstream = (install ? builder.permit() : builder.deny())
+                .withKey(Criteria.matchInPort(port))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.IPV4.ethType()))
+                .addCondition(Criteria.matchIPProtocol(IPv4.PROTOCOL_UDP))
+                .addCondition(Criteria.matchUdpSrc(TpPort.tpPort(68)))
+                .addCondition(Criteria.matchUdpDst(TpPort.tpPort(67)))
+                .fromApp(appId)
+                .withPriority(1000)
+                .add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        log.info("DHCP filter for {} on {} installed.",
+                                devId, port);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        log.info("DHCP filter for {} on {} failed because {}",
+                                devId, port, error);
+                    }
+                });
+
+        flowObjectiveService.filter(devId, dhcpUpstream);
 
     }
 
