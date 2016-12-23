@@ -27,6 +27,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.onlab.packet.EthType;
 import org.onlab.packet.VlanId;
 import org.onlab.packet.TpPort;
+import org.onlab.packet.IPv4;
 import org.onosproject.cfg.ComponentConfigService;
 
 import org.onosproject.core.ApplicationId;
@@ -474,6 +475,8 @@ public class Olt
 
         FilteringObjective dhcpUpstream = (install ? builder.permit() : builder.deny())
                 .withKey(Criteria.matchInPort(port))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.IPV4.ethType()))
+                .addCondition(Criteria.matchIPProtocol(IPv4.PROTOCOL_UDP))
                 .addCondition(Criteria.matchUdpSrc(TpPort.tpPort(68)))
                 .addCondition(Criteria.matchUdpDst(TpPort.tpPort(67)))
                 .fromApp(appId)
