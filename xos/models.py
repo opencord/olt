@@ -241,6 +241,13 @@ class VOLTTenant(Tenant):
         if self.deleted:
             return
 
+        # Check to see if the wrong s-tag is set. This can only happen if the
+        # user changed the s-tag after the VoltTenant object was created.
+        if self.vcpe and self.vcpe.instance:
+            s_tags = Tag.select_by_content_object(self.vcpe.instance).filter(name="s_tag")
+            if s_tags and (s_tags[0].value != str(self.s_tag)):
+                self.vcpe.delete()
+
         if self.vcpe is None:
             from services.vsg.models import VSGService, VSGTenant
             vsgServices = VSGService.get_service_objects().all()
