@@ -93,6 +93,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Olt
         extends AbstractListenerManager<AccessDeviceEvent, AccessDeviceListener>
         implements AccessDeviceService {
+    private static final String APP_NAME = "org.opencord.olt";
 
     private static final short DEFAULT_VLAN = 0;
     private static final String SUBSCRIBERS = "existing-subscribers";
@@ -154,7 +155,7 @@ public class Olt
     @Activate
     public void activate(ComponentContext context) {
         modified(context);
-        appId = coreService.registerApplication("org.onosproject.olt");
+        appId = coreService.registerApplication(APP_NAME);
         componentConfigService.registerProperties(getClass());
 
         eventDispatcher.addSink(AccessDeviceEvent.class, listenerRegistry);
