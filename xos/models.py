@@ -27,7 +27,7 @@ CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
 
 class CordSubscriberRoot(Subscriber):
     class Meta:
-        proxy = True
+        app_label = "volt"
 
     KIND = CORD_SUBSCRIBER_KIND
 
@@ -36,23 +36,24 @@ class CordSubscriberRoot(Subscriber):
                       ("delinquent", "Delinquent"),
                       ("copyrightviolation", "Copyright Violation"))
 
+    firewall_enable = models.BooleanField(default=False)
+    firewall_rules = models.TextField(blank=True, null=True, default="accept all anywhere anywhere")
+    url_filter_enable = models.BooleanField(default=False)
+    url_filter_rules = models.TextField(blank=True, null=True, default="allow all")
+    url_filter_level = StrippedCharField(max_length=30, null=False, blank=False, default="PG")
+    cdn_enable = models.BooleanField(default=False)
+    is_demo_user = models.BooleanField(default=False)
+
+    uplink_speed = models.BigIntegerField(default=1000000000)
+    downlink_speed = models.BigIntegerField(default=1000000000)
+    enable_uverse = models.BooleanField(default=True)
+
+    status = StrippedCharField(max_length=30, null=False, blank=False, choices=status_choices, default="enabled")
+
     # 'simple_attributes' will be expanded into properties and setters that
     # store the attribute using self.set_attribute / self.get_attribute.
 
-    simple_attributes = ( ("firewall_enable", False),
-                          ("firewall_rules", "accept all anywhere anywhere"),
-                          ("url_filter_enable", False),
-                          ("url_filter_rules", "allow all"),
-                          ("url_filter_level", "PG"),
-                          ("cdn_enable", False),
-                          ("devices", []),
-                          ("is_demo_user", False),
-
-                          ("uplink_speed", 1000000000),  # 1 gigabit, a reasonable default?
-                          ("downlink_speed", 1000000000),
-                          ("enable_uverse", True) )
-
-    default_attributes = {"status": "enabled"}
+    simple_attributes = ( ("devices", []), )
 
     sync_attributes = ("firewall_enable",
                        "firewall_rules",
@@ -67,7 +68,6 @@ class CordSubscriberRoot(Subscriber):
     def __init__(self, *args, **kwargs):
         super(CordSubscriberRoot, self).__init__(*args, **kwargs)
         self.cached_volt = None
-        self._initial_url_filter_enable = self.url_filter_enable
 
     @property
     def volt(self):
@@ -82,16 +82,6 @@ class CordSubscriberRoot(Subscriber):
         #volt.caller = self.creator
         self.cached_volt = volt
         return volt
-
-    @property
-    def status(self):
-        return self.get_attribute("status", self.default_attributes["status"])
-
-    @status.setter
-    def status(self, value):
-        if not value in [x[0] for x in self.status_choices]:
-            raise Exception("invalid status %s" % value)
-        self.set_attribute("status", value)
 
     def find_device(self, mac):
         for device in self.devices:
@@ -169,7 +159,10 @@ class CordSubscriberRoot(Subscriber):
             if (self.has_field_changed("service_specific_id")):
                 raise XOSPermissionDenied("You do not have permission to change service_specific_id")
         super(CordSubscriberRoot, self).save(*args, **kwargs)
-        if (self.volt) and (self.volt.vcpe): # and (self._initial_url_filter_enabled != self.url_filter_enable):
+
+        # TODO - reimplement this as a watcher
+
+        if (self.volt) and (self.volt.vcpe):
             # 1) trigger manage_bbs_account to run
             # 2) trigger vcpe observer to wake up
             self.volt.vcpe.save()
