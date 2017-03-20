@@ -47,9 +47,6 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('voltadmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def get_queryset(self, request):
-        return VOLTService.get_service_objects_by_user(request.user)
-
 class VOLTTenantForm(forms.ModelForm):
     s_tag = forms.CharField()
     c_tag = forms.CharField()
@@ -168,44 +165,15 @@ class VOLTTenantInline(XOSTabularInline):
     def selflink_reverse_path(self):
         return "admin:cord_volttenant_change"
 
-    def get_queryset(self, request):
-        qs = super(VOLTTenantInline, self).queryset(request)
-        return qs.filter(kind=VOLT_KIND)
-
 class CordSubscriberRootForm(forms.ModelForm):
-    url_filter_level = forms.CharField(required = False)
-    uplink_speed = forms.CharField(required = False)
-    downlink_speed = forms.CharField(required = False)
-    status = forms.ChoiceField(choices=CordSubscriberRoot.status_choices, required=True)
-    enable_uverse = forms.BooleanField(required=False)
-    cdn_enable = forms.BooleanField(required=False)
-
     def __init__(self,*args,**kwargs):
         super (CordSubscriberRootForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        if self.instance:
-            self.fields['url_filter_level'].initial = self.instance.url_filter_level
-            self.fields['uplink_speed'].initial = self.instance.uplink_speed
-            self.fields['downlink_speed'].initial = self.instance.downlink_speed
-            self.fields['status'].initial = self.instance.status
-            self.fields['enable_uverse'].initial = self.instance.enable_uverse
-            self.fields['cdn_enable'].initial = self.instance.cdn_enable
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = CORD_SUBSCRIBER_KIND
-            self.fields['uplink_speed'].initial = CordSubscriberRoot.get_default_attribute("uplink_speed")
-            self.fields['downlink_speed'].initial = CordSubscriberRoot.get_default_attribute("downlink_speed")
-            self.fields['status'].initial = CordSubscriberRoot.get_default_attribute("status")
-            self.fields['enable_uverse'].initial = CordSubscriberRoot.get_default_attribute("enable_uverse")
-            self.fields['cdn_enable'].initial = CordSubscriberRoot.get_default_attribute("cdn_enable")
 
     def save(self, commit=True):
-        self.instance.url_filter_level = self.cleaned_data.get("url_filter_level")
-        self.instance.uplink_speed = self.cleaned_data.get("uplink_speed")
-        self.instance.downlink_speed = self.cleaned_data.get("downlink_speed")
-        self.instance.status = self.cleaned_data.get("status")
-        self.instance.enable_uverse = self.cleaned_data.get("enable_uverse")
-        self.instance.cdn_enable = self.cleaned_data.get("cdn_enable")
         return super(CordSubscriberRootForm, self).save(commit=commit)
 
     class Meta:

@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port, AddressPool, User
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, TenantRoot, NetworkParameter, NetworkParameterType, Port, AddressPool, User
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -25,7 +25,7 @@ CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
 # CordSubscriberRoot
 # -------------------------------------------
 
-class CordSubscriberRoot(Subscriber):
+class CordSubscriberRoot(TenantRoot):
     class Meta:
         app_label = "volt"
 

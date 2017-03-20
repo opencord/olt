@@ -190,7 +190,7 @@ class CordSubscriberViewSet(XOSViewSet):
     base_name = "subscriber"
     method_name = "subscriber"
     method_kind = "viewset"
-    queryset = CordSubscriberNew.get_tenant_objects().select_related().all()
+    queryset = CordSubscriberNew.objects.select_related().all()
     serializer_class = CordSubscriberSerializer
 
     custom_serializers = {"set_features": FeatureSerializer,
