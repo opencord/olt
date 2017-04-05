@@ -28,6 +28,7 @@ import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.aaa.AaaManagerService;
 import org.onosproject.rest.AbstractWebResource;
 
 /**
@@ -78,6 +79,51 @@ public class OltWebResource extends AbstractWebResource {
         PortNumber portNumber = PortNumber.portNumber(port);
         ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
         service.removeSubscriber(connectPoint);
+        return Response.noContent().build();
+    }
+
+    /**
+     * Creates a subscriber based on MAC address and C-tag.
+     *
+     * @param mac MAC address of the subscriber
+     * @param ctag C-TAG for the subscriber
+     * @return 200 OK
+     */
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{mac}/{ctag}")
+    public Response provisionSubscriber(
+            @PathParam("mac")String mac,
+            @PathParam("ctag")short ctag) {
+
+        AaaManagerService aaaService = get(AaaManagerService.class);
+        ConnectPoint subsPort = aaaService.getConnectPointIfAuthenticated(mac);
+        if (subsPort != null) {
+            AccessDeviceService service = get(AccessDeviceService.class);
+            VlanId vlanId = VlanId.vlanId(ctag);
+            service.provisionSubscriber(subsPort, vlanId);
+        }
+        return ok("").build();
+    }
+
+    /**
+     * Remove a subscriber based on the MAC address.
+     *
+     * @param mac MAC address of subscriber to delete
+     * @return 204 NO CONTENT
+     */
+    @DELETE
+    @Path("{mac}")
+    public Response removeSubscriber(
+            @PathParam("mac")String mac) {
+
+        AccessDeviceService service = get(AccessDeviceService.class);
+        AaaManagerService aaaService = get(AaaManagerService.class);
+        ConnectPoint subsPort = aaaService.getConnectPointIfAuthenticated(mac);
+        if (subsPort != null) {
+            service.removeSubscriber(subsPort);
+        }
+
         return Response.noContent().build();
     }
 }

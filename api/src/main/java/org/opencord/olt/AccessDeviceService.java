@@ -47,6 +47,22 @@ public interface AccessDeviceService
     void removeSubscriber(ConnectPoint port);
 
     /**
+     * Gets the S-Tag associated with a particular port on the access device.
+     *
+     * @param port subscriber's connection point
+     * @return vlan S-Tag used for this subscriber
+     */
+    VlanId getSTag(ConnectPoint port);
+
+    /**
+     * Gets the S-Tag associated with a particular port on the access device.
+     *
+     * @param port subscriber's connection point
+     * @return vlan C-Tag used for this subscriber
+     */
+    VlanId getCTag(ConnectPoint port);
+
+    /**
      * Returns information about the provisioned subscribers.
      *
      * @return subscribers
