@@ -60,4 +60,7 @@ public interface AccessDeviceService
      */
     Map<DeviceId, AccessDeviceData> fetchOlts();
 
+    void provisionQos(QosKey qos, Integer queueId);
+    Collection<Map.Entry<QosKey, Integer>> getQos();
+    void removeQos(QosKey qos);
 }

@@ -26,6 +26,7 @@ import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.Service;
 import org.onlab.packet.EthType;
 import org.onlab.packet.VlanId;
+import org.onlab.util.KryoNamespace;
 import org.onosproject.cfg.ComponentConfigService;
 
 import org.onosproject.core.ApplicationId;
@@ -50,6 +51,7 @@ import org.onosproject.net.flow.DefaultTrafficTreatment;
 import org.onosproject.net.flow.TrafficSelector;
 import org.onosproject.net.flow.TrafficTreatment;
 import org.onosproject.net.flow.criteria.Criteria;
+import org.onosproject.net.flow.instructions.Instructions;
 import org.onosproject.net.flowobjective.DefaultFilteringObjective;
 import org.onosproject.net.flowobjective.DefaultForwardingObjective;
 import org.onosproject.net.flowobjective.FilteringObjective;
@@ -66,6 +68,7 @@ import org.opencord.olt.AccessDeviceService;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
+import org.opencord.olt.QosKey;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 
@@ -97,6 +100,7 @@ public class Olt
 
     private static final short DEFAULT_VLAN = 0;
     private static final String SUBSCRIBERS = "existing-subscribers";
+    private static final String QOSMAP = "existing-qos-maps";
 
     private final Logger log = getLogger(getClass());
 
@@ -136,6 +140,7 @@ public class Olt
     private Map<DeviceId, AccessDeviceData> oltData = new ConcurrentHashMap<>();
 
     private Map<ConnectPoint, VlanId> subscribers;
+    private Map<QosKey, Integer> qosMap;
 
     private InternalNetworkConfigListener configListener =
             new InternalNetworkConfigListener();
@@ -184,6 +189,15 @@ public class Olt
         subscribers = storageService.<ConnectPoint, VlanId>consistentMapBuilder()
                 .withName(SUBSCRIBERS)
                 .withSerializer(Serializer.using(KryoNamespaces.API))
+                .build().asJavaMap();
+
+        qosMap = storageService.<QosKey, Integer>consistentMapBuilder()
+                .withName(QOSMAP)
+                .withSerializer(Serializer.using(
+                        new KryoNamespace.Builder()
+                                .register(KryoNamespaces.API)
+                                .register(QosKey.class)
+                                .register(Integer.class).build()))
                 .build().asJavaMap();
 
         deviceService.addListener(deviceListener);
@@ -256,6 +270,44 @@ public class Olt
         return Maps.newHashMap(oltData);
     }
 
+
+    @Override
+    public void provisionQos(QosKey qos, Integer queueId) {
+        AccessDeviceData olt = oltData.get(qos.port.deviceId());
+
+        if (olt == null) {
+            log.warn("No data found for OLT device {}", qos.port.deviceId());
+            return;
+        }
+        provisionQos(qos, queueId,
+                olt.defaultVlan().orElse(VlanId.vlanId((short) this.defaultVlan)));
+    }
+
+    @Override
+    public void removeQos(QosKey qos) {
+        AccessDeviceData olt = oltData.get(qos.port.deviceId());
+
+        if (olt == null) {
+            log.warn("No data found for OLT device {}", qos.port.deviceId());
+            return;
+        }
+
+        Integer queueId = qosMap.remove(qos);
+
+        if (queueId == null) {
+            log.warn("Unknown subscriber at location {}", qos.port);
+            return;
+        }
+
+        unprovisionQos(qos, olt.uplink(), queueId,
+                olt.defaultVlan().orElse(VlanId.vlanId((short) this.defaultVlan)));
+
+    }
+
+    @Override
+    public Collection<Map.Entry<QosKey, Integer>> getQos() {
+        return qosMap.entrySet();
+    }
     private void unprovisionSubscriber(DeviceId deviceId, PortNumber uplink,
                                        PortNumber subscriberPort, VlanId subscriberVlan,
                                        VlanId deviceVlan, Optional<VlanId> defaultVlan) {
@@ -462,7 +514,77 @@ public class Olt
         flowObjectiveService.filter(devId, eapol);
 
     }
+    private void provisionQos(QosKey qos, Integer queueId, VlanId vlanId) {
 
+        TrafficSelector upstream = DefaultTrafficSelector.builder()
+                .matchVlanId(vlanId)
+                .matchInPort(qos.port.port())
+                .matchVlanPcp(qos.vlanPcp.byteValue())
+                .build();
+
+
+        TrafficTreatment upstreamTreatment = DefaultTrafficTreatment.builder()
+                .add(Instructions.setQueue(queueId.longValue(), null))
+                .build();
+
+        ForwardingObjective.Builder fwd = DefaultForwardingObjective.builder()
+                .withFlag(ForwardingObjective.Flag.SPECIFIC)
+                .withPriority(1000)
+                .makePermanent()
+                .withSelector(upstream)
+                .fromApp(appId)
+                .withTreatment(upstreamTreatment);
+
+        qosMap.put(qos, queueId);
+
+        flowObjectiveService.forward(qos.port.deviceId(), fwd.add(new ObjectiveContext() {
+            @Override
+            public void onSuccess(Objective objective) {
+                log.info("install Qos stream success");
+            }
+
+            @Override
+            public void onError(Objective objective, ObjectiveError error) {
+                log.error("install Qos stream failed");
+            }
+        }));
+
+    }
+    private void unprovisionQos(QosKey qos, PortNumber uplinkPort,
+                                Integer queueId, VlanId vlanId) {
+
+        TrafficSelector upstream = DefaultTrafficSelector.builder()
+                .matchVlanId(vlanId)
+                .matchInPort(qos.port.port())
+                .matchVlanPcp(qos.vlanPcp.byteValue())
+                .build();
+
+
+        TrafficTreatment upstreamTreatment = DefaultTrafficTreatment.builder()
+                .add(Instructions.setQueue(queueId.longValue(), uplinkPort))
+                .build();
+
+        ForwardingObjective.Builder fwd = DefaultForwardingObjective.builder()
+                .withFlag(ForwardingObjective.Flag.VERSATILE)
+                .withPriority(1000)
+                .makePermanent()
+                .withSelector(upstream)
+                .fromApp(appId)
+                .withTreatment(upstreamTreatment);
+
+        flowObjectiveService.forward(qos.port.deviceId(), fwd.remove(new ObjectiveContext() {
+            @Override
+            public void onSuccess(Objective objective) {
+                log.info("install Qos stream success");
+            }
+
+            @Override
+            public void onError(Objective objective, ObjectiveError error) {
+                log.error("install Qos stream failed");
+            }
+        }));
+        qosMap.remove(qos);
+    }
     private class InternalDeviceListener implements DeviceListener {
         @Override
         public void event(DeviceEvent event) {
