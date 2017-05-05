@@ -13,7 +13,7 @@ topology_template:
           base_url: file:///opt/xos_services/olt/xos/
           # The following will concatenate with base_url automatically, if
           # base_url is non-null.
-          models: models.py
+          xproto: ./
           admin: admin.py
           admin_template: templates/voltadmin.html
           #synchronizer: synchronizer/manifest

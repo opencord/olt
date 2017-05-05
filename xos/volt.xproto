@@ -1,0 +1,59 @@
+option name = "volt";
+option verbose_name = "vOLT Service";
+
+message CordSubscriberRoot (TenantRoot){
+     option kind = "CordSubscriberRoot";
+
+     required bool firewall_enable = 1 [default = False, null = False, db_index = False, blank = True];
+     optional string firewall_rules = 2 [default = "accept all anywhere anywhere", null = True, db_index = False, blank = True];
+     required bool url_filter_enable = 3 [default = False, null = False, db_index = False, blank = True];
+     optional string url_filter_rules = 4 [default = "allow all", null = True, db_index = False, blank = True];
+     required string url_filter_level = 5 [default = "PG", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+     required bool cdn_enable = 6 [default = False, null = False, db_index = False, blank = True];
+     required bool is_demo_user = 7 [default = False, null = False, db_index = False, blank = True];
+     required int32 uplink_speed = 8 [default = 1000000000, null = False, db_index = False, blank = False];
+     required int32 downlink_speed = 9 [default = 1000000000, null = False, db_index = False, blank = False];
+     required bool enable_uverse = 10 [default = True, null = False, db_index = False, blank = True];
+     required string status = 11 [default = "enabled", choices = "(('enabled', 'Enabled'), ('suspended', 'Suspended'), ('delinquent', 'Delinquent'), ('copyrightviolation', 'Copyright Violation'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
+}
+
+message VOLTService (Service){
+     option kind = "vOLT";
+}
+
+message VOLTTenant (Tenant){
+     option kind = "vOLT";
+     option verbose_name = "vOLT Tenant";
+
+     optional int32 s_tag = 1 [help_text = "s-tag", null = True, db_index = False, blank = True];
+     optional int32 c_tag = 2 [help_text = "c-tag", null = True, db_index = False, blank = True];
+     optional manytoone creator->User:created_volts = 3 [db_index = True, null = True, blank = True];
+}
+
+message AccessAgent (PlCoreBase){
+     required string name = 1 [help_text = "name of agent", max_length = 254, null = False, db_index = False, blank = False];
+     required manytoone volt_service->VOLTService:access_agents = 2 [db_index = True, null = False, blank = False];
+     optional string mac = 3 [help_text = "MAC Address or Access Agent", max_length = 32, null = True, db_index = False, blank = True];
+}
+
+message VOLTDevice (PlCoreBase){
+     option verbose_name = "vOLT Device";
+
+     required string name = 1 [help_text = "name of device", max_length = 254, null = False, db_index = False, blank = False];
+     required manytoone volt_service->VOLTService:volt_devices = 2 [db_index = True, null = False, blank = False];
+     optional string openflow_id = 3 [help_text = "OpenFlow ID", max_length = 254, null = True, db_index = False, blank = True];
+     optional string driver = 4 [help_text = "driver", max_length = 254, null = True, db_index = False, blank = True];
+     optional manytoone access_agent->AccessAgent:volt_devices = 5 [db_index = True, null = True, blank = True];
+}
+
+message AccessDevice (PlCoreBase){
+     required manytoone volt_device->VOLTDevice:access_devices = 1 [db_index = True, null = False, blank = False];
+     optional int32 uplink = 2 [db_index = False, null = True, blank = True];
+     optional int32 vlan = 3 [db_index = False, null = True, blank = True];
+}
+
+message AgentPortMapping (PlCoreBase){
+     required manytoone access_agent->AccessAgent:port_mappings = 1 [db_index = True, null = False, blank = False];
+     optional string mac = 2 [help_text = "MAC Address", max_length = 32, null = True, db_index = False, blank = True];
+     optional string port = 3 [help_text = "Openflow port ID", max_length = 32, null = True, db_index = False, blank = True];
+}
