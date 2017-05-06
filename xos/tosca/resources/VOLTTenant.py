@@ -1,5 +1,6 @@
 from core.models import User
-from services.volt.models import VOLTTenant, VOLTService, CordSubscriberRoot, VOLT_KIND
+from services.volt.models import VOLTTenant, VOLTService, VOLT_KIND
+from services.rcord.models import CordSubscriberRoot
 
 from xosresource import XOSResource
 

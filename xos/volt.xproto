@@ -1,22 +1,6 @@
 option name = "volt";
 option verbose_name = "vOLT Service";
 
-message CordSubscriberRoot (TenantRoot){
-     option kind = "CordSubscriberRoot";
-
-     required bool firewall_enable = 1 [default = False, null = False, db_index = False, blank = True];
-     optional string firewall_rules = 2 [default = "accept all anywhere anywhere", null = True, db_index = False, blank = True];
-     required bool url_filter_enable = 3 [default = False, null = False, db_index = False, blank = True];
-     optional string url_filter_rules = 4 [default = "allow all", null = True, db_index = False, blank = True];
-     required string url_filter_level = 5 [default = "PG", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
-     required bool cdn_enable = 6 [default = False, null = False, db_index = False, blank = True];
-     required bool is_demo_user = 7 [default = False, null = False, db_index = False, blank = True];
-     required int32 uplink_speed = 8 [default = 1000000000, null = False, db_index = False, blank = False];
-     required int32 downlink_speed = 9 [default = 1000000000, null = False, db_index = False, blank = False];
-     required bool enable_uverse = 10 [default = True, null = False, db_index = False, blank = True];
-     required string status = 11 [default = "enabled", choices = "(('enabled', 'Enabled'), ('suspended', 'Suspended'), ('delinquent', 'Delinquent'), ('copyrightviolation', 'Copyright Violation'))", max_length = 30, content_type = "stripped", blank = False, null = False, db_index = False];
-}
-
 message VOLTService (Service){
      option kind = "vOLT";
 }

@@ -10,7 +10,8 @@ from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
-from services.volt.models import VOLTTenant, CordSubscriberRoot
+from services.volt.models import VOLTTenant
+from services.rcord.models import CordSubscriberRoot
 from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied

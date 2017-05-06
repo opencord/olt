@@ -1,5 +1,5 @@
 from core.models import User, TenantRootPrivilege, TenantRootRole
-from services.volt.models import CordSubscriberRoot
+from services.rcord.models import CordSubscriberRoot
 from xosresource import XOSResource
 
 class XOSCORDSubscriber(XOSResource):

@@ -10,6 +10,7 @@ from operator import itemgetter, attrgetter, methodcaller
 from core.models import Tag
 from core.models.service import LeastLoadedNodeScheduler
 from services.vrouter.models import VRouterService, VRouterTenant
+from services.rcord.models import CordSubscriberRoot
 import traceback
 from xos.exceptions import *
 from xos.config import Config
@@ -18,6 +19,5 @@ class ConfigurationError(Exception):
     pass
 
 VOLT_KIND = "vOLT"
-CORD_SUBSCRIBER_KIND = "CordSubscriberRoot"
 
 CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)

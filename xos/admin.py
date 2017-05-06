@@ -146,63 +146,10 @@ class AccessAgentAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'), ('accessportmaps', 'Port Mappings'))
 
-# -------------------------------------------
-# CORDSubscriberRoot
-# -------------------------------------------
-
-class VOLTTenantInline(XOSTabularInline):
-    model = VOLTTenant
-    fields = ['provider_service', 'subscriber_root', 'service_specific_id']
-    readonly_fields = ['provider_service', 'subscriber_root', 'service_specific_id']
-    extra = 0
-    max_num = 0
-    suit_classes = 'suit-tab suit-tab-volttenants'
-    fk_name = 'subscriber_root'
-    verbose_name = 'subscribed tenant'
-    verbose_name_plural = 'subscribed tenants'
-
-    @property
-    def selflink_reverse_path(self):
-        return "admin:cord_volttenant_change"
-
-class CordSubscriberRootForm(forms.ModelForm):
-    def __init__(self,*args,**kwargs):
-        super (CordSubscriberRootForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].widget.attrs['readonly'] = True
-        if (not self.instance) or (not self.instance.pk):
-            # default fields for an 'add' form
-            self.fields['kind'].initial = CORD_SUBSCRIBER_KIND
-
-    def save(self, commit=True):
-        return super(CordSubscriberRootForm, self).save(commit=commit)
-
-    class Meta:
-        model = CordSubscriberRoot
-        fields = '__all__'
-
-class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id',  'name', )
-    list_display_links = ('backend_status_icon', 'id', 'name', )
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'service_specific_id', # 'service_specific_attribute',
-                                     'url_filter_level', "uplink_speed", "downlink_speed", "status", "enable_uverse", "cdn_enable"],
-                          'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'service_specific_attribute',)
-    form = CordSubscriberRootForm
-    inlines = (VOLTTenantInline, TenantRootPrivilegeInline)
-
-    suit_form_tabs =(('general', 'Cord Subscriber Root Details'),
-        ('volttenants','VOLT Tenancy'),
-        ('tenantrootprivileges','Privileges')
-    )
-
-    def get_queryset(self, request):
-        return CordSubscriberRoot.get_tenant_objects_by_user(request.user)
-
 admin.site.register(VOLTService, VOLTServiceAdmin)
 admin.site.register(VOLTTenant, VOLTTenantAdmin)
 admin.site.register(VOLTDevice, VOLTDeviceAdmin)
 admin.site.register(AccessDevice, AccessDeviceAdmin)
 admin.site.register(AccessAgent, AccessAgentAdmin)
 
-admin.site.register(CordSubscriberRoot, CordSubscriberRootAdmin)
 
