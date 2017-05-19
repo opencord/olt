@@ -14,13 +14,13 @@ message VOLTTenant (Tenant){
      optional manytoone creator->User:created_volts = 3 [db_index = True, null = True, blank = True];
 }
 
-message AccessAgent (PlCoreBase){
+message AccessAgent (XOSBase){
      required string name = 1 [help_text = "name of agent", max_length = 254, null = False, db_index = False, blank = False];
      required manytoone volt_service->VOLTService:access_agents = 2 [db_index = True, null = False, blank = False];
      optional string mac = 3 [help_text = "MAC Address or Access Agent", max_length = 32, null = True, db_index = False, blank = True];
 }
 
-message VOLTDevice (PlCoreBase){
+message VOLTDevice (XOSBase){
      option verbose_name = "vOLT Device";
 
      required string name = 1 [help_text = "name of device", max_length = 254, null = False, db_index = False, blank = False];
@@ -30,13 +30,13 @@ message VOLTDevice (PlCoreBase){
      optional manytoone access_agent->AccessAgent:volt_devices = 5 [db_index = True, null = True, blank = True];
 }
 
-message AccessDevice (PlCoreBase){
+message AccessDevice (XOSBase){
      required manytoone volt_device->VOLTDevice:access_devices = 1 [db_index = True, null = False, blank = False];
      optional int32 uplink = 2 [db_index = False, null = True, blank = True];
      optional int32 vlan = 3 [db_index = False, null = True, blank = True];
 }
 
-message AgentPortMapping (PlCoreBase){
+message AgentPortMapping (XOSBase){
      required manytoone access_agent->AccessAgent:port_mappings = 1 [db_index = True, null = False, blank = False];
      optional string mac = 2 [help_text = "MAC Address", max_length = 32, null = True, db_index = False, blank = True];
      optional string port = 3 [help_text = "Openflow port ID", max_length = 32, null = True, db_index = False, blank = True];

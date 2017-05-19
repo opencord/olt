@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import *
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, TenantRoot, NetworkParameter, NetworkParameterType, Port, AddressPool, User
-from core.models.plcorebase import StrippedCharField
+from core.models import Service, XOSBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, TenantRoot, NetworkParameter, NetworkParameterType, Port, AddressPool, User
+from core.models.xosbase import StrippedCharField
 import os
 from django.db import models, transaction
 from django.forms.models import model_to_dict
