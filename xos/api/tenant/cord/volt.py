@@ -12,7 +12,7 @@ from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, X
 from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 
 def get_default_volt_service():
-    volt_services = VOLTService.get_service_objects().all()
+    volt_services = VOLTService.objects.all()
     if volt_services:
         return volt_services[0].id
     return None
@@ -28,7 +28,7 @@ class VOLTTenantForAPI(VOLTTenant):
 
     @subscriber.setter
     def subscriber(self, value):
-        self.subscriber_root = value # CordSubscriberRoot.get_tenant_objects().get(id=value)
+        self.subscriber_root = value
 
     @property
     def related(self):
@@ -48,7 +48,7 @@ class VOLTTenantSerializer(PlusModelSerializer):
     service_specific_id = serializers.CharField(required=False)
     s_tag = serializers.CharField()
     c_tag = serializers.CharField()
-    subscriber = serializers.PrimaryKeyRelatedField(queryset=CordSubscriberRoot.get_tenant_objects().all(), required=False)
+    subscriber = serializers.PrimaryKeyRelatedField(queryset=CordSubscriberRoot.objects.all(), required=False)
     related = serializers.DictField(required=False)
 
     property_fields=["subscriber"]
@@ -65,7 +65,7 @@ class VOLTTenantViewSet(XOSViewSet):
     base_name = "volt"
     method_name = "volt"
     method_kind = "viewset"
-    queryset = VOLTTenantForAPI.get_tenant_objects().all() # select_related().all()
+    queryset = VOLTTenantForAPI.objects.all()
     serializer_class = VOLTTenantSerializer
 
     @classmethod

@@ -1,5 +1,5 @@
 def __init__(self, *args, **kwargs):
-    volt_services = VOLTService.get_service_objects().all()
+    volt_services = VOLTService.objects.all()
     if volt_services:
         self._meta.get_field("provider_service").default = volt_services[0].id
     super(VOLTTenant, self).__init__(*args, **kwargs)
@@ -48,7 +48,7 @@ def manage_vcpe(self):
 
     if self.vcpe is None:
         from services.vsg.models import VSGService, VSGTenant
-        vsgServices = VSGService.get_service_objects().all()
+        vsgServices = VSGService.objects.all()
         if not vsgServices:
             raise XOSConfigurationError("No VSG Services available")
 
@@ -66,7 +66,7 @@ def manage_subscriber(self):
         # TODO: This probably goes away when we rethink the ONOS-to-XOS
         # vOLT API.
 
-        subs = CordSubscriberRoot.get_tenant_objects().filter(service_specific_id = self.service_specific_id)
+        subs = CordSubscriberRoot.objects.filter(service_specific_id = self.service_specific_id)
         if subs:
             sub = subs[0]
         else:
