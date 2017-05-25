@@ -55,7 +55,7 @@ class VOLTTenantForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super (VOLTTenantForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['provider_service'].queryset = VOLTService.get_service_objects().all()
+        self.fields['provider_service'].queryset = VOLTService.objects.all()
         if self.instance:
             # fields for the attributes
             self.fields['c_tag'].initial = self.instance.c_tag
@@ -65,8 +65,8 @@ class VOLTTenantForm(forms.ModelForm):
             # default fields for an 'add' form
             self.fields['kind'].initial = VOLT_KIND
             self.fields['creator'].initial = get_request().user
-            if VOLTService.get_service_objects().exists():
-               self.fields["provider_service"].initial = VOLTService.get_service_objects().all()[0]
+            if VOLTService.objects.exists():
+               self.fields["provider_service"].initial = VOLTService.objects.all()[0]
 
     def save(self, commit=True):
         self.instance.s_tag = self.cleaned_data.get("s_tag")
@@ -91,7 +91,7 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general','Details'),)
 
     def get_queryset(self, request):
-        return VOLTTenant.get_tenant_objects_by_user(request.user)
+        return VOLTTenant.select_by_user(request.user)
 
 class AccessDeviceInline(XOSTabularInline):
     model = AccessDevice

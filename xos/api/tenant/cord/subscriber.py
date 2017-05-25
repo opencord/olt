@@ -359,7 +359,7 @@ class CordSubscriberViewSet(XOSViewSet):
         return Response({identity: DeviceIdentitySerializer(device.identity).data[identity]})
 
     def account_num_detail(self, pk=None, account_num=None):
-        object_list = CordSubscriberNew.get_tenant_objects().all()
+        object_list = CordSubscriberNew.objects.all()
         object_list = [x for x in object_list if x.service_specific_id == account_num]
         if not object_list:
             return Response("Failed to find account_num %s" % account_num, status=status.HTTP_404_NOT_FOUND)
@@ -367,14 +367,14 @@ class CordSubscriberViewSet(XOSViewSet):
         return Response( object_list[0].id )
 
     def ssidlist(self, request):
-        object_list = CordSubscriberNew.get_tenant_objects().all()
+        object_list = CordSubscriberNew.objects.all()
 
         ssidmap = [ {"service_specific_id": x.service_specific_id, "subscriber_id": x.id} for x in object_list ]
 
         return Response({"ssidmap": ssidmap})
 
     def ssiddetail(self, pk=None, ssid=None):
-        object_list = CordSubscriberNew.get_tenant_objects().all()
+        object_list = CordSubscriberNew.objects.all()
 
         ssidmap = [ {"service_specific_id": x.service_specific_id, "subscriber_id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
 
