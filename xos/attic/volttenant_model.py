@@ -42,7 +42,7 @@ def manage_vcpe(self):
     # Check to see if the wrong s-tag is set. This can only happen if the
     # user changed the s-tag after the VoltTenant object was created.
     if self.vcpe and self.vcpe.instance:
-        s_tags = Tag.select_by_content_object(self.vcpe.instance).filter(name="s_tag")
+        s_tags = Tag.objects.filter(content_type=self.vcpe.instance.get_content_type_key(), object_id=self.vcpe.instance.id, name="s_tag")
         if s_tags and (s_tags[0].value != str(self.s_tag)):
             self.vcpe.delete()
 
