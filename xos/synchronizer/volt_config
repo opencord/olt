@@ -1,0 +1,19 @@
+# Sets options for the synchronizer
+[observer]
+name=volt
+dependency_graph=/opt/xos/synchronizers/volt/model-deps
+steps_dir=/opt/xos/synchronizers/volt/steps
+sys_dir=/opt/xos/synchronizers/volt/sys
+log_file=console
+log_level=debug
+pretend=False
+backoff_disabled=True
+save_ansible_output=True
+proxy_ssh=True
+proxy_ssh_key=/opt/cord_profile/node_key
+proxy_ssh_user=root
+accessor_kind=api
+accessor_password=@/opt/xos/services/volt/credentials/xosadmin@opencord.org
+
+[networking]
+use_vtn=True
