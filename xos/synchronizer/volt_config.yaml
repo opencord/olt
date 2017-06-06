@@ -1,0 +1,7 @@
+name: volt-synchronizer
+accessor:
+  username: xosadmin@opencord.org
+  password: "@/opt/xos/services/volt/credentials/xosadmin@opencord.org"
+dependency_graph: "/opt/xos/synchronizers/volt/model-deps"
+steps_dir: "/opt/xos/synchronizers/volt/steps"
+sys_dir: "/opt/xos/synchronizers/volt/sys"
