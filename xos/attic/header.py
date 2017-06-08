@@ -13,7 +13,7 @@ from services.vrouter.models import VRouterService, VRouterTenant
 from services.rcord.models import CordSubscriberRoot
 import traceback
 from xos.exceptions import *
-from xos.config import Config
+from xosconfig import Config
 
 class ConfigurationError(Exception):
     pass
