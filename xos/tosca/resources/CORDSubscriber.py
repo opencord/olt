@@ -9,7 +9,7 @@ class XOSCORDSubscriber(XOSResource):
 
     def postprocess(self, obj):
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), ("tosca.relationships.AccessPrivilege", "access"), )
-        self.postprocess_privileges(TenantRootRole, TenantRootPrivilege, rolemap, obj, "tenant_root")
+        self.postprocess_privileges(TenantRootRole, 'TenantRoot', rolemap, obj)
 
     def can_delete(self, obj):
         return super(XOSCORDSubscriber, self).can_delete(obj)
