@@ -1,7 +1,7 @@
 def __init__(self, *args, **kwargs):
     volt_services = VOLTService.objects.all()
     if volt_services:
-        self._meta.get_field("provider_service").default = volt_services[0].id
+        self._meta.get_field("owner").default = volt_services[0].id
     super(VOLTTenant, self).__init__(*args, **kwargs)
     self.cached_vcpe = None
 
@@ -52,6 +52,7 @@ def manage_vcpe(self):
         if not vsgServices:
             raise XOSConfigurationError("No VSG Services available")
 
+        raise Exception("this is broken")
         vcpe = VSGTenant(provider_service = vsgServices[0],
                           subscriber_tenant = self)
         vcpe.caller = self.creator
