@@ -5,7 +5,7 @@ message VOLTService (Service){
      option kind = "vOLT";
 }
 
-message VOLTTenant (Tenant){
+message VOLTTenant (ServiceInstance){
      option kind = "vOLT";
      option verbose_name = "vOLT Tenant";
 
