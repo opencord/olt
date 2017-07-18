@@ -1,7 +1,7 @@
 def __init__(self, *args, **kwargs):
     volt_services = VOLTService.objects.all()
     if volt_services:
-        self._meta.get_field("provider_service").default = volt_services[0].id
+        self._meta.get_field("owner").default = volt_services[0].id
     super(VOLTTenant, self).__init__(*args, **kwargs)
     self.cached_vcpe = None
 
@@ -52,5 +52,3 @@ def save(self, *args, **kwargs):
             raise XOSProgrammingError("VOLTTenant's self.creator was not set")
 
     super(VOLTTenant, self).save(*args, **kwargs)
-
-
