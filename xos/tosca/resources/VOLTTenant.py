@@ -1,4 +1,4 @@
-from core.models import User
+from core.models import User, ServiceInstanceLink
 from services.volt.models import VOLTTenant, VOLTService, VOLT_KIND
 from services.rcord.models import CordSubscriberRoot
 
@@ -15,26 +15,30 @@ class XOSVOLTTenant(XOSResource):
 
         provider_name = self.get_requirement("tosca.relationships.MemberOfService", throw_exception=throw_exception)
         if provider_name:
-            args["provider_service"] = self.get_xos_object(VOLTService, throw_exception=throw_exception, name=provider_name)
-
-        subscriber_name = self.get_requirement("tosca.relationships.BelongsToSubscriber")
-        if subscriber_name:
-            args["subscriber_root"] = self.get_xos_object(CordSubscriberRoot, throw_exception=throw_exception, name=subscriber_name)
+            args["owner"] = self.get_xos_object(VOLTService, throw_exception=throw_exception, name=provider_name)
 
         return args
 
     def get_existing_objs(self):
         args = self.get_xos_args(throw_exception=False)
-        provider_service = args.get("provider_service", None)
+        provider_service = args.get("owner", None)
         service_specific_id = args.get("service_specific_id", None)
         if (provider_service) and (service_specific_id):
-            existing_obj = self.get_xos_object(VOLTTenant, kind=VOLT_KIND, provider_service=provider_service, service_specific_id=service_specific_id, throw_exception=False)
+            existing_obj = self.get_xos_object(VOLTTenant, owner=provider_service, service_specific_id=service_specific_id, throw_exception=False)
             if existing_obj:
                 return [ existing_obj ]
         return []
 
     def postprocess(self, obj):
-        pass
+        subscriber_name = self.get_requirement("tosca.relationships.BelongsToSubscriber")
+        if subscriber_name:
+            subscriber = self.get_xos_object(CordSubscriberRoot, throw_exception=True, name=subscriber_name)
+
+            links = ServiceInstanceLink.objects.filter(provider_service_instance = obj,
+                                                       subscriber_service_instance = subscriber)
+            if not links:
+                link = ServiceInstanceLink(provider_service_instance = obj, subscriber_service_instance = subscriber)
+                link.save()
 
     def can_delete(self, obj):
         return super(XOSVOLTTenant, self).can_delete(obj)
