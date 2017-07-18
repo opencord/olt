@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, SubscriberLinkInline, ProviderLinkInline, ProviderDependencyInline,SubscriberDependencyInline
 from core.middleware import get_request
 
 from functools import update_wrapper
@@ -30,7 +30,7 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
+    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline,ProviderDependencyInline,SubscriberDependencyInline]
 
     extracontext_registered_admins = True
 
@@ -41,6 +41,7 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
         #('tools', 'Tools'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+        ('servicetenants', 'Dependencies'),
         ('serviceprivileges','Privileges'),
     )
 
@@ -54,8 +55,7 @@ class VOLTTenantForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         super (VOLTTenantForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['provider_service'].queryset = VOLTService.objects.all()
+        self.fields['owner'].queryset = VOLTService.objects.all()
         if self.instance:
             # fields for the attributes
             self.fields['c_tag'].initial = self.instance.c_tag
@@ -63,10 +63,9 @@ class VOLTTenantForm(forms.ModelForm):
             self.fields['creator'].initial = self.instance.creator
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
-            self.fields['kind'].initial = VOLT_KIND
             self.fields['creator'].initial = get_request().user
             if VOLTService.objects.exists():
-               self.fields["provider_service"].initial = VOLTService.objects.all()[0]
+               self.fields["owner"].initial = VOLTService.objects.all()[0]
 
     def save(self, commit=True):
         self.instance.s_tag = self.cleaned_data.get("s_tag")
@@ -80,15 +79,16 @@ class VOLTTenantForm(forms.ModelForm):
 
 
 class VOLTTenantAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id', 'service_specific_id', 's_tag', 'c_tag', 'subscriber_root' )
+    list_display = ('backend_status_icon', 'id', 'service_specific_id', 's_tag', 'c_tag', )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_root', 'service_specific_id', # 'service_specific_attribute',
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'owner', 'service_specific_id', # 'service_specific_attribute',
                                      's_tag', 'c_tag', 'creator'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute')
+    inlines = (ProviderLinkInline, SubscriberLinkInline)
     form = VOLTTenantForm
 
-    suit_form_tabs = (('general','Details'),)
+    suit_form_tabs = (('general','Details'), ('servicelinks','Links'),)
 
     def get_queryset(self, request):
         return VOLTTenant.select_by_user(request.user)
