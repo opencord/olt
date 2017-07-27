@@ -22,6 +22,30 @@
       "revId": "d7590f7533b6ded8973f4cb4ce2306d3231f2ccb",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a1a2d67_47e85e7c",
+        "filename": "xos/tosca/resources/CORDSubscriber.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2017-07-27T16:10:52Z",
+      "side": 1,
+      "message": "We eliminated the TenantRoot model and replaced it with a ServiceInstance, so it now requires some service to logically hold the collection of subscribers. \n\nIt may make sense to rename CORDSubscriber to RCordSubscriber, as CORDSubscriber is defined by the RCORD profile.",
+      "parentUuid": "1a1a2d67_8779d6fe",
+      "range": {
+        "startLine": 5,
+        "startChar": 6,
+        "endLine": 5,
+        "endChar": 23
+      },
+      "revId": "d7590f7533b6ded8973f4cb4ce2306d3231f2ccb",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
