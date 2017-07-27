@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a1a2d67_8779d6fe",
+        "filename": "xos/tosca/resources/CORDSubscriber.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2017-07-27T15:47:17Z",
+      "side": 1,
+      "message": "CORDSubscriber is not now in the \"rcord\" service?",
+      "range": {
+        "startLine": 5,
+        "startChar": 6,
+        "endLine": 5,
+        "endChar": 23
+      },
+      "revId": "d7590f7533b6ded8973f4cb4ce2306d3231f2ccb",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
