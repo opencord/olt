@@ -1,7 +1,7 @@
 option name = "volt";
-option verbose_name = "vOLT Service";
 
 message VOLTService (Service){
+     option verbose_name = "vOLT Service";
      option kind = "vOLT";
 }
 
@@ -15,6 +15,8 @@ message VOLTTenant (ServiceInstance){
 }
 
 message AccessAgent (XOSBase){
+     option verbose_name = "Access Agent";
+
      required string name = 1 [help_text = "name of agent", max_length = 254, null = False, db_index = False, blank = False];
      required manytoone volt_service->VOLTService:access_agents = 2 [db_index = True, null = False, blank = False];
      optional string mac = 3 [help_text = "MAC Address or Access Agent", max_length = 32, null = True, db_index = False, blank = True];
@@ -31,12 +33,16 @@ message VOLTDevice (XOSBase){
 }
 
 message AccessDevice (XOSBase){
+     option verbose_name = "Access Device";
+
      required manytoone volt_device->VOLTDevice:access_devices = 1 [db_index = True, null = False, blank = False];
      optional int32 uplink = 2 [db_index = False, null = True, blank = True];
      optional int32 vlan = 3 [db_index = False, null = True, blank = True];
 }
 
 message AgentPortMapping (XOSBase){
+     option verbose_name = "Agent Port Mapping";
+
      required manytoone access_agent->AccessAgent:port_mappings = 1 [db_index = True, null = False, blank = False];
      optional string mac = 2 [help_text = "MAC Address", max_length = 32, null = True, db_index = False, blank = True];
      optional string port = 3 [help_text = "Openflow port ID", max_length = 32, null = True, db_index = False, blank = True];
