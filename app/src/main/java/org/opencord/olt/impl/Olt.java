@@ -25,7 +25,10 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.Service;
 import org.onlab.packet.EthType;
+import org.onlab.packet.IPv4;
+import org.onlab.packet.TpPort;
 import org.onlab.packet.VlanId;
+import org.onlab.util.Tools;
 import org.onosproject.cfg.ComponentConfigService;
 
 import org.onosproject.core.ApplicationId;
@@ -125,6 +128,10 @@ public class Olt
             label = "Default VLAN RG<->ONU traffic")
     private int defaultVlan = DEFAULT_VLAN;
 
+    @Property(name = "enableDhcpIgmpOnProvisioning", boolValue = false,
+            label = "Create the DHCP and IGMP Flow rules when a subscriber is provisioned")
+    protected boolean enableDhcpIgmpOnProvisioning = false;
+
     private final DeviceListener deviceListener = new InternalDeviceListener();
 
     private ApplicationId appId;
@@ -207,6 +214,11 @@ public class Olt
         try {
             String s = get(properties, "defaultVlan");
             defaultVlan = isNullOrEmpty(s) ? DEFAULT_VLAN : Integer.parseInt(s.trim());
+
+            Boolean o = Tools.isPropertyEnabled(properties, "enableDhcpIgmpOnProvisioning");
+            if (o != null) {
+                enableDhcpIgmpOnProvisioning = o;
+            }
         } catch (Exception e) {
             defaultVlan = DEFAULT_VLAN;
         }
@@ -221,8 +233,16 @@ public class Olt
             return;
         }
 
+        if (enableDhcpIgmpOnProvisioning) {
+            processDhcpFilteringObjectives(olt.deviceId(), port.port(), true);
+        }
+
         provisionVlans(olt.deviceId(), olt.uplink(), port.port(), vlan, olt.vlan(),
-                       olt.defaultVlan());
+                olt.defaultVlan());
+
+        if (enableDhcpIgmpOnProvisioning) {
+            processIgmpFilteringObjectives(olt.deviceId(), port.port(), true);
+        }
     }
 
     @Override
@@ -241,10 +261,18 @@ public class Olt
             return;
         }
 
+        if (enableDhcpIgmpOnProvisioning) {
+            processDhcpFilteringObjectives(olt.deviceId(), port.port(), false);
+        }
+
         unprovisionSubscriber(olt.deviceId(), olt.uplink(), port.port(), subscriberVlan,
                               olt.vlan(), olt.defaultVlan());
 
+        if (enableDhcpIgmpOnProvisioning) {
+            processIgmpFilteringObjectives(olt.deviceId(), port.port(), false);
+        }
     }
+
 
     @Override
     public Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers() {
@@ -461,6 +489,73 @@ public class Olt
 
         flowObjectiveService.filter(devId, eapol);
 
+    }
+
+    private void processDhcpFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
+        if (!mastershipService.isLocalMaster(devId)) {
+            return;
+        }
+        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+
+        FilteringObjective dhcpUpstream = (install ? builder.permit() : builder.deny())
+                .withKey(Criteria.matchInPort(port))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.IPV4.ethType()))
+                .addCondition(Criteria.matchIPProtocol(IPv4.PROTOCOL_UDP))
+                .addCondition(Criteria.matchUdpSrc(TpPort.tpPort(68)))
+                .addCondition(Criteria.matchUdpDst(TpPort.tpPort(67)))
+                .withMeta(DefaultTrafficTreatment.builder()
+                                  .setOutput(PortNumber.CONTROLLER).build())
+                .fromApp(appId)
+                .withPriority(1000)
+                .add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        log.info("DHCP filter for {} on {} installed.",
+                                devId, port);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        log.info("DHCP filter for {} on {} failed because {}",
+                                devId, port, error);
+                    }
+                });
+
+        flowObjectiveService.filter(devId, dhcpUpstream);
+    }
+
+    private void processIgmpFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
+        if (!mastershipService.isLocalMaster(devId)) {
+            return;
+        }
+
+       DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+
+        builder = install ? builder.permit() : builder.deny();
+
+        FilteringObjective igmp = builder
+                .withKey(Criteria.matchInPort(port))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.IPV4.ethType()))
+                .addCondition(Criteria.matchIPProtocol(IPv4.PROTOCOL_IGMP))
+                .withMeta(DefaultTrafficTreatment.builder()
+                                  .setOutput(PortNumber.CONTROLLER).build())
+                .fromApp(appId)
+                .withPriority(10000)
+                .add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        log.info("Igmp filter for {} on {} installed.",
+                                 devId, port);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        log.info("Igmp filter for {} on {} failed because {}.",
+                                 devId, port, error);
+                    }
+                });
+
+        flowObjectiveService.filter(devId, igmp);
     }
 
     private class InternalDeviceListener implements DeviceListener {
