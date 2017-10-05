@@ -578,9 +578,11 @@ public class Olt
                     AccessDeviceData olt = oltData.get(devId);
                     VlanId vlan = subscribers.get(new ConnectPoint(devId,
                                                                    event.port().number()));
-                    unprovisionSubscriber(devId, olt.uplink(),
-                                          event.port().number(),
-                                          vlan, olt.vlan(), olt.defaultVlan());
+                    if (vlan != null) {
+                        unprovisionSubscriber(devId, olt.uplink(),
+                                event.port().number(),
+                                vlan, olt.vlan(), olt.defaultVlan());
+                    }
                     if (!oltData.get(devId).uplink().equals(event.port().number()) &&
                             event.port().isEnabled()) {
                         processFilteringObjectives(devId, event.port().number(), false);
