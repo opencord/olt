@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.onosproject</groupId>
         <artifactId>onos-dependencies</artifactId>
-        <version>1.10.6</version>
+        <version>1.10.9</version>
         <relativePath></relativePath>
     </parent>
 
@@ -33,7 +33,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <onos.version>1.10.6</onos.version>
+        <onos.version>1.10.9</onos.version>
         <onos.app.name>org.opencord.olt</onos.app.name>
         <onos.app.title>OLT Access Management</onos.app.title>
         <onos.app.origin>OpenCord</onos.app.origin>
@@ -41,8 +41,6 @@
         <onos.app.url>http://opencord.org</onos.app.url>
 	<onos.app.readme>CORD OLT Access management application</onos.app.readme>
         <cord.config.version>1.4.0-SNAPSHOT</cord.config.version>
-        <!-- TODO onos-build-conf.version can be dropped when onos.version > 1.10.3 -->
-        <onos-build-conf.version>1.10.3-onf</onos-build-conf.version>
     </properties>
 
     <modules>
