@@ -30,6 +30,7 @@ import org.onosproject.net.PortNumber;
 import org.opencord.olt.AccessDeviceService;
 import org.onosproject.rest.AbstractWebResource;
 
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 /**
  * OLT REST APIs.
  */
@@ -80,4 +81,43 @@ public class OltWebResource extends AbstractWebResource {
         service.removeSubscriber(connectPoint);
         return Response.noContent().build();
     }
+
+    /**
+     * Provision HSIA service for a subscriber.
+     *
+     * @param subscriberId Identifier for the subscriber
+     * @return 200 OK or 404 NOT_FOUND
+     */
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("services/hsia/{subscriberId}")
+    public Response provisionHsia(
+            @PathParam("subscriberId")String subscriberId) {
+        AccessDeviceService service = get(AccessDeviceService.class);
+
+        if (service.provisionHsia(subscriberId)) {
+            return ok("").build();
+        }
+        return Response.status(NOT_FOUND).build();
+    }
+
+    /**
+     * Removes HSIA service for a subscriber.
+     *
+     * @param subscriberId Identifier for the subscriber
+     * @return 200 OK or 404 NOT_FOUND
+     */
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("services/hsia/{subscriberId}")
+    public Response deleteHsia(
+            @PathParam("subscriberId")String subscriberId) {
+        AccessDeviceService service = get(AccessDeviceService.class);
+
+        if (service.deleteHsia(subscriberId)) {
+            return ok("").build();
+        }
+        return Response.status(NOT_FOUND).build();
+    }
+
 }

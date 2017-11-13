@@ -47,11 +47,27 @@ public interface AccessDeviceService
     void removeSubscriber(ConnectPoint port);
 
     /**
+     * Provisions flows for HSIA service for the specific subscriber.
+     *
+     * @param subscriberId Identification of the subscriber
+     * @return true is successful false otherwise
+     */
+    public boolean provisionHsia(String subscriberId);
+
+    /**
+     * Removes flows for HSIA service for the specific subscriber.
+     *
+     * @param subscriberId Identification of the subscriber
+     * @return true is successful false otherwise
+     */
+    public boolean deleteHsia(String subscriberId);
+
+    /**
      * Returns information about the provisioned subscribers.
      *
      * @return subscribers
      */
-    Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers();
+    Collection<Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>>> getSubscribers();
 
     /**
      * Returns the map of configured OLTs.

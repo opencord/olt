@@ -39,6 +39,7 @@
         </api.description>
 	<api.package>org.onosproject.olt.rest</api.package>
 	<olt.api.version>1.4.0-SNAPSHOT</olt.api.version>
+    <sadis.api.version>1.2.0-SNAPSHOT</sadis.api.version>
     </properties>
 
     <dependencies>
@@ -46,6 +47,12 @@
             <groupId>org.opencord</groupId>
             <artifactId>olt-api</artifactId>
             <version>${olt.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencord</groupId>
+            <artifactId>sadis-api</artifactId>
+	    <version>${sadis.api.version}</version>
         </dependency>
 
         <dependency>
