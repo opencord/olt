@@ -35,7 +35,9 @@ import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.event.AbstractListenerManager;
 import org.onosproject.mastership.MastershipService;
+import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.ConnectPoint;
+import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
@@ -66,12 +68,17 @@ import org.opencord.cordconfig.access.AccessDeviceData;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.AccessSubscriberId;
+import org.opencord.sadis.SubscriberAndDeviceInformation;
+import org.opencord.sadis.SubscriberAndDeviceInformationService;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 
+import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.List;
@@ -124,6 +131,9 @@ public class Olt
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected StorageService storageService;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected SubscriberAndDeviceInformationService subsService;
+
     @Property(name = "defaultVlan", intValue = DEFAULT_VLAN,
             label = "Default VLAN RG<->ONU traffic")
     private int defaultVlan = DEFAULT_VLAN;
@@ -142,7 +152,7 @@ public class Olt
 
     private Map<DeviceId, AccessDeviceData> oltData = new ConcurrentHashMap<>();
 
-    private Map<ConnectPoint, VlanId> subscribers;
+    private Map<ConnectPoint, Map.Entry<VlanId, VlanId>> subscribers;
 
     private InternalNetworkConfigListener configListener =
             new InternalNetworkConfigListener();
@@ -188,11 +198,11 @@ public class Olt
                 .forEach(p -> processFilteringObjectives((DeviceId) p.element().id(),
                                                          p.number(), true));
 
-        subscribers = storageService.<ConnectPoint, VlanId>consistentMapBuilder()
+        subscribers = storageService.<ConnectPoint, Map.Entry<VlanId, VlanId>>consistentMapBuilder()
                 .withName(SUBSCRIBERS)
-                .withSerializer(Serializer.using(KryoNamespaces.API))
+                .withSerializer(Serializer.using(Arrays.asList(KryoNamespaces.API),
+                                AbstractMap.SimpleEntry.class))
                 .build().asJavaMap();
-
         deviceService.addListener(deviceListener);
 
         log.info("Started with Application ID {}", appId.id());
@@ -222,6 +232,95 @@ public class Olt
         } catch (Exception e) {
             defaultVlan = DEFAULT_VLAN;
         }
+    }
+
+    /**
+     * Creates AccessDeviceData and puts it in the oltData map, if device is
+     * present in Sadis config.
+     *
+     * @param dev Device to look for
+     * @return true if device is created in the oltData map else false
+     */
+    private ConnectPoint findSubscriberConnectPoint(String id) {
+
+        Iterable<Device> devices = deviceService.getDevices();
+        for (Device d : devices) {
+            for (Port p : deviceService.getPorts(d.id())) {
+                log.debug("Comparing {} with {}", p.annotations().value(AnnotationKeys.PORT_NAME), id);
+                if (p.annotations().value(AnnotationKeys.PORT_NAME).equals(id)) {
+                    log.debug("Found on device {} port {}", d.id(), p.number());
+                    return new ConnectPoint(d.id(), p.number());
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean provisionHsia(AccessSubscriberId subscriberId) {
+
+        SubscriberAndDeviceInformation subscriber = subsService.get(subscriberId.toString());
+        if (subscriber == null) {
+            log.warn("Subscriber {} not found", subscriberId);
+            return false;
+        }
+
+        ConnectPoint subsPort = findSubscriberConnectPoint(subscriberId.toString());
+        if (subsPort == null) {
+            log.warn("ConnectPoint for {} not found", subscriberId);
+            return false;
+        }
+
+        AccessDeviceData olt = oltData.get(subsPort.deviceId());
+        if (olt == null) {
+            log.warn("No data found for OLT device {}", subsPort.deviceId());
+            return false;
+        }
+        log.info("Provisioning HSIA for subscriber: {}", subscriberId);
+        if (enableDhcpIgmpOnProvisioning) {
+            processDhcpFilteringObjectives(olt.deviceId(), subsPort.port(), true);
+        }
+
+        provisionVlans(olt.deviceId(), olt.uplink(), subsPort.port(),
+                subscriber.cTag(), subscriber.sTag(), olt.defaultVlan());
+
+
+        return true;
+    }
+
+    @Override
+    public boolean deleteHsia(AccessSubscriberId subscriberId) {
+
+        SubscriberAndDeviceInformation subscriber = subsService.get(subscriberId.toString());
+        if (subscriber == null) {
+            log.warn("Subscriber {} not found", subscriberId);
+            return false;
+        }
+
+        ConnectPoint subsPort = findSubscriberConnectPoint(subscriberId.toString());
+        if (subsPort == null) {
+            log.warn("ConnectPoint for {} not found", subscriberId);
+            return false;
+        }
+
+        AccessDeviceData olt = oltData.get(subsPort.deviceId());
+        if (olt == null) {
+            log.warn("No data found for OLT device {}", subsPort.deviceId());
+            return false;
+        }
+
+        if (enableDhcpIgmpOnProvisioning) {
+            processDhcpFilteringObjectives(olt.deviceId(), subsPort.port(), false);
+        }
+        log.info("Removing HSIA and IGMP for subscriber: {}", subscriberId);
+        unprovisionSubscriber(olt.deviceId(), olt.uplink(), subsPort.port(),
+                subscriber.cTag(), subscriber.sTag(), olt.defaultVlan());
+
+        // No point of Multicast without HSIA remove it if present
+        if (enableDhcpIgmpOnProvisioning) {
+            processIgmpFilteringObjectives(olt.deviceId(), subsPort.port(), false);
+        }
+        return true;
     }
 
     @Override
@@ -254,9 +353,9 @@ public class Olt
             return;
         }
 
-        VlanId subscriberVlan = subscribers.remove(port);
+        Map.Entry<VlanId, VlanId> vlans = subscribers.remove(port);
 
-        if (subscriberVlan == null) {
+        if (vlans == null) {
             log.warn("Unknown subscriber at location {}", port);
             return;
         }
@@ -265,7 +364,7 @@ public class Olt
             processDhcpFilteringObjectives(olt.deviceId(), port.port(), false);
         }
 
-        unprovisionSubscriber(olt.deviceId(), olt.uplink(), port.port(), subscriberVlan,
+        unprovisionSubscriber(olt.deviceId(), olt.uplink(), port.port(), vlans.getValue(),
                               olt.vlan(), olt.defaultVlan());
 
         if (enableDhcpIgmpOnProvisioning) {
@@ -275,7 +374,7 @@ public class Olt
 
 
     @Override
-    public Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers() {
+    public Collection<Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>>> getSubscribers() {
         return subscribers.entrySet();
     }
 
@@ -360,7 +459,7 @@ public class Olt
                                                           defaultVlan);
 
         ConnectPoint cp = new ConnectPoint(deviceId, subscriberPort);
-        subscribers.put(cp, subscriberVlan);
+        subscribers.put(cp, new AbstractMap.SimpleEntry(deviceVlan, subscriberVlan));
 
         flowObjectiveService.forward(deviceId, upFwd.add(new ObjectiveContext() {
             @Override
@@ -576,12 +675,12 @@ public class Olt
                     break;
                 case PORT_REMOVED:
                     AccessDeviceData olt = oltData.get(devId);
-                    VlanId vlan = subscribers.get(new ConnectPoint(devId,
+                    Map.Entry<VlanId, VlanId> vlans = subscribers.get(new ConnectPoint(devId,
                                                                    event.port().number()));
-                    if (vlan != null) {
+                    if (vlans != null) {
                         unprovisionSubscriber(devId, olt.uplink(),
                                 event.port().number(),
-                                vlan, olt.vlan(), olt.defaultVlan());
+                                vlans.getValue(), olt.vlan(), olt.defaultVlan());
                     }
                     if (!oltData.get(devId).uplink().equals(event.port().number()) &&
                             event.port().isEnabled()) {
