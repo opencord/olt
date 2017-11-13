@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a5c5d37_b66ded06",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 617,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2017-11-13T21:11:18Z",
+      "side": 1,
+      "message": "Why not add this logic to the DEVICE_ADDED event handling in the switch case below? It makes more sense to me to keep the logic for handling each event type in the same place.",
+      "revId": "3b050854f03860baba2f0ca7fdc85f60f61bf89c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
