@@ -34,6 +34,23 @@
       "revId": "3b050854f03860baba2f0ca7fdc85f60f61bf89c",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a5c5d37_71ce5f85",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 619,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2017-11-14T19:54:34Z",
+      "side": 1,
+      "message": "unless I am interpreting this incorrectly, couldn\u0027t this conditional be inverted and just return right here as opposed to use a temporary variable?",
+      "revId": "3b050854f03860baba2f0ca7fdc85f60f61bf89c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
