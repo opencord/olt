@@ -16,6 +16,24 @@
       "revId": "3b050854f03860baba2f0ca7fdc85f60f61bf89c",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a5c5d37_118de37b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 617,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2017-11-14T12:37:32Z",
+      "side": 1,
+      "message": "Agreed that we want to keep the handling of each even in one place. But in this case, we don\u0027t want to process events which are not from know OLT devices (oltData.containsKey()); except for the case when an OLT gets added. So to avoid processing in the switch case below for other devices I put in the check on the event here.\n\nThe other thing that could be done is to put this logic in the DEVICE_ADDED case, but then we need to put the oltData.containsKey() check in all the other case statements to ignore events from other devices.\n\nPlease share your thoughts.",
+      "parentUuid": "9a5c5d37_b66ded06",
+      "revId": "3b050854f03860baba2f0ca7fdc85f60f61bf89c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
