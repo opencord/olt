@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7e962254_ae1cc007",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2017-11-29T07:25:25Z",
+      "side": 1,
+      "message": "Yes they are higher level APIs, but we should keep the old way of doing things till this way is hardened. We could deprecate the old way at a later point in time.\n\nRegarding HSIA, I have seen it being used by multiple operators. We could also call it provisionTrafficFlows() if it makes more sense is more intutive.",
+      "parentUuid": "ab2f786c_fd819404",
+      "revId": "1e7fb1ed70a38de1f0c0ecf97ed2090c13daa524",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7045717f_368e2180",
         "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
         "patchSetId": 1
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "ea1826a7_f9e5a4f3",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2017-11-29T07:25:25Z",
+      "side": 1,
+      "message": "Have done the changes. Please find them in the new patchset",
+      "parentUuid": "7045717f_368e2180",
+      "range": {
+        "startLine": 63,
+        "startChar": 30,
+        "endLine": 63,
+        "endChar": 36
+      },
+      "revId": "1e7fb1ed70a38de1f0c0ecf97ed2090c13daa524",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "efdca45c_84c876c9",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 1
@@ -53,6 +95,24 @@
       "writtenOn": "2017-11-15T17:49:55Z",
       "side": 1,
       "message": "Once you know the ConnectPoint, can you just call the original provisionSubscriber() method? Is the rest of this code doing anything different?",
+      "revId": "1e7fb1ed70a38de1f0c0ecf97ed2090c13daa524",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4052b7fa_ff75815c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2017-11-29T07:25:25Z",
+      "side": 1,
+      "message": "There are some differences:\n1. In this case we don\u0027t provision the IGMP flows even if the enableDhcpIgmpOnProvisioning is true because user is asking to specifically create HSIA flows.\n2. If we use the provisionSubscriber() function from here, the s-tag used for the subscriber would be that of the olt (olt.vlan() is used inside that function), where as here we are using the s-tag which is configured for that particular subscriber. With this flexibility we can support subscribers with different S-tags on the same OLT.",
+      "parentUuid": "efdca45c_84c876c9",
       "revId": "1e7fb1ed70a38de1f0c0ecf97ed2090c13daa524",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
