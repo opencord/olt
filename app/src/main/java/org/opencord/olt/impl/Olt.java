@@ -30,7 +30,6 @@ import org.onlab.packet.TpPort;
 import org.onlab.packet.VlanId;
 import org.onlab.util.Tools;
 import org.onosproject.cfg.ComponentConfigService;
-
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.event.AbstractListenerManager;
@@ -39,7 +38,6 @@ import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
-
 import org.onosproject.net.config.ConfigFactory;
 import org.onosproject.net.config.NetworkConfigEvent;
 import org.onosproject.net.config.NetworkConfigListener;
@@ -61,14 +59,14 @@ import org.onosproject.net.flowobjective.ForwardingObjective;
 import org.onosproject.net.flowobjective.Objective;
 import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
+import org.onosproject.store.serializers.KryoNamespaces;
+import org.onosproject.store.service.Serializer;
+import org.onosproject.store.service.StorageService;
 import org.opencord.cordconfig.access.AccessDeviceConfig;
 import org.opencord.cordconfig.access.AccessDeviceData;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
-import org.onosproject.store.serializers.KryoNamespaces;
-import org.onosproject.store.service.Serializer;
-import org.onosproject.store.service.StorageService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 
@@ -83,6 +81,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.onlab.util.Tools.get;
 import static org.onlab.util.Tools.groupedThreads;
@@ -226,11 +225,13 @@ public class Olt
 
     @Override
     public void provisionSubscriber(ConnectPoint port, VlanId vlan) {
+        checkNotNull(deviceService.getPort(port.deviceId(), port.port()),
+                "Invalid connect point");
         AccessDeviceData olt = oltData.get(port.deviceId());
 
         if (olt == null) {
             log.warn("No data found for OLT device {}", port.deviceId());
-            return;
+            throw new IllegalArgumentException("Missing OLT configuration for device");
         }
 
         if (enableDhcpIgmpOnProvisioning) {
