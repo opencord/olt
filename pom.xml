@@ -12,7 +12,7 @@
   ~ distributed under the License is distributed on an "AS IS" BASIS,
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
-  ~ limitations under the License. 
+  ~ limitations under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.onosproject</groupId>
         <artifactId>onos-dependencies</artifactId>
-        <version>1.10.9</version>
+        <version>1.13.1</version>
         <relativePath></relativePath>
     </parent>
 
@@ -33,13 +33,13 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <onos.version>1.10.9</onos.version>
+        <onos.version>1.13.1</onos.version>
         <onos.app.name>org.opencord.olt</onos.app.name>
         <onos.app.title>OLT Access Management</onos.app.title>
         <onos.app.origin>OpenCord</onos.app.origin>
         <onos.app.category>default</onos.app.category>
         <onos.app.url>http://opencord.org</onos.app.url>
-	<onos.app.readme>CORD OLT Access management application</onos.app.readme>
+        <onos.app.readme>CORD OLT Access management application</onos.app.readme>
         <cord.config.version>1.4.0-SNAPSHOT</cord.config.version>
     </properties>
 
