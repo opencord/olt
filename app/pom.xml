@@ -37,14 +37,26 @@
         <api.description>
             APIs for interacting with the CORD OLT application.
         </api.description>
+        <onos.app.name>org.opencord.olt</onos.app.name>
+        <onos.app.title>OLT Access Management</onos.app.title>
+        <onos.app.origin>OpenCord</onos.app.origin>
+        <onos.app.category>default</onos.app.category>
+        <onos.app.url>http://opencord.org</onos.app.url>
+        <onos.app.readme>CORD OLT Access management application</onos.app.readme>
 	<api.package>org.onosproject.olt.rest</api.package>
-	<olt.api.version>1.4.0-SNAPSHOT</olt.api.version>
+	<olt.api.version>${project.version}</olt.api.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.opencord</groupId>
             <artifactId>olt-api</artifactId>
+            <version>${olt.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencord</groupId>
+            <artifactId>olt-kafka</artifactId>
             <version>${olt.api.version}</version>
         </dependency>
 

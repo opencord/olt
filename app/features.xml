@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
-  ~ Copyright 2016-present Open Networking Foundation
+  ~ Copyright 2018-present Open Networking Foundation
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,5 +20,7 @@
         <feature>onos-api</feature>
         <bundle>mvn:${project.groupId}/olt-api/${project.version}</bundle>
         <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/olt-kafka/${project.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/1.1.0_1</bundle>
     </feature>
 </features>

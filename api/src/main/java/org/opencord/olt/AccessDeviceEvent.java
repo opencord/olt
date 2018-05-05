@@ -18,6 +18,7 @@ package org.opencord.olt;
 import org.onlab.packet.VlanId;
 import org.onosproject.event.AbstractEvent;
 import org.onosproject.net.DeviceId;
+import org.onosproject.net.Port;
 
 import java.util.Optional;
 
@@ -28,6 +29,8 @@ public class AccessDeviceEvent extends AbstractEvent<AccessDeviceEvent.Type, Dev
 
     private final Optional<VlanId> sVlan;
     private final Optional<VlanId> cVlan;
+
+    private final Optional<Port> port;
 
     public enum Type {
         /**
@@ -48,8 +51,17 @@ public class AccessDeviceEvent extends AbstractEvent<AccessDeviceEvent.Type, Dev
         /**
          * An access device disconnected.
          */
-        DEVICE_DISCONNECTED
+        DEVICE_DISCONNECTED,
 
+        /**
+         * A new UNI port has been detected.
+         */
+        UNI_ADDED,
+
+        /**
+         * An existing UNI port was removed.
+         */
+        UNI_REMOVED
     }
 
     /**
@@ -69,6 +81,7 @@ public class AccessDeviceEvent extends AbstractEvent<AccessDeviceEvent.Type, Dev
         super(type, deviceId);
         this.sVlan = Optional.ofNullable(sVlanId);
         this.cVlan = Optional.ofNullable(cVlanId);
+        this.port = Optional.empty();
     }
 
     /**
@@ -89,7 +102,15 @@ public class AccessDeviceEvent extends AbstractEvent<AccessDeviceEvent.Type, Dev
         super(type, deviceId, time);
         this.sVlan = Optional.ofNullable(sVlanId);
         this.cVlan = Optional.ofNullable(cVlanId);
+        this.port = Optional.empty();
 
+    }
+
+    public AccessDeviceEvent(Type type, DeviceId deviceId, Port port) {
+        super(type, deviceId);
+        this.sVlan = Optional.empty();
+        this.cVlan = Optional.empty();
+        this.port = Optional.ofNullable(port);
     }
 
     public Optional<VlanId> sVlanId() {
@@ -98,6 +119,10 @@ public class AccessDeviceEvent extends AbstractEvent<AccessDeviceEvent.Type, Dev
 
     public Optional<VlanId> cVlanId() {
         return cVlan;
+    }
+
+    public Optional<Port> port() {
+        return port;
     }
 
 }
