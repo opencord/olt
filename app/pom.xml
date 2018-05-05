@@ -38,7 +38,7 @@
             APIs for interacting with the CORD OLT application.
         </api.description>
 	<api.package>org.onosproject.olt.rest</api.package>
-	<olt.api.version>1.4.0-SNAPSHOT</olt.api.version>
+	<olt.api.version>${project.version}</olt.api.version>
     </properties>
 
     <dependencies>
