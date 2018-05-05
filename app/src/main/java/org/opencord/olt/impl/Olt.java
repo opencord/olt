@@ -182,10 +182,8 @@ public class Olt
 
         oltData.keySet().stream()
                 .flatMap(did -> deviceService.getPorts(did).stream())
-                .filter(p -> !oltData.get(p.element().id()).uplink().equals(p.number()))
-                .filter(p -> p.isEnabled())
-                .forEach(p -> processFilteringObjectives((DeviceId) p.element().id(),
-                                                         p.number(), true));
+                .filter(this::isUni)
+                .forEach(this::initializeUni);
 
         subscribers = storageService.<ConnectPoint, VlanId>consistentMapBuilder()
                 .withName(SUBSCRIBERS)
@@ -283,6 +281,16 @@ public class Olt
     @Override
     public Map<DeviceId, AccessDeviceData> fetchOlts() {
         return Maps.newHashMap(oltData);
+    }
+
+    private void initializeUni(Port port) {
+        DeviceId deviceId = (DeviceId) port.element().id();
+
+        post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, deviceId, port));
+
+        if (port.isEnabled()) {
+            processFilteringObjectives(deviceId, port.number(), true);
+        }
     }
 
     private void unprovisionSubscriber(DeviceId deviceId, PortNumber uplink,
@@ -559,6 +567,10 @@ public class Olt
         flowObjectiveService.filter(devId, igmp);
     }
 
+    private boolean isUni(Port port) {
+        return !oltData.get(port.element().id()).uplink().equals(port.number());
+    }
+
     private class InternalDeviceListener implements DeviceListener {
         @Override
         public void event(DeviceEvent event) {
@@ -570,9 +582,12 @@ public class Olt
                 //TODO: Port handling and bookkeeping should be improved once
                 // olt firmware handles correct behaviour.
                 case PORT_ADDED:
-                    if (!oltData.get(devId).uplink().equals(event.port().number()) &&
-                            event.port().isEnabled()) {
-                        processFilteringObjectives(devId, event.port().number(), true);
+                    if (!oltData.get(devId).uplink().equals(event.port().number())) {
+                        post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, event.port()));
+
+                        if (event.port().isEnabled()) {
+                            processFilteringObjectives(devId, event.port().number(), true);
+                        }
                     }
                     break;
                 case PORT_REMOVED:
@@ -584,10 +599,14 @@ public class Olt
                                 event.port().number(),
                                 vlan, olt.vlan(), olt.defaultVlan());
                     }
-                    if (!oltData.get(devId).uplink().equals(event.port().number()) &&
-                            event.port().isEnabled()) {
-                        processFilteringObjectives(devId, event.port().number(), false);
+                    if (!oltData.get(devId).uplink().equals(event.port().number())) {
+                        if (event.port().isEnabled()) {
+                            processFilteringObjectives(devId, event.port().number(), false);
+                        }
+
+                        post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, event.port()));
                     }
+
                     break;
                 case PORT_UPDATED:
                     if (oltData.get(devId).uplink().equals(event.port().number())) {
@@ -603,9 +622,21 @@ public class Olt
                     post(new AccessDeviceEvent(
                             AccessDeviceEvent.Type.DEVICE_CONNECTED, devId,
                             null, null));
+
+                    // Send UNI_ADDED events for all existing ports
+                    deviceService.getPorts(devId).stream()
+                            .filter(Olt.this::isUni)
+                            .forEach(p -> post(new AccessDeviceEvent(
+                                    AccessDeviceEvent.Type.UNI_ADDED, devId, p)));
+
                     provisionDefaultFlows(devId);
                     break;
                 case DEVICE_REMOVED:
+                    deviceService.getPorts(devId).stream()
+                            .filter(Olt.this::isUni)
+                            .forEach(p -> post(new AccessDeviceEvent(
+                                    AccessDeviceEvent.Type.UNI_REMOVED, devId, p)));
+
                     post(new AccessDeviceEvent(
                             AccessDeviceEvent.Type.DEVICE_DISCONNECTED, devId,
                             null, null));
