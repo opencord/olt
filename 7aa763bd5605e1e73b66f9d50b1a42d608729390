@@ -16,6 +16,24 @@
       "revId": "7aa763bd5605e1e73b66f9d50b1a42d608729390",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "18beb475_c54312cc",
+        "filename": "integration/xos/src/main/java/org/opencord/olt/xos/XosIntegration.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2018-05-07T16:53:34Z",
+      "side": 1,
+      "message": "Yes it is still the case that a LogicalPort corresponds to a UNI, not an ONU. In the case of multiple UNIs on an ONU, each UNI would have the same name which is the serial number of the ONU (we could qualify this with a suffix that is different for each UNI if we want the name to be unique).",
+      "parentUuid": "5aa3700a_264d3d00",
+      "revId": "7aa763bd5605e1e73b66f9d50b1a42d608729390",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
