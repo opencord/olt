@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5aa3700a_264d3d00",
+        "filename": "integration/xos/src/main/java/org/opencord/olt/xos/XosIntegration.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-05-07T16:21:33Z",
+      "side": 1,
+      "message": "If we use the serialNumber of the ONU as the name of the LogicalPort how do we support the scenarios (maybe in the future) of supporting multiple UNIs on the ONU? \n\nThe general way we have been using this in vOLTHA is that each LogicalPort corresponds to a UNI on the ONU (and so it gets created when a UNI on the ONU is created)\n\nPlease share you thoughts on this.",
+      "revId": "7aa763bd5605e1e73b66f9d50b1a42d608729390",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
