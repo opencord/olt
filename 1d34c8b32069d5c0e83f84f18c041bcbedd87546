@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "551f3540_3433a366",
+        "filename": "kafka/src/main/java/org/opencord/olt/kafka/KafkaIntegration.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2018-05-23T13:48:25Z",
+      "side": 1,
+      "message": "Yet another reason to get rid of OSGi :)",
+      "range": {
+        "startLine": 169,
+        "startChar": 59,
+        "endLine": 169,
+        "endChar": 63
+      },
+      "revId": "1d34c8b32069d5c0e83f84f18c041bcbedd87546",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3b29d73c_1d08f8be",
+        "filename": "kafka/src/main/java/org/opencord/olt/kafka/OltKafkaConfig.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2018-05-23T13:48:25Z",
+      "side": 1,
+      "message": "Why is this OLT specific?",
+      "range": {
+        "startLine": 17,
+        "startChar": 21,
+        "endLine": 17,
+        "endChar": 24
+      },
+      "revId": "1d34c8b32069d5c0e83f84f18c041bcbedd87546",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
