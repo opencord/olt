@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0bb6d653_3a06d8c3",
+        "filename": "kafka/src/main/java/org/opencord/olt/kafka/KafkaIntegration.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2018-05-23T17:23:47Z",
+      "side": 1,
+      "message": "Yes, I had a lot of pain trying to get the right classes to load.",
+      "parentUuid": "551f3540_3433a366",
+      "range": {
+        "startLine": 169,
+        "startChar": 59,
+        "endLine": 169,
+        "endChar": 63
+      },
+      "revId": "1d34c8b32069d5c0e83f84f18c041bcbedd87546",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3b29d73c_1d08f8be",
         "filename": "kafka/src/main/java/org/opencord/olt/kafka/OltKafkaConfig.java",
         "patchSetId": 3
