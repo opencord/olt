@@ -626,6 +626,7 @@ public class Olt
                     // Send UNI_ADDED events for all existing ports
                     deviceService.getPorts(devId).stream()
                             .filter(Olt.this::isUni)
+                            .filter(Port::isEnabled)
                             .forEach(p -> post(new AccessDeviceEvent(
                                     AccessDeviceEvent.Type.UNI_ADDED, devId, p)));
 
