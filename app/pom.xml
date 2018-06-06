@@ -43,8 +43,8 @@
         <onos.app.category>default</onos.app.category>
         <onos.app.url>http://opencord.org</onos.app.url>
         <onos.app.readme>CORD OLT Access management application</onos.app.readme>
-	<api.package>org.onosproject.olt.rest</api.package>
-	<olt.api.version>${project.version}</olt.api.version>
+        <api.package>org.opencord.olt.rest</api.package>
+        <olt.api.version>${project.version}</olt.api.version>
     </properties>
 
     <dependencies>
