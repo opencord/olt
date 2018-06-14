@@ -127,9 +127,13 @@ public class Olt
             label = "Default VLAN RG<->ONU traffic")
     private int defaultVlan = DEFAULT_VLAN;
 
-    @Property(name = "enableDhcpIgmpOnProvisioning", boolValue = false,
-            label = "Create the DHCP and IGMP Flow rules when a subscriber is provisioned")
-    protected boolean enableDhcpIgmpOnProvisioning = false;
+    @Property(name = "enableDhcpOnProvisioning", boolValue = true,
+            label = "Create the DHCP Flow rules when a subscriber is provisioned")
+    protected boolean enableDhcpOnProvisioning = false;
+
+    @Property(name = "enableIgmpOnProvisioning", boolValue = false,
+            label = "Create IGMP Flow rules when a subscriber is provisioned")
+    protected boolean enableIgmpOnProvisioning = false;
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
 
@@ -212,10 +216,16 @@ public class Olt
             String s = get(properties, "defaultVlan");
             defaultVlan = isNullOrEmpty(s) ? DEFAULT_VLAN : Integer.parseInt(s.trim());
 
-            Boolean o = Tools.isPropertyEnabled(properties, "enableDhcpIgmpOnProvisioning");
+            Boolean o = Tools.isPropertyEnabled(properties, "enableDhcpOnProvisioning");
             if (o != null) {
-                enableDhcpIgmpOnProvisioning = o;
+                enableDhcpOnProvisioning = o;
             }
+
+            Boolean p = Tools.isPropertyEnabled(properties, "enableIgmpOnProvisioning");
+            if (p != null) {
+                enableIgmpOnProvisioning = p;
+            }
+
         } catch (Exception e) {
             defaultVlan = DEFAULT_VLAN;
         }
@@ -232,14 +242,14 @@ public class Olt
             throw new IllegalArgumentException("Missing OLT configuration for device");
         }
 
-        if (enableDhcpIgmpOnProvisioning) {
+        if (enableDhcpOnProvisioning) {
             processDhcpFilteringObjectives(olt.deviceId(), port.port(), true);
         }
 
         provisionVlans(olt.deviceId(), olt.uplink(), port.port(), vlan, olt.vlan(),
                 olt.defaultVlan());
 
-        if (enableDhcpIgmpOnProvisioning) {
+        if (enableIgmpOnProvisioning) {
             processIgmpFilteringObjectives(olt.deviceId(), port.port(), true);
         }
     }
@@ -260,14 +270,14 @@ public class Olt
             return;
         }
 
-        if (enableDhcpIgmpOnProvisioning) {
+        if (enableDhcpOnProvisioning) {
             processDhcpFilteringObjectives(olt.deviceId(), port.port(), false);
         }
 
         unprovisionSubscriber(olt.deviceId(), olt.uplink(), port.port(), subscriberVlan,
                               olt.vlan(), olt.defaultVlan());
 
-        if (enableDhcpIgmpOnProvisioning) {
+        if (enableIgmpOnProvisioning) {
             processIgmpFilteringObjectives(olt.deviceId(), port.port(), false);
         }
     }
@@ -481,7 +491,7 @@ public class Olt
                 .withMeta(DefaultTrafficTreatment.builder()
                                   .setOutput(PortNumber.CONTROLLER).build())
                 .fromApp(appId)
-                .withPriority(1000)
+                .withPriority(10000)
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
@@ -515,7 +525,7 @@ public class Olt
                 .withMeta(DefaultTrafficTreatment.builder()
                                   .setOutput(PortNumber.CONTROLLER).build())
                 .fromApp(appId)
-                .withPriority(1000)
+                .withPriority(10000)
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
