@@ -39,6 +39,7 @@ import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
 import org.slf4j.Logger;
 
+import java.time.Instant;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
@@ -109,6 +110,7 @@ public class KafkaIntegration {
     private static final String UNI_PORT_ID = "uni_port_id";
     private static final String OF_DPID = "of_dpid";
     private static final String ACTIVATED = "activated";
+    private static final String TIMESTAMP = "timestamp";
 
     @Activate
     public void activate() {
@@ -194,8 +196,8 @@ public class KafkaIntegration {
         String serialNumber = port.annotations().value(AnnotationKeys.PORT_NAME);
 
         ObjectMapper mapper = new ObjectMapper();
-
         ObjectNode onuNode = mapper.createObjectNode();
+        onuNode.put(TIMESTAMP, Instant.now().toString());
         onuNode.put(STATUS, ACTIVATED);
         onuNode.put(SERIAL_NUMBER, serialNumber);
         onuNode.put(UNI_PORT_ID, port.number().toLong());
@@ -244,6 +246,8 @@ public class KafkaIntegration {
 
         @Override
         public void event(AccessDeviceEvent accessDeviceEvent) {
+            log.debug("KafkaIntegration got {} event for {}/{}",
+                    accessDeviceEvent.type(), accessDeviceEvent.subject(), accessDeviceEvent.port());
             switch (accessDeviceEvent.type()) {
             case UNI_ADDED:
                 executor.execute(() ->
