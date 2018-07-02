@@ -578,6 +578,9 @@ public class Olt
             if (!oltData.containsKey(devId)) {
                 return;
             }
+            if (event.type() != DeviceEvent.Type.PORT_STATS_UPDATED) {
+                log.debug("Olt got {} event for {}", event.type(), event.subject());
+            }
             switch (event.type()) {
                 //TODO: Port handling and bookkeeping should be improved once
                 // olt firmware handles correct behaviour.
@@ -614,6 +617,7 @@ public class Olt
                     }
                     if (event.port().isEnabled()) {
                         processFilteringObjectives(devId, event.port().number(), true);
+                        post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, event.port()));
                     } else {
                         processFilteringObjectives(devId, event.port().number(), false);
                     }
