@@ -45,6 +45,7 @@
         <onos.app.readme>CORD OLT Access management application</onos.app.readme>
         <api.package>org.opencord.olt.rest</api.package>
         <olt.api.version>${project.version}</olt.api.version>
+        <sadis.api.version>2.1.0</sadis.api.version>
     </properties>
 
     <dependencies>
@@ -58,6 +59,12 @@
             <groupId>org.opencord</groupId>
             <artifactId>olt-kafka</artifactId>
             <version>${olt.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencord</groupId>
+            <artifactId>sadis-api</artifactId>
+	        <version>${sadis.api.version}</version>
         </dependency>
 
         <dependency>

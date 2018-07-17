@@ -15,6 +15,12 @@
  */
 package org.opencord.olt.rest;
 
+import org.onosproject.net.ConnectPoint;
+import org.onosproject.net.DeviceId;
+import org.onosproject.net.PortNumber;
+import org.onosproject.rest.AbstractWebResource;
+import org.opencord.olt.AccessDeviceService;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,13 +28,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.onlab.packet.VlanId;
-import org.onosproject.net.ConnectPoint;
-import org.onosproject.net.DeviceId;
-import org.onosproject.net.PortNumber;
-import org.opencord.olt.AccessDeviceService;
-import org.onosproject.rest.AbstractWebResource;
 
 /**
  * OLT REST APIs.
@@ -42,22 +41,19 @@ public class OltWebResource extends AbstractWebResource {
      *
      * @param device device id
      * @param port port number
-     * @param vlan vlan id
      * @return 200 OK
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{device}/{port}/{vlan}")
+    @Path("{device}/{port}")
     public Response provisionSubscriber(
             @PathParam("device")String device,
-            @PathParam("port")long port,
-            @PathParam("vlan")short vlan) {
+            @PathParam("port")long port) {
         AccessDeviceService service = get(AccessDeviceService.class);
         DeviceId deviceId = DeviceId.deviceId(device);
         PortNumber portNumber = PortNumber.portNumber(port);
-        VlanId vlanId = VlanId.vlanId(vlan);
         ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
-        service.provisionSubscriber(connectPoint, vlanId);
+        service.provisionSubscriber(connectPoint);
         return ok("").build();
     }
 
