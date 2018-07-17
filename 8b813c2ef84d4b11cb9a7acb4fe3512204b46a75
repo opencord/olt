@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "35f25996_5b7cfb18",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-07-17T17:40:47Z",
+      "side": 1,
+      "message": "Agreed, will change this to OPTIONAL_UNARY",
+      "parentUuid": "62f83970_1099f5f8",
+      "range": {
+        "startLine": 129,
+        "startChar": 50,
+        "endLine": 129,
+        "endChar": 65
+      },
+      "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c0af964c_915651cc",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2018-07-17T17:23:23Z",
       "side": 1,
       "message": "SADIS isn\u0027t a static set of data. It is an integration interface. So caching values at any given time is not something that will work.",
+      "range": {
+        "startLine": 193,
+        "startChar": 0,
+        "endLine": 193,
+        "endChar": 76
+      },
+      "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1c0ab46c_4688fdfd",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-07-17T17:40:47Z",
+      "side": 1,
+      "message": "Sorry David. The comment is wrong and misleading.\n\nThe comment should be \"For each device visible to ONOS, see if it already exists in oltData, else add it to oltData if it\u0027s configuration is available in Sadis\"\n\nThis happens only on activation of the app (as there could already be some devices connected to ONOS before the app is activated or in case of re-activation).\n\nIn the normal case, whenever a device connects to ONOS, it\u0027s configuration is looked up in Sadis and if the configuration exists then the data is added into oltApp",
+      "parentUuid": "c0af964c_915651cc",
       "range": {
         "startLine": 193,
         "startChar": 0,
