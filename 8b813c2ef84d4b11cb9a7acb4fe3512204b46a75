@@ -93,6 +93,30 @@
       "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a7ce580c_bd6e54b3",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2018-07-17T17:51:46Z",
+      "side": 1,
+      "message": "My point really is, that data from SADIS should only be read \"as needed\". So I am not even sure that data should be copied from SADIS to OLT data. Instead, when the OLT app needs data, that is when it should query SADIS.",
+      "parentUuid": "1c0ab46c_4688fdfd",
+      "range": {
+        "startLine": 193,
+        "startChar": 0,
+        "endLine": 193,
+        "endChar": 76
+      },
+      "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
