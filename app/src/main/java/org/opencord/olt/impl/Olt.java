@@ -35,6 +35,7 @@ import org.onosproject.core.CoreService;
 import org.onosproject.event.AbstractListenerManager;
 import org.onosproject.mastership.MastershipService;
 import org.onosproject.net.ConnectPoint;
+import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
@@ -67,6 +68,8 @@ import org.opencord.cordconfig.access.AccessDeviceData;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.sadis.SubscriberAndDeviceInformation;
+import org.opencord.sadis.SubscriberAndDeviceInformationService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 
@@ -122,6 +125,9 @@ public class Olt
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected StorageService storageService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected SubscriberAndDeviceInformationService subsService;
 
     @Property(name = "defaultVlan", intValue = DEFAULT_VLAN,
             label = "Default VLAN RG<->ONU traffic")
@@ -183,6 +189,17 @@ public class Olt
                     }
                 }
         );
+
+        // look for all provisioned devices in Sadis and put them in oltData
+        Iterable<Device> devices = deviceService.getDevices();
+        for (Device d : devices) {
+            if (oltData.containsKey(d.id())) {
+                // skip the ones that are provisioned through AccessDeviceConfig
+                continue;
+            }
+            checkAndCreateAccessDevice(d);
+        }
+
 
         oltData.keySet().stream()
                 .flatMap(did -> deviceService.getPorts(did).stream())
@@ -577,6 +594,37 @@ public class Olt
         flowObjectiveService.filter(devId, igmp);
     }
 
+    /**
+     * Creates AccessDeviceData and puts it in the oltData map, if device is
+     * present in Sadis config.
+     *
+     * @param dev Device to look for
+     * @return true if device is created in the oltData map else false
+     */
+    private boolean checkAndCreateAccessDevice(Device dev) {
+        // we create only for the ones we are master of
+        if (!mastershipService.isLocalMaster(dev.id())) {
+                return false;
+        }
+        // check if this device is provisioned in Sadis
+        String devSerialNo = dev.serialNumber();
+        SubscriberAndDeviceInformation deviceInfo = subsService.get(devSerialNo);
+        log.debug("checkAndCreateAccessDevice: deviceInfo {}", deviceInfo);
+        if (deviceInfo != null) {
+            Optional<VlanId> defaultVlan = Optional.empty();
+            AccessDeviceData data = new AccessDeviceData(dev.id(),
+                    PortNumber.portNumber(deviceInfo.uplinkPort()),
+                    deviceInfo.sTag(),
+                    defaultVlan);
+
+            oltData.put(dev.id(), data);
+            log.debug("checkAndCreateAccessDevice: Stored did {} data {}", dev.id(), data);
+            return true;
+        }
+
+        return false;
+    }
+
     private boolean isUni(Port port) {
         return !oltData.get(port.element().id()).uplink().equals(port.number());
     }
@@ -586,7 +634,14 @@ public class Olt
         public void event(DeviceEvent event) {
             DeviceId devId = event.subject().id();
             if (!oltData.containsKey(devId)) {
-                return;
+                // the only case this can happen is when the device is added
+                if (event.type() == DeviceEvent.Type.DEVICE_ADDED) {
+                    if (!checkAndCreateAccessDevice(deviceService.getDevice(devId))) {
+                        return;
+                    }
+                } else {
+                    return;
+                }
             }
             if (event.type() != DeviceEvent.Type.PORT_STATS_UPDATED) {
                 log.debug("Olt got {} event for {}", event.type(), event.subject());
