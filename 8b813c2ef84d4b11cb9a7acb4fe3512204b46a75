@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "62f83970_1099f5f8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2018-07-17T17:23:23Z",
+      "side": 1,
+      "message": "Should this be optional, so that this works even if SADIS is not present?",
+      "range": {
+        "startLine": 129,
+        "startChar": 50,
+        "endLine": 129,
+        "endChar": 65
+      },
+      "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c0af964c_915651cc",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2018-07-17T17:23:23Z",
+      "side": 1,
+      "message": "SADIS isn\u0027t a static set of data. It is an integration interface. So caching values at any given time is not something that will work.",
+      "range": {
+        "startLine": 193,
+        "startChar": 0,
+        "endLine": 193,
+        "endChar": 76
+      },
+      "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
