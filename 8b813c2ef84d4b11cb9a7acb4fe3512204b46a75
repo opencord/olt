@@ -141,6 +141,30 @@
       "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "60940347_f9e7f7b3",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2018-07-18T18:34:56Z",
+      "side": 1,
+      "message": "Is there a requirement to stay backward compatible? Why not move all data integration into SADIS and kick the major version number of the olt app to the next number? As SADIS can use data in netcfg it can still be done this way, well slightly different, and in a real deployment, the data will be available via the integration interface.\n\nMy concern is that things will start to like like a patch-work if we prioritize back compatability over forward driection, or things we plan to fix later just end up as a pile of technical debt and either never get addressed or we continue to make decisions for \"time\" issues and maintain the debt.",
+      "parentUuid": "d2d54ac9_2c89d7dc",
+      "range": {
+        "startLine": 193,
+        "startChar": 0,
+        "endLine": 193,
+        "endChar": 76
+      },
+      "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
