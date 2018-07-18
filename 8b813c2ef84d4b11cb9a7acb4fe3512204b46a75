@@ -117,6 +117,30 @@
       "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d2d54ac9_2c89d7dc",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-07-18T04:28:04Z",
+      "side": 1,
+      "message": "Yes David, I understand your point. Couple of points\n\n1. We are only really copying the S-tag for the OLT from Sadis, the ports are something that we already have from the device but Sadis configuration tells us which out of them is the uplink port. I am not in favour of associating a S-tag with an OLT, but this is something that RCORD did.\n\n2. This change is backward compatible, in the sense that you could still provision the OLT data using the ONOS configuration (netcfg). If it finds the OLT data in the ONOS configuration it stores it in local data structure (oltData) else it looks at Sadis. So the copying comes from that. All the code assumes that OLTs data to be present in \"oltData\". We can get rid of copying the data from Sadis completely if we remove this backward compatibility (there would be good amount of churn in the code).\n\nMy suggestion is that we take this patchset as an intermediate step to go towards that; i.e. remove association of an OLT with a particular S-tag and also have provisioning of OLTs in ONOS only using Sadis.",
+      "parentUuid": "a7ce580c_bd6e54b3",
+      "range": {
+        "startLine": 193,
+        "startChar": 0,
+        "endLine": 193,
+        "endChar": 76
+      },
+      "revId": "8b813c2ef84d4b11cb9a7acb4fe3512204b46a75",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
