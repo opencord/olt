@@ -205,6 +205,7 @@ public class Olt
         deviceService.removeListener(deviceListener);
         networkConfig.removeListener(configListener);
         networkConfig.unregisterConfigFactory(configFactory);
+        eventDispatcher.removeSink(AccessDeviceEvent.class);
         log.info("Stopped");
     }
 
