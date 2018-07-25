@@ -15,6 +15,15 @@
  */
 package org.opencord.olt.rest;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.onosproject.net.ConnectPoint;
+import org.onosproject.net.DeviceId;
+import org.onosproject.net.PortNumber;
+import org.onosproject.rest.AbstractWebResource;
+import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.Subscriber;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,13 +31,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.onlab.packet.VlanId;
-import org.onosproject.net.ConnectPoint;
-import org.onosproject.net.DeviceId;
-import org.onosproject.net.PortNumber;
-import org.opencord.olt.AccessDeviceService;
-import org.onosproject.rest.AbstractWebResource;
+import static org.onlab.util.Tools.readTreeFromStream;
 
 /**
  * OLT REST APIs.
@@ -37,15 +43,7 @@ import org.onosproject.rest.AbstractWebResource;
 @Path("oltapp")
 public class OltWebResource extends AbstractWebResource {
 
-    /**
-     * Provision a subscriber.
-     *
-     * @param device device id
-     * @param port port number
-     * @param vlan vlan id
-     * @return 200 OK
-     */
-    @POST
+    /*@POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{device}/{port}/{vlan}")
     public Response provisionSubscriber(
@@ -59,6 +57,38 @@ public class OltWebResource extends AbstractWebResource {
         ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
         service.provisionSubscriber(connectPoint, vlanId);
         return ok("").build();
+    }*/
+    /*
+     * Provision a subscriber.
+     *
+     * @param device device id
+     * @param port port number
+     * @param vlan vlan id
+     * @return 200 OK
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("subscribers")
+    public Response provisionSubscriber(InputStream stream) {
+            //@PathParam("device")String device,
+            //@PathParam("port")long port,
+            //@PathParam("vlan")short vlan) {
+        try {
+            ObjectNode node = readTreeFromStream(mapper(), stream);
+            Subscriber subscriber = codec(Subscriber.class).decode(node, this);
+
+            AccessDeviceService service = get(AccessDeviceService.class);
+
+            /*DeviceId deviceId = DeviceId.deviceId(device);
+            PortNumber portNumber = PortNumber.portNumber(port);
+            VlanId vlanId = VlanId.vlanId(vlan);*/
+            //ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
+            service.provisionSubscriber(subscriber.uniPort(), subscriber.sVlan(), subscriber.cVlan());
+            return ok("").build();
+        } catch (IOException ex) {
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     /**

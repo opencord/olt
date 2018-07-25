@@ -17,10 +17,10 @@
 package org.opencord.olt.cli;
 
 import org.apache.karaf.shell.commands.Command;
-import org.onlab.packet.VlanId;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.ConnectPoint;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.Subscriber;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ import java.util.Map;
         description = "Shows provisioned subscribers")
 public class ShowSubscribersCommand extends AbstractShellCommand {
 
-    private static final String FORMAT = "port=%s, cvlan=%s";
+    private static final String FORMAT = "port=%s, svlan=%s, cvlan=%s";
 
     @Override
     protected void execute() {
@@ -39,7 +39,8 @@ public class ShowSubscribersCommand extends AbstractShellCommand {
         service.getSubscribers().forEach(this::display);
     }
 
-    private void display(Map.Entry<ConnectPoint, VlanId> subscriber) {
-        print(FORMAT, subscriber.getKey(), subscriber.getValue());
+    private void display(Map.Entry<ConnectPoint, Subscriber> entry) {
+        Subscriber subscriber = entry.getValue();
+        print(FORMAT, subscriber.uniPort(), subscriber.sVlan(), subscriber.cVlan());
     }
 }

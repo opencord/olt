@@ -28,6 +28,7 @@ import org.onlab.packet.EthType;
 import org.onlab.packet.IPv4;
 import org.onlab.packet.TpPort;
 import org.onlab.packet.VlanId;
+import org.onlab.util.KryoNamespace;
 import org.onlab.util.Tools;
 import org.onosproject.cfg.ComponentConfigService;
 import org.onosproject.core.ApplicationId;
@@ -67,6 +68,7 @@ import org.opencord.cordconfig.access.AccessDeviceData;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.Subscriber;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 
@@ -145,7 +147,8 @@ public class Olt
 
     private Map<DeviceId, AccessDeviceData> oltData = new ConcurrentHashMap<>();
 
-    private Map<ConnectPoint, VlanId> subscribers;
+    //private Map<ConnectPoint, VlanId> subscribers;
+    private Map<ConnectPoint, Subscriber> subscribers;
 
     private InternalNetworkConfigListener configListener =
             new InternalNetworkConfigListener();
@@ -189,9 +192,14 @@ public class Olt
                 .filter(this::isUni)
                 .forEach(this::initializeUni);
 
-        subscribers = storageService.<ConnectPoint, VlanId>consistentMapBuilder()
+        KryoNamespace serializer = KryoNamespace.newBuilder()
+                .register(KryoNamespaces.API)
+                .register(Subscriber.class)
+                .build();
+
+        subscribers = storageService.<ConnectPoint, Subscriber>consistentMapBuilder()
                 .withName(SUBSCRIBERS)
-                .withSerializer(Serializer.using(KryoNamespaces.API))
+                .withSerializer(Serializer.using(serializer))
                 .build().asJavaMap();
 
         deviceService.addListener(deviceListener);
@@ -232,7 +240,7 @@ public class Olt
         }
     }
 
-    @Override
+    /*@Override
     public void provisionSubscriber(ConnectPoint port, VlanId vlan) {
         checkNotNull(deviceService.getPort(port.deviceId(), port.port()),
                 "Invalid connect point");
@@ -253,6 +261,29 @@ public class Olt
         if (enableIgmpOnProvisioning) {
             processIgmpFilteringObjectives(olt.deviceId(), port.port(), true);
         }
+    }*/
+
+    @Override
+    public void provisionSubscriber(ConnectPoint port, VlanId sVlan, VlanId cVlan) {
+        checkNotNull(deviceService.getPort(port.deviceId(), port.port()),
+                "Invalid connect point");
+        AccessDeviceData olt = oltData.get(port.deviceId());
+
+        if (olt == null) {
+            log.warn("No data found for OLT device {}", port.deviceId());
+            throw new IllegalArgumentException("Missing OLT configuration for device");
+        }
+
+        if (enableDhcpOnProvisioning) {
+            processDhcpFilteringObjectives(olt.deviceId(), port.port(), true);
+        }
+
+        provisionVlans(olt.deviceId(), olt.uplink(), port.port(), cVlan, sVlan,
+                olt.defaultVlan());
+
+        if (enableIgmpOnProvisioning) {
+            processIgmpFilteringObjectives(olt.deviceId(), port.port(), true);
+        }
     }
 
     @Override
@@ -264,9 +295,9 @@ public class Olt
             return;
         }
 
-        VlanId subscriberVlan = subscribers.remove(port);
+        Subscriber subscriber = subscribers.remove(port);
 
-        if (subscriberVlan == null) {
+        if (subscriber == null) {
             log.warn("Unknown subscriber at location {}", port);
             return;
         }
@@ -275,8 +306,8 @@ public class Olt
             processDhcpFilteringObjectives(olt.deviceId(), port.port(), false);
         }
 
-        unprovisionSubscriber(olt.deviceId(), olt.uplink(), port.port(), subscriberVlan,
-                              olt.vlan(), olt.defaultVlan());
+        unprovisionSubscriber(olt.deviceId(), olt.uplink(), port.port(), subscriber.cVlan(),
+                              subscriber.sVlan(), olt.defaultVlan());
 
         if (enableIgmpOnProvisioning) {
             processIgmpFilteringObjectives(olt.deviceId(), port.port(), false);
@@ -285,7 +316,7 @@ public class Olt
 
 
     @Override
-    public Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers() {
+    public Collection<Map.Entry<ConnectPoint, Subscriber>> getSubscribers() {
         return subscribers.entrySet();
     }
 
@@ -380,7 +411,7 @@ public class Olt
                                                           defaultVlan);
 
         ConnectPoint cp = new ConnectPoint(deviceId, subscriberPort);
-        subscribers.put(cp, subscriberVlan);
+        subscribers.put(cp, new Subscriber(cp, deviceVlan, subscriberVlan));
 
         flowObjectiveService.forward(deviceId, upFwd.add(new ObjectiveContext() {
             @Override
@@ -606,12 +637,12 @@ public class Olt
                     break;
                 case PORT_REMOVED:
                     AccessDeviceData olt = oltData.get(devId);
-                    VlanId vlan = subscribers.get(new ConnectPoint(devId,
+                    Subscriber subscriber = subscribers.get(new ConnectPoint(devId,
                                                                    event.port().number()));
-                    if (vlan != null) {
+                    if (subscriber != null) {
                         unprovisionSubscriber(devId, olt.uplink(),
                                 event.port().number(),
-                                vlan, olt.vlan(), olt.defaultVlan());
+                                subscriber.cVlan(), subscriber.sVlan(), olt.defaultVlan());
                     }
                     if (!oltData.get(devId).uplink().equals(event.port().number())) {
                         if (event.port().isEnabled()) {

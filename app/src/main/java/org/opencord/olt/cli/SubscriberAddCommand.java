@@ -40,10 +40,15 @@ public class SubscriberAddCommand extends AbstractShellCommand {
             required = true, multiValued = false)
     private String strPort = null;
 
-    @Argument(index = 2, name = "vlanId",
-            description = "VLAN ID to add",
+    @Argument(index = 2, name = "sVlanId",
+            description = "S-VLAN ID to add",
             required = true, multiValued = false)
-    private String strVlanId = null;
+    private String strSVlanId = null;
+
+    @Argument(index = 3, name = "cVlanId",
+            description = "C-VLAN ID to add",
+            required = true, multiValued = false)
+    private String strCVlanId = null;
 
     @Override
     protected void execute() {
@@ -51,9 +56,10 @@ public class SubscriberAddCommand extends AbstractShellCommand {
 
         DeviceId deviceId = DeviceId.deviceId(strDeviceId);
         PortNumber port = PortNumber.portNumber(strPort);
-        VlanId vlan = VlanId.vlanId(Short.parseShort(strVlanId));
+        VlanId sVlan = VlanId.vlanId(Short.parseShort(strSVlanId));
+        VlanId cVlan = VlanId.vlanId(Short.parseShort(strCVlanId));
         ConnectPoint connectPoint = new ConnectPoint(deviceId, port);
 
-        service.provisionSubscriber(connectPoint, vlan);
+        service.provisionSubscriber(connectPoint, sVlan, cVlan);
     }
 }

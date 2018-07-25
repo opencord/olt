@@ -31,13 +31,10 @@ import java.util.Map;
 public interface AccessDeviceService
         extends ListenerService<AccessDeviceEvent, AccessDeviceListener> {
 
-    /**
-     * Provisions connectivity for a subscriber on an access device.
-     *
-     * @param port subscriber's connection point
-     * @param vlan VLAN ID to provision for subscriber
-     */
-    void provisionSubscriber(ConnectPoint port, VlanId vlan);
+
+    //void provisionSubscriber(ConnectPoint port, VlanId vlan);
+
+    void provisionSubscriber(ConnectPoint port, VlanId sVlan, VlanId cVlan);
 
     /**
      * Removes provisioned connectivity for a subscriber from an access device.
@@ -51,7 +48,7 @@ public interface AccessDeviceService
      *
      * @return subscribers
      */
-    Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers();
+    Collection<Map.Entry<ConnectPoint, Subscriber>> getSubscribers();
 
     /**
      * Returns the map of configured OLTs.
