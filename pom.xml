@@ -39,7 +39,6 @@
 
     <modules>
         <module>api</module>
-        <module>kafka</module>
         <module>app</module>
     </modules>
 
