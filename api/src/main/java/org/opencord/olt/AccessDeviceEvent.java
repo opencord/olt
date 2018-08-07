@@ -106,6 +106,13 @@ public class AccessDeviceEvent extends AbstractEvent<AccessDeviceEvent.Type, Dev
 
     }
 
+    /**
+     * Creates a new access device event.
+     *
+     * @param type event type
+     * @param deviceId device ID
+     * @param port port
+     */
     public AccessDeviceEvent(Type type, DeviceId deviceId, Port port) {
         super(type, deviceId);
         this.sVlan = Optional.empty();
@@ -113,14 +120,29 @@ public class AccessDeviceEvent extends AbstractEvent<AccessDeviceEvent.Type, Dev
         this.port = Optional.ofNullable(port);
     }
 
+    /**
+     * Retrieves the s-vlan ID.
+     *
+     * @return s-vlan ID
+     */
     public Optional<VlanId> sVlanId() {
         return sVlan;
     }
 
+    /**
+     * Retrieves the c-vlan ID.
+     *
+     * @return c-vlan ID
+     */
     public Optional<VlanId> cVlanId() {
         return cVlan;
     }
 
+    /**
+     * Retrieves the port.
+     *
+     * @return port
+     */
     public Optional<Port> port() {
         return port;
     }

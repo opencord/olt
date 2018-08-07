@@ -22,7 +22,6 @@ import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.opencord.cordconfig.access.AccessDeviceData;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -32,32 +31,45 @@ public interface AccessDeviceService
         extends ListenerService<AccessDeviceEvent, AccessDeviceListener> {
 
     /**
-     * Provisions connectivity for a subscriber on an access device.
+     * Provisions connectivity for a subscriber on a given port with the given
+     * VLAN tags.
      *
-     * @param port subscriber's connection point
-     * @param vlan VLAN ID to provision for subscriber
+     * @param port subscriber connect point
+     * @param sVlan s-vlan tag
+     * @param cVlan c-vlan tag
      */
-    void provisionSubscriber(ConnectPoint port, VlanId vlan);
+    SubscriberId provisionSubscriber(ConnectPoint port, VlanId sVlan, VlanId cVlan);
 
     /**
      * Removes provisioned connectivity for a subscriber from an access device.
      *
-     * @param port subscriber's connection point
+     * @param subscriberId subscriber ID
      */
-    void removeSubscriber(ConnectPoint port);
+    void removeSubscriber(SubscriberId subscriberId);
+
+    /**
+     * Gets the provisioning record for a particular subscriber ID.
+     *
+     * @param subscriberId subscriber ID
+     * @return subscriber provisioning record
+     */
+    Subscriber getSubscriber(SubscriberId subscriberId);
 
     /**
      * Returns information about the provisioned subscribers.
      *
      * @return subscribers
      */
-    Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers();
+    Iterable<Subscriber> getSubscribers();
 
     /**
      * Returns the map of configured OLTs.
      *
      * @return a map
+     * @deprecated per-device config record is being removed in favour of
+     * getting the information through SADIS
      */
+    @Deprecated
     Map<DeviceId, AccessDeviceData> fetchOlts();
 
 }

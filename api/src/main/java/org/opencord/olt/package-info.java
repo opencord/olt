@@ -15,6 +15,6 @@
  */
 
 /**
- * OLT application api.
+ * OLT application API.
  */
 package org.opencord.olt;
