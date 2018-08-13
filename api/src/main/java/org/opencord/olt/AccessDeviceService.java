@@ -20,9 +20,9 @@ import org.onlab.packet.VlanId;
 import org.onosproject.event.ListenerService;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
-import org.opencord.cordconfig.access.AccessDeviceData;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,10 +54,10 @@ public interface AccessDeviceService
     Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers();
 
     /**
-     * Returns the map of configured OLTs.
+     * Returns the list of active OLTs.
      *
-     * @return a map
+     * @return a List
      */
-    Map<DeviceId, AccessDeviceData> fetchOlts();
+    List<DeviceId> fetchOlts();
 
 }

@@ -16,44 +16,23 @@
 
 package org.opencord.olt.cli;
 
-import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.onosproject.cli.AbstractShellCommand;
-import org.onosproject.net.DeviceId;
-import org.opencord.cordconfig.access.AccessDeviceData;
-import org.opencord.olt.AccessDeviceService;
 
-import java.util.Map;
+import org.opencord.olt.AccessDeviceService;
 
 /**
  * Shows configured OLTs.
  */
 @Command(scope = "onos", name = "olts",
-        description = "Shows configured OLTs")
+        description = "Shows OLTs connected to ONOS")
 public class ShowOltCommand extends AbstractShellCommand {
-
-    @Argument(index = 0, name = "deviceId", description = "Access device ID",
-            required = false, multiValued = false)
-    private String strDeviceId = null;
 
     @Override
     protected void execute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        Map<DeviceId, AccessDeviceData> data = service.fetchOlts();
-        if (strDeviceId != null) {
-            DeviceId deviceId = DeviceId.deviceId(strDeviceId);
-            print("OLT %s:", deviceId);
-            display(data.get(deviceId));
-        } else {
-            data.keySet().forEach(did -> {
-                print("OLT %s:", did);
-                display(data.get(did));
-            });
-        }
-    }
-
-    private void display(AccessDeviceData accessDeviceData) {
-        print("\tvlan : %s", accessDeviceData.vlan());
-        print("\tuplink : %s", accessDeviceData.uplink());
+        service.fetchOlts().forEach(did -> {
+            print("OLT %s", did);
+        });
     }
 }
