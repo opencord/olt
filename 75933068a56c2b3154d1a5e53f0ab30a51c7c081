@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b61e5299_2595dc47",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2018-08-14T18:18:40Z",
+      "side": 1,
+      "message": "So this is assuming one subscriber per UNI and one set of tags per subscriber right? This doesn\u0027t address the issue that you brought up on the mailing list of multiple sets of tags per subscriber.\n\nAnd the API to the OLT app would be provisionSubscriber(ConnectPoint uniPort)?",
+      "range": {
+        "startLine": 243,
+        "startChar": 36,
+        "endLine": 243,
+        "endChar": 53
+      },
+      "revId": "75933068a56c2b3154d1a5e53f0ab30a51c7c081",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "29bcefe7_fe6bf530",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2018-08-14T18:18:40Z",
+      "side": 1,
+      "message": "You shouldn\u0027t need this vlan anymore if both tags are being pulled from SADIS.",
+      "range": {
+        "startLine": 243,
+        "startChar": 62,
+        "endLine": 243,
+        "endChar": 66
+      },
+      "revId": "75933068a56c2b3154d1a5e53f0ab30a51c7c081",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
