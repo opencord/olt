@@ -45,6 +45,30 @@
       "revId": "75933068a56c2b3154d1a5e53f0ab30a51c7c081",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "81fd7ba4_25bffae1",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-08-15T15:22:19Z",
+      "side": 1,
+      "message": "Yes the current change is for a single subscriber per UNI. I will submit another patch for multiple tags on each UNI later.",
+      "parentUuid": "b61e5299_2595dc47",
+      "range": {
+        "startLine": 243,
+        "startChar": 36,
+        "endLine": 243,
+        "endChar": 53
+      },
+      "revId": "75933068a56c2b3154d1a5e53f0ab30a51c7c081",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
