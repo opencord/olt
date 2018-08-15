@@ -134,6 +134,10 @@ public class Olt
             label = "Create IGMP Flow rules when a subscriber is provisioned")
     protected boolean enableIgmpOnProvisioning = false;
 
+    @Property(name = "unprovisionOnSubscriberPortDown", boolValue = true,
+            label = "Unprovision subscriber of its port goes down")
+    protected boolean unprovisionOnSubscriberPortDown = true;
+
     private final DeviceListener deviceListener = new InternalDeviceListener();
 
     private ApplicationId appId;
@@ -205,6 +209,11 @@ public class Olt
             Boolean p = Tools.isPropertyEnabled(properties, "enableIgmpOnProvisioning");
             if (p != null) {
                 enableIgmpOnProvisioning = p;
+            }
+
+            Boolean q = Tools.isPropertyEnabled(properties, "unprovisionOnSubscriberPortDown");
+            if (q != null) {
+                unprovisionOnSubscriberPortDown = q;
             }
 
         } catch (Exception e) {
@@ -728,6 +737,10 @@ public class Olt
                         post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, event.port()));
                     } else {
                         processFilteringObjectives(devId, event.port().number(), false);
+                        if (unprovisionOnSubscriberPortDown) {
+                            // Removing flows to force re-authentication
+                            removeSubscriber(new ConnectPoint(devId, event.port().number()));
+                        }
                     }
                     break;
                 case DEVICE_ADDED:
