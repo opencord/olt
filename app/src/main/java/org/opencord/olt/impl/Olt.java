@@ -728,6 +728,7 @@ public class Olt
                         post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, event.port()));
                     } else {
                         processFilteringObjectives(devId, event.port().number(), false);
+                        post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, event.port()));
                     }
                     break;
                 case DEVICE_ADDED:
