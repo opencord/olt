@@ -691,23 +691,7 @@ public class Olt
                     }
                     break;
                 case PORT_REMOVED:
-                    String portName = event.port().annotations().value(AnnotationKeys.PORT_NAME);
-                    SubscriberAndDeviceInformation subscriber = subsService.get(portName);
-                    if (subscriber == null) {
-                        log.warn("Subscriber {} not found", portName);
-                        break;
-                    }
-
-                    Port uplinkPort = getUplinkPort(dev);
-                    if (uplinkPort == null) {
-                        log.warn("No uplink port found for device {}", dev);
-                        break;
-                    }
-
-                    Optional<VlanId> defaultVlan = Optional.empty();
-                    unprovisionSubscriber(devId, uplinkPort.number(),
-                            event.port().number(),
-                            subscriber.cTag(), subscriber.sTag(), defaultVlan);
+                    removeSubscriber(new ConnectPoint(devId, event.port().number()));
 
                     if (isUniPort(dev, event.port())) {
                         if (event.port().isEnabled()) {
