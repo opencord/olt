@@ -31,7 +31,7 @@ import java.util.Map;
         description = "Shows provisioned subscribers")
 public class ShowSubscribersCommand extends AbstractShellCommand {
 
-    private static final String FORMAT = "port=%s, cvlan=%s";
+    private static final String FORMAT = "port=%s, svlan=%s, cvlan=%s";
 
     @Override
     protected void execute() {
@@ -39,7 +39,8 @@ public class ShowSubscribersCommand extends AbstractShellCommand {
         service.getSubscribers().forEach(this::display);
     }
 
-    private void display(Map.Entry<ConnectPoint, VlanId> subscriber) {
-        print(FORMAT, subscriber.getKey(), subscriber.getValue());
+    private void display(Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>> subscriber) {
+        print(FORMAT, subscriber.getKey(), subscriber.getValue().getKey(),
+                subscriber.getValue().getValue());
     }
 }
