@@ -703,11 +703,7 @@ public class Olt
                         log.warn("No uplink port found for device {}", dev);
                         break;
                     }
-
-                    Optional<VlanId> defaultVlan = Optional.empty();
-                    unprovisionSubscriber(devId, uplinkPort.number(),
-                            event.port().number(),
-                            subscriber.cTag(), subscriber.sTag(), defaultVlan);
+                    removeSubscriber(new ConnectPoint(devId, event.port().number()));
 
                     if (isUniPort(dev, event.port())) {
                         if (event.port().isEnabled()) {
