@@ -35,22 +35,40 @@ public interface AccessDeviceService
      * Provisions connectivity for a subscriber on an access device.
      *
      * @param port subscriber's connection point
+     * @return true if successful false otherwise
      */
-    void provisionSubscriber(ConnectPoint port);
+    boolean provisionSubscriber(ConnectPoint port);
 
     /**
      * Removes provisioned connectivity for a subscriber from an access device.
      *
      * @param port subscriber's connection point
+     * @return true if successful false otherwise
      */
-    void removeSubscriber(ConnectPoint port);
+    boolean removeSubscriber(ConnectPoint port);
+
+    /**
+     * Provisions flows for the specific subscriber.
+     *
+     * @param subscriberId Identification of the subscriber
+     * @return true if successful false otherwise
+     */
+    boolean provisionSubscriber(AccessSubscriberId subscriberId);
+
+    /**
+     * Removes flows for the specific subscriber.
+     *
+     * @param subscriberId Identification of the subscriber
+     * @return true if successful false otherwise
+     */
+    boolean removeSubscriber(AccessSubscriberId subscriberId);
 
     /**
      * Returns information about the provisioned subscribers.
      *
      * @return subscribers
      */
-    Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers();
+    Collection<Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>>> getSubscribers();
 
     /**
      * Returns the list of active OLTs.

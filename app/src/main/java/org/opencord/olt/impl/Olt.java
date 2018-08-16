@@ -58,6 +58,7 @@ import org.onosproject.net.flowobjective.ObjectiveError;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.AccessSubscriberId;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 import org.opencord.sadis.SubscriberAndDeviceInformationService;
 import org.osgi.service.component.ComponentContext;
@@ -189,21 +190,21 @@ public class Olt
     }
 
     @Override
-    public void provisionSubscriber(ConnectPoint port) {
+    public boolean provisionSubscriber(ConnectPoint port) {
         checkNotNull(deviceService.getPort(port.deviceId(), port.port()),
                 "Invalid connect point");
         // Find the subscriber on this connect point
         SubscriberAndDeviceInformation sub = getSubscriber(port);
         if (sub == null) {
             log.warn("No subscriber found for {}", port);
-            return;
+            return false;
         }
 
         // Get the uplink port
         Port uplinkPort = getUplinkPort(deviceService.getDevice(port.deviceId()));
         if (uplinkPort == null) {
             log.warn("No uplink port found for OLT device {}", port.deviceId());
-            return;
+            return false;
         }
 
         if (enableDhcpOnProvisioning) {
@@ -217,22 +218,23 @@ public class Olt
         if (enableIgmpOnProvisioning) {
             processIgmpFilteringObjectives(port.deviceId(), port.port(), true);
         }
+        return true;
     }
 
     @Override
-    public void removeSubscriber(ConnectPoint port) {
+    public boolean removeSubscriber(ConnectPoint port) {
         // Get the subscriber connected to this port from Sadis
         SubscriberAndDeviceInformation subscriber = getSubscriber(port);
         if (subscriber == null) {
             log.warn("Subscriber on port {} not found", port);
-            return;
+            return false;
         }
 
         // Get the uplink port
         Port uplinkPort = getUplinkPort(deviceService.getDevice(port.deviceId()));
         if (uplinkPort == null) {
             log.warn("No uplink port found for OLT device {}", port.deviceId());
-            return;
+            return false;
         }
 
         if (enableDhcpOnProvisioning) {
@@ -246,12 +248,36 @@ public class Olt
         if (enableIgmpOnProvisioning) {
             processIgmpFilteringObjectives(port.deviceId(), port.port(), false);
         }
+        return true;
     }
 
+    @Override
+    public boolean provisionSubscriber(AccessSubscriberId subscriberId) {
+        // Check if we can find the connect point to which this subscriber is connected
+        ConnectPoint subsPort = findSubscriberConnectPoint(subscriberId.toString());
+        if (subsPort == null) {
+            log.warn("ConnectPoint for {} not found", subscriberId);
+            return false;
+        }
+
+        return provisionSubscriber(subsPort);
+    }
 
     @Override
-    public Collection<Map.Entry<ConnectPoint, VlanId>> getSubscribers() {
-        ArrayList<Map.Entry<ConnectPoint, VlanId>> subs = new ArrayList<>();
+    public boolean removeSubscriber(AccessSubscriberId subscriberId) {
+        // Check if we can find the connect point to which this subscriber is connected
+        ConnectPoint subsPort = findSubscriberConnectPoint(subscriberId.toString());
+        if (subsPort == null) {
+            log.warn("ConnectPoint for {} not found", subscriberId);
+            return false;
+        }
+
+        return removeSubscriber(subsPort);
+    }
+
+    @Override
+    public Collection<Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>>> getSubscribers() {
+        ArrayList<Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>>> subs = new ArrayList<>();
 
         // Get the subscribers for all the devices
         // If the port is UNI, is enabled and exists in Sadis then copy it
@@ -262,7 +288,8 @@ public class Olt
 
                     SubscriberAndDeviceInformation sub = getSubscriber(cp);
                     if (sub != null) {
-                        subs.add(new AbstractMap.SimpleEntry(cp, sub.cTag()));
+                        Map.Entry<VlanId, VlanId> vlans = new AbstractMap.SimpleEntry(sub.sTag(), sub.cTag());
+                        subs.add(new AbstractMap.SimpleEntry(cp, vlans));
                     }
                 }
             }
@@ -286,6 +313,27 @@ public class Olt
             }
         }
         return olts;
+    }
+
+    /**
+     * Finds the connect point to which a subscriber is connected.
+     *
+     * @param id The id of the subscriber, this is the same ID as in Sadis
+     * @return Subscribers ConnectPoint if found else null
+     */
+    private ConnectPoint findSubscriberConnectPoint(String id) {
+
+        Iterable<Device> devices = deviceService.getDevices();
+        for (Device d : devices) {
+            for (Port p : deviceService.getPorts(d.id())) {
+                log.trace("Comparing {} with {}", p.annotations().value(AnnotationKeys.PORT_NAME), id);
+                if (p.annotations().value(AnnotationKeys.PORT_NAME).equals(id)) {
+                    log.debug("Found on device {} port {}", d.id(), p.number());
+                    return new ConnectPoint(d.id(), p.number());
+                }
+            }
+        }
+        return null;
     }
 
     private void initializeUni(Port port) {
