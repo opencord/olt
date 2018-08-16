@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a5052566_53d70810",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 694,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-08-16T18:55:04Z",
+      "side": 1,
+      "message": "Hi Nicolas, my bad.. I should have pointed it earlier.. but can you please put the removeSubscriber function call inside the\n\nif (isUniPort(dev, event.port())){\n....\n\nif the connectpoint is not a UNI anyways the removeSubscriber won\u0027t do anything.",
+      "revId": "4a68e514f447a38a620754c12d66c89916513cfa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
