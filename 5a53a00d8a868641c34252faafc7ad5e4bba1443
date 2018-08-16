@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2eec60ea_421e439b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 694,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-08-16T18:47:11Z",
+      "side": 1,
+      "message": "As you are calling removeSubscriber from here itself... the search for the subscriber and the uplinkPort are happening inside that function. So line nos 694 - 705 are not needed. Could you please remove them?",
+      "revId": "5a53a00d8a868641c34252faafc7ad5e4bba1443",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
