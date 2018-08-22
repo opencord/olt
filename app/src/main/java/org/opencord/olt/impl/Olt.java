@@ -171,7 +171,7 @@ public class Olt
         // UNI ports
         Iterable<Device> devices = deviceService.getDevices();
         for (Device d : devices) {
-            checkAndCreateEapolFlows(d);
+            checkAndCreateDeviceFlows(d);
         }
 
         deviceService.addListener(deviceListener);
@@ -526,6 +526,50 @@ public class Olt
 
     }
 
+    /**
+     * Installs trap filtering objectives for particular traffic types on an
+     * NNI port.
+     *
+     * @param devId device ID
+     * @param port port number
+     * @param install true to install, false to remove
+     */
+    private void processNniFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
+        processLldpFilteringObjective(devId, port, install);
+        processDhcpFilteringObjectives(devId, port, install);
+    }
+
+    private void processLldpFilteringObjective(DeviceId devId, PortNumber port, boolean install) {
+        if (!mastershipService.isLocalMaster(devId)) {
+            return;
+        }
+        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+
+        FilteringObjective lldp = (install ? builder.permit() : builder.deny())
+                .withKey(Criteria.matchInPort(port))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.LLDP.ethType()))
+                .withMeta(DefaultTrafficTreatment.builder()
+                        .setOutput(PortNumber.CONTROLLER).build())
+                .fromApp(appId)
+                .withPriority(10000)
+                .add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        log.info("LLDP filter for {} on {} installed.",
+                                devId, port);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        log.info("LLDP filter for {} on {} failed because {}",
+                                devId, port, error);
+                    }
+                });
+
+        flowObjectiveService.filter(devId, lldp);
+
+    }
+
     private void processDhcpFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
         if (!mastershipService.isLocalMaster(devId)) {
             return;
@@ -594,12 +638,12 @@ public class Olt
     }
 
     /**
-     * Creates EAPOL flows on the UNIs, if device is
-     * present in Sadis config.
+     * Creates trap flows for device, including DHCP and LLDP trap on NNI and
+     * EAPOL trap on the UNIs, if device is present in Sadis config.
      *
      * @param dev Device to look for
      */
-    private void checkAndCreateEapolFlows(Device dev) {
+    private void checkAndCreateDeviceFlows(Device dev) {
         // we create only for the ones we are master of
         if (!mastershipService.isLocalMaster(dev.id())) {
                 return;
@@ -607,18 +651,20 @@ public class Olt
         // check if this device is provisioned in Sadis
         String devSerialNo = dev.serialNumber();
         SubscriberAndDeviceInformation deviceInfo = subsService.get(devSerialNo);
-        log.debug("checkAndCreateEapolFlows: deviceInfo {}", deviceInfo);
+        log.debug("checkAndCreateDeviceFlows: deviceInfo {}", deviceInfo);
 
         if (deviceInfo != null) {
-            // This is an OLT device as per Sadis, we need to create EAPOL flows
-            // on all it's UNIs
+            // This is an OLT device as per Sadis, we create flows for UNI and NNI ports
             for (Port p : deviceService.getPorts(dev.id())) {
                 if (isUniPort(dev, p)) {
                     processFilteringObjectives(dev.id(), p.number(), true);
+                } else {
+                    processNniFilteringObjectives(dev.id(), p.number(), true);
                 }
             }
         }
     }
+
 
     /**
      * Get the uplink for of the OLT device.
@@ -726,7 +772,7 @@ public class Olt
                             .forEach(p -> post(new AccessDeviceEvent(
                                     AccessDeviceEvent.Type.UNI_ADDED, devId, p)));
 
-                    checkAndCreateEapolFlows(dev);
+                    checkAndCreateDeviceFlows(dev);
                     break;
                 case DEVICE_REMOVED:
                     deviceService.getPorts(devId).stream()
@@ -743,6 +789,7 @@ public class Olt
                         post(new AccessDeviceEvent(
                                 AccessDeviceEvent.Type.DEVICE_CONNECTED, devId,
                                 null, null));
+                        checkAndCreateDeviceFlows(dev);
                     } else {
                         post(new AccessDeviceEvent(
                                 AccessDeviceEvent.Type.DEVICE_DISCONNECTED, devId,
