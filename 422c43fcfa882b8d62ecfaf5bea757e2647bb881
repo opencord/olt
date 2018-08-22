@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fcafa59f_bd2517f9",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 542,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-08-22T22:52:11Z",
+      "side": 1,
+      "message": "How come ONOS core does not install LLDP on it\u0027s own?",
+      "revId": "422c43fcfa882b8d62ecfaf5bea757e2647bb881",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "416f164a_d6e4c4e9",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 657,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-08-22T22:52:11Z",
+      "side": 1,
+      "message": "we create flows",
+      "revId": "422c43fcfa882b8d62ecfaf5bea757e2647bb881",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8da864df_0d05d89c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 659,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-08-22T22:52:11Z",
+      "side": 1,
+      "message": "This logic only works if the assumption is that there is only a single uplink port. Ok for now, but maybe add a TODO in that method",
+      "revId": "422c43fcfa882b8d62ecfaf5bea757e2647bb881",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
