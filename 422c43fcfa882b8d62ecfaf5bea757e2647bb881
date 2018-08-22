@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8d8daecc_36d3ce36",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 542,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2018-08-22T22:57:38Z",
+      "side": 1,
+      "message": "ONOS installs the packet requests as forwarding objectives, and the OltPipeline is coded to only accept traps that are installed as filtering objectives. The only forwarding objectives it accepts are the vlan data traffic flows.",
+      "parentUuid": "fcafa59f_bd2517f9",
+      "revId": "422c43fcfa882b8d62ecfaf5bea757e2647bb881",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "416f164a_d6e4c4e9",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 1
@@ -47,6 +65,24 @@
       "writtenOn": "2018-08-22T22:52:11Z",
       "side": 1,
       "message": "This logic only works if the assumption is that there is only a single uplink port. Ok for now, but maybe add a TODO in that method",
+      "revId": "422c43fcfa882b8d62ecfaf5bea757e2647bb881",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b70015d7_3550fd5b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 659,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2018-08-22T22:57:38Z",
+      "side": 1,
+      "message": "Actually I think this is OK because if you have more NNI ports then the isUniPort method should return false for all of them.\nBut yes in general the app has the assumption of a single NNI port.",
+      "parentUuid": "8da864df_0d05d89c",
       "revId": "422c43fcfa882b8d62ecfaf5bea757e2647bb881",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
