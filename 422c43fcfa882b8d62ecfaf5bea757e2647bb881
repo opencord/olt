@@ -122,6 +122,24 @@
       "revId": "422c43fcfa882b8d62ecfaf5bea757e2647bb881",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "64235115_331bc345",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 659,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2018-08-23T17:45:52Z",
+      "side": 1,
+      "message": "I think when you have multiple NNI ports you can assume the isUniPort function will work correctly and return false when you call it with an NNI port. The implementation of this will likely pull the information of available NNI ports from SADIS.",
+      "parentUuid": "59b7a4ec_4216d6df",
+      "revId": "422c43fcfa882b8d62ecfaf5bea757e2647bb881",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
