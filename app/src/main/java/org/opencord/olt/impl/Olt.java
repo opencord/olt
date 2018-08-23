@@ -716,14 +716,30 @@ public class Olt
         return false;
     }
 
+    private SubscriberAndDeviceInformation getOltInfo(Device dev) {
+        String devSerialNo = dev.serialNumber();
+        SubscriberAndDeviceInformation deviceInfo = subsService.get(devSerialNo);
+        return deviceInfo;
+    }
+
     private class InternalDeviceListener implements DeviceListener {
         @Override
         public void event(DeviceEvent event) {
             DeviceId devId = event.subject().id();
             Device dev = event.subject();
-            if (event.type() != DeviceEvent.Type.PORT_STATS_UPDATED) {
-                log.debug("Olt got {} event for {}", event.type(), event.subject());
+
+
+            if (event.type() == DeviceEvent.Type.PORT_STATS_UPDATED) {
+                return;
             }
+
+            if (getOltInfo(dev) == null) {
+                log.debug("No device info found, this is not an OLT");
+                return;
+            }
+
+            log.debug("OLT got {} event for {}", event.type(), event.subject());
+
             switch (event.type()) {
                 //TODO: Port handling and bookkeeping should be improved once
                 // olt firmware handles correct behaviour.
@@ -734,6 +750,8 @@ public class Olt
                         if (event.port().isEnabled()) {
                             processFilteringObjectives(devId, event.port().number(), true);
                         }
+                    } else {
+                        checkAndCreateDeviceFlows(dev);
                     }
                     break;
                 case PORT_REMOVED:
