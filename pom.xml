@@ -34,7 +34,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <onos.version>1.13.1</onos.version>
-        <cord.config.version>1.4.0</cord.config.version>
     </properties>
 
     <modules>
@@ -79,11 +78,6 @@
             <version>${onos.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.opencord</groupId>
-            <artifactId>cord-config</artifactId>
-            <version>${cord.config.version}</version>
-        </dependency>
     </dependencies>
 
     <repositories>

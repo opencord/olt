@@ -39,11 +39,6 @@ import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
-import org.onosproject.net.config.ConfigFactory;
-import org.onosproject.net.config.NetworkConfigEvent;
-import org.onosproject.net.config.NetworkConfigListener;
-import org.onosproject.net.config.NetworkConfigRegistry;
-import org.onosproject.net.config.basics.SubjectFactories;
 import org.onosproject.net.device.DeviceEvent;
 import org.onosproject.net.device.DeviceListener;
 import org.onosproject.net.device.DeviceService;
@@ -60,7 +55,6 @@ import org.onosproject.net.flowobjective.ForwardingObjective;
 import org.onosproject.net.flowobjective.Objective;
 import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
-import org.opencord.cordconfig.access.AccessDeviceConfig;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
@@ -114,9 +108,6 @@ public class Olt
     protected CoreService coreService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
-    protected NetworkConfigRegistry networkConfig;
-
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected ComponentConfigService componentConfigService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
@@ -141,20 +132,6 @@ public class Olt
     private ExecutorService oltInstallers = Executors.newFixedThreadPool(4,
                                                                          groupedThreads("onos/olt-service",
                                                                                         "olt-installer-%d"));
-    private InternalNetworkConfigListener configListener =
-            new InternalNetworkConfigListener();
-    private static final Class<AccessDeviceConfig> CONFIG_CLASS =
-            AccessDeviceConfig.class;
-
-    private ConfigFactory<DeviceId, AccessDeviceConfig> configFactory =
-            new ConfigFactory<DeviceId, AccessDeviceConfig>(
-                    SubjectFactories.DEVICE_SUBJECT_FACTORY, CONFIG_CLASS, "accessDevice") {
-                @Override
-                public AccessDeviceConfig createConfig() {
-                    return new AccessDeviceConfig();
-                }
-            };
-
 
     @Activate
     public void activate(ComponentContext context) {
@@ -163,9 +140,6 @@ public class Olt
         componentConfigService.registerProperties(getClass());
 
         eventDispatcher.addSink(AccessDeviceEvent.class, listenerRegistry);
-
-        networkConfig.registerConfigFactory(configFactory);
-        networkConfig.addListener(configListener);
 
         // look for all provisioned devices in Sadis and create EAPOL flows for the
         // UNI ports
@@ -183,8 +157,6 @@ public class Olt
     public void deactivate() {
         componentConfigService.unregisterProperties(getClass(), false);
         deviceService.removeListener(deviceListener);
-        networkConfig.removeListener(configListener);
-        networkConfig.unregisterConfigFactory(configFactory);
         eventDispatcher.removeSink(AccessDeviceEvent.class);
         log.info("Stopped");
     }
@@ -820,30 +792,6 @@ public class Olt
                 default:
                     return;
             }
-        }
-    }
-
-    private class InternalNetworkConfigListener implements NetworkConfigListener {
-        @Override
-        public void event(NetworkConfigEvent event) {
-            switch (event.type()) {
-
-                case CONFIG_ADDED:
-                case CONFIG_UPDATED:
-
-                    break;
-                case CONFIG_REGISTERED:
-                case CONFIG_UNREGISTERED:
-                    break;
-                case CONFIG_REMOVED:
-                default:
-                    break;
-            }
-        }
-
-        @Override
-        public boolean isRelevant(NetworkConfigEvent event) {
-            return event.configClass().equals(CONFIG_CLASS);
         }
     }
 }
