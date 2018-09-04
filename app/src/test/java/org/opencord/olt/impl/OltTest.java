@@ -38,8 +38,10 @@ import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceServiceAdapter;
 import org.onosproject.net.provider.ProviderId;
+import org.opencord.sadis.BandwidthProfileInformation;
+import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
-import org.opencord.sadis.SubscriberAndDeviceInformationService;
+import org.opencord.sadis.SadisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +64,9 @@ public class OltTest {
     public void setUp() {
         olt = new Olt();
         olt.deviceService = new MockDeviceService();
-        olt.subsService = new MockSubService();
+        olt.sadisService = new MockSadisService();
+        olt.subsService = olt.sadisService.getSubscriberInfoService();
+
     }
 
     /**
@@ -166,7 +170,21 @@ public class OltTest {
         }
     }
 
-    private class MockSubService implements SubscriberAndDeviceInformationService {
+    private class MockSadisService implements SadisService {
+
+
+        @Override
+        public BaseInformationService<SubscriberAndDeviceInformation> getSubscriberInfoService() {
+            return new MockSubService();
+        }
+
+        @Override
+        public BaseInformationService<BandwidthProfileInformation> getBandwidthProfileService() {
+            return null;
+        }
+    }
+
+    private class MockSubService implements BaseInformationService<SubscriberAndDeviceInformation> {
         MockSubscriberAndDeviceInformation sub =
                 new MockSubscriberAndDeviceInformation(CLIENT_NAS_PORT_ID, CLIENT_C_TAG,
                                                        CLIENT_S_TAG, CLIENT_NAS_PORT_ID, CLIENT_CIRCUIT_ID, null, null);
