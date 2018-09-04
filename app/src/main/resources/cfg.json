@@ -1,0 +1,33 @@
+{  
+"apps" : {
+  "org.opencord.sadis" : {
+      "sadis" : {
+        "integration" : {
+          "cache" : {
+            "enabled" : true,
+            "maxsize" : 50,
+            "ttl" : "PT1m"
+          }
+        },
+        "entries" : [ {
+          "id" : "s1-eth1",
+          "cTag" : 2,
+          "sTag" : 4,
+          "nasPortId" : "s1-eth1"
+        }, {
+          "id" : "1",
+          "hardwareIdentifier" : "00:00:00:00:00:01",
+          "ipAddress" : "127.0.0.1",
+          "uplinkPort": "2"
+        } ]
+      }
+    }
+  },
+   "devices":{  
+      "of:0000000000000001":{
+         "basic":{
+            "driver":"pmc-olt"
+         }
+      }
+   }
+}
