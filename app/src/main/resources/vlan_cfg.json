@@ -1,0 +1,62 @@
+{
+"apps" : {
+  "org.opencord.sadis" : {
+      "sadis" : {
+        "integration" : {
+          "cache" : {
+            "enabled" : true,
+            "maxsize" : 60,
+            "ttl" : "PT1m"
+          }
+        },
+        "entries" : [ {
+          "id" : "s1-eth1",
+          "cTag" : 2,
+          "sTag" : 4,
+          "nasPortId" : "s1-eth1",
+          "technologyProfileId" : 10,
+          "upstreamBandwidthProfile" : "High-Speed-Internet",
+          "downstreamBandwidthProfile" : "User1-Specific"
+        }, {
+          "id" : "1",
+          "hardwareIdentifier" : "00:00:00:00:00:01",
+          "ipAddress" : "127.0.0.1",
+          "uplinkPort": "2"
+        } ]
+      },
+         "bandwidthprofile":{
+            "integration":{
+               "cache":{
+                  "enabled":true,
+                  "maxsize":40,
+                  "ttl":"PT1m"
+               }
+            },
+            "entries":[
+               {
+                  "id":"High-Speed-Internet",
+                  "cir":200000000,
+                  "cbs":348000,
+                  "eir":10000000,
+                  "ebs":348000,
+                  "air":10000000
+               },
+               {
+                  "id":"User1-Specific",
+                  "cir":300000000,
+                  "cbs":348000,
+                  "eir":20000000,
+                  "ebs":348000
+               }
+            ]
+         }
+    }
+  },
+   "devices":{
+      "of:0000000000000001":{
+         "basic":{
+            "driver":"pmc-olt"
+         }
+      }
+   }
+}
