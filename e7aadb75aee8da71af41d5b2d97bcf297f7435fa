@@ -70,6 +70,47 @@
       "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1bdb1cfa_f79edbb2",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2018-09-12T20:45:14Z",
+      "side": 1,
+      "message": "No, I am not suggesting that. Just wanted to make sure I understood. I actually like tuples as a first-class citizen in programming languages, although I admit it can turn into something hard to support and be misused; which is why I think Java and other languages don\u0027t support them natively. So, I think a Map.Entry here is fine and I agree the fewer libraries we can bring in the better.",
+      "parentUuid": "5c7a6249_7b8193e1",
+      "range": {
+        "startLine": 71,
+        "startChar": 39,
+        "endLine": 71,
+        "endChar": 66
+      },
+      "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2fcf7ff5_95f9b0f1",
+        "filename": "api/src/main/java/org/opencord/olt/AccessSubscriberId.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000003
+      },
+      "writtenOn": "2018-09-12T20:45:14Z",
+      "side": 1,
+      "message": "This class seems to be an alias for a String. Any reason that this class isn\u0027t eliminated and a String isn\u0027t used?",
+      "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
