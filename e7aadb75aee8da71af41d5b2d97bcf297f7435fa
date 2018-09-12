@@ -46,6 +46,30 @@
       "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5c7a6249_7b8193e1",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-09-12T03:22:41Z",
+      "side": 1,
+      "message": "Hi David,\n\nAre you suggesting to you something else instead of Map.Entry\u003cVlanId, VlanId\u003e. I had also earlier thought of using javafx.util.Pair, but didn\u0027t to avoid pulling in another library. \n\nPlease do share your thoughts.",
+      "parentUuid": "191e88e6_0ff6be4f",
+      "range": {
+        "startLine": 71,
+        "startChar": 39,
+        "endLine": 71,
+        "endChar": 66
+      },
+      "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
