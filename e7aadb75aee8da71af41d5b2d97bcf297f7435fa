@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "19a9ff2c_c304755f",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-09-24T19:58:22Z",
+      "side": 1,
+      "message": "if successful",
+      "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "01ea3572_64698d06",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-09-24T19:58:22Z",
+      "side": 1,
+      "message": "if successful",
+      "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "00962720_2be56fc1",
         "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
         "patchSetId": 2
@@ -91,6 +125,23 @@
         "endLine": 71,
         "endChar": 66
       },
+      "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2847be34_e4debc3a",
+        "filename": "api/src/main/java/org/opencord/olt/AccessSubscriberId.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-09-24T19:58:22Z",
+      "side": 1,
+      "message": "Is this identifier supposed to represent the uni PORT_NAME?\nI had to go through the code where it is used to understand that. It helps to add an example or description in the class javadoc",
       "revId": "e7aadb75aee8da71af41d5b2d97bcf297f7435fa",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
