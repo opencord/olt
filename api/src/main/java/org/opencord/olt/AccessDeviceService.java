@@ -24,6 +24,7 @@ import org.onosproject.net.DeviceId;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Service for interacting with an access device (OLT).
@@ -51,17 +52,21 @@ public interface AccessDeviceService
      * Provisions flows for the specific subscriber.
      *
      * @param subscriberId Identification of the subscriber
+     * @param sTag additional outer tag on this port
+     * @param cTag additional inner tag on this port
      * @return true if successful false otherwise
      */
-    boolean provisionSubscriber(AccessSubscriberId subscriberId);
+    boolean provisionSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag);
 
     /**
      * Removes flows for the specific subscriber.
      *
      * @param subscriberId Identification of the subscriber
+     * @param sTag additional outer tag on this port
+     * @param cTag additional inner tag on this port
      * @return true if successful false otherwise
      */
-    boolean removeSubscriber(AccessSubscriberId subscriberId);
+    boolean removeSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag);
 
     /**
      * Returns information about the provisioned subscribers.
