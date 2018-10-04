@@ -27,7 +27,7 @@ import org.opencord.olt.AccessDeviceService;
 /**
  * Adds a subscriber to an access device.
  */
-@Command(scope = "onos", name = "add-subscriber-access",
+@Command(scope = "onos", name = "volt-add-subscriber-access",
         description = "Adds a subscriber to an access device")
 public class SubscriberAddCommand extends AbstractShellCommand {
 

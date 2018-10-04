@@ -16,14 +16,17 @@
 
 package org.opencord.olt;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.onlab.packet.VlanId;
 import org.onosproject.event.ListenerService;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
+import org.opencord.sadis.SubscriberAndDeviceInformation;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Service for interacting with an access device (OLT).
@@ -76,5 +79,13 @@ public interface AccessDeviceService
      * @return a List
      */
     List<DeviceId> fetchOlts();
+
+    /**
+     * Returns information about subscribers that have been programmed in the
+     * dataplane.
+     *
+     * @return an immutable map of locations and subscriber information
+     */
+    ImmutableMap<ConnectPoint, SubscriberAndDeviceInformation> getProgSubs();
 
 }

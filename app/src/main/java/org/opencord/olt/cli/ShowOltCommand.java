@@ -18,14 +18,13 @@ package org.opencord.olt.cli;
 
 import org.apache.karaf.shell.commands.Command;
 import org.onosproject.cli.AbstractShellCommand;
-
 import org.opencord.olt.AccessDeviceService;
 
 /**
  * Shows configured OLTs.
  */
-@Command(scope = "onos", name = "olts",
-        description = "Shows OLTs connected to ONOS")
+@Command(scope = "onos", name = "volt-olts",
+        description = "Shows vOLTs connected to ONOS")
 public class ShowOltCommand extends AbstractShellCommand {
 
     @Override

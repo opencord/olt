@@ -19,29 +19,27 @@ package org.opencord.olt.cli;
 import java.util.Map;
 
 import org.apache.karaf.shell.commands.Command;
-import org.onlab.packet.VlanId;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.ConnectPoint;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.sadis.SubscriberAndDeviceInformation;
 
 /**
- * Shows provisioned (configured) subscribers. The data plane flows for the
- * subscribers may or may not have been programmed.
+ * Shows subscriber information for those subscriber which have been programmed
+ * in the data-plane.
  */
-@Command(scope = "onos", name = "volt-subscribers",
-        description = "Shows pre-provisioned subscribers")
-public class ShowSubscribersCommand extends AbstractShellCommand {
-
-    private static final String FORMAT = "port=%s, svlan=%s, cvlan=%s";
+@Command(scope = "onos", name = "volt-programmed-subscribers",
+        description = "Shows subscribers programmed in the dataplane")
+public class ShowProgrammedSubscribersCommand extends AbstractShellCommand {
 
     @Override
     protected void execute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        service.getSubscribers().forEach(this::display);
+        Map<ConnectPoint, SubscriberAndDeviceInformation> info = service.getProgSubs();
+        info.forEach(this::display);
     }
 
-    private void display(Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>> subscriber) {
-        print(FORMAT, subscriber.getKey(), subscriber.getValue().getKey(),
-                subscriber.getValue().getValue());
+    private void display(ConnectPoint cp, SubscriberAndDeviceInformation sub) {
+        print("location=%s subscriber=%s", cp, sub);
     }
 }

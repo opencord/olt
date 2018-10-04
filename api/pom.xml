@@ -32,6 +32,9 @@
     <url>http://opencord.org</url>
 
     <description>OLT application API</description>
+    <properties>
+        <sadis.api.version>2.1.0</sadis.api.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -45,6 +48,12 @@
             <groupId>org.onosproject</groupId>
             <artifactId>onos-core-serializers</artifactId>
             <version>${onos.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencord</groupId>
+            <artifactId>sadis-api</artifactId>
+            <version>${sadis.api.version}</version>
         </dependency>
     </dependencies>
 

@@ -32,13 +32,12 @@
         </command>
         <command>
             <action class="org.opencord.olt.cli.ShowOltCommand"/>
-            <completers>
-                <ref component-id="deviceIdCompleter"/>
-                <null/>
-            </completers>
         </command>
         <command>
             <action class="org.opencord.olt.cli.ShowSubscribersCommand"/>
+        </command>
+        <command>
+            <action class="org.opencord.olt.cli.ShowProgrammedSubscribersCommand"/>
         </command>
     </command-bundle>
 
