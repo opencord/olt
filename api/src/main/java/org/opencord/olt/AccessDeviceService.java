@@ -19,6 +19,7 @@ package org.opencord.olt;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.onlab.packet.VlanId;
 import org.onosproject.event.ListenerService;
@@ -54,17 +55,21 @@ public interface AccessDeviceService
      * Provisions flows for the specific subscriber.
      *
      * @param subscriberId Identification of the subscriber
+     * @param sTag additional outer tag on this port
+     * @param cTag additional inner tag on this port
      * @return true if successful false otherwise
      */
-    boolean provisionSubscriber(AccessSubscriberId subscriberId);
+    boolean provisionSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag);
 
     /**
      * Removes flows for the specific subscriber.
      *
      * @param subscriberId Identification of the subscriber
+     * @param sTag additional outer tag on this port
+     * @param cTag additional inner tag on this port
      * @return true if successful false otherwise
      */
-    boolean removeSubscriber(AccessSubscriberId subscriberId);
+    boolean removeSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag);
 
     /**
      * Returns information about the provisioned subscribers.

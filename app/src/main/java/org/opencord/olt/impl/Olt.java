@@ -23,6 +23,7 @@ import static org.onlab.util.Tools.groupedThreads;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -74,6 +75,10 @@ import org.onosproject.net.flowobjective.ForwardingObjective;
 import org.onosproject.net.flowobjective.Objective;
 import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
+import org.onosproject.store.serializers.KryoNamespaces;
+import org.onosproject.store.service.ConsistentMultimap;
+import org.onosproject.store.service.Serializer;
+import org.onosproject.store.service.StorageService;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
@@ -82,6 +87,7 @@ import org.opencord.sadis.SubscriberAndDeviceInformation;
 import org.opencord.sadis.SubscriberAndDeviceInformationService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
+
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -97,6 +103,7 @@ public class Olt
     private static final String APP_NAME = "org.opencord.olt";
 
     private static final short DEFAULT_VLAN = 0;
+    private static final String ADDITIONAL_VLANS = "additional-vlans";
 
     private final Logger log = getLogger(getClass());
 
@@ -118,6 +125,9 @@ public class Olt
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected SubscriberAndDeviceInformationService subsService;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected StorageService storageService;
+
     @Property(name = "defaultVlan", intValue = DEFAULT_VLAN,
             label = "Default VLAN RG<->ONU traffic")
     private int defaultVlan = DEFAULT_VLAN;
@@ -137,6 +147,8 @@ public class Olt
     private ExecutorService oltInstallers = Executors
             .newFixedThreadPool(4, groupedThreads("onos/olt-service",
                                                   "olt-installer-%d"));
+
+    private ConsistentMultimap<ConnectPoint, Map.Entry<VlanId, VlanId>> additionalVlans;
 
     protected ExecutorService eventExecutor;
 
@@ -158,6 +170,12 @@ public class Olt
         for (Device d : devices) {
             checkAndCreateDeviceFlows(d);
         }
+
+        additionalVlans = storageService.<ConnectPoint, Map.Entry<VlanId, VlanId>>consistentMultimapBuilder()
+                .withName(ADDITIONAL_VLANS)
+                .withSerializer(Serializer.using(Arrays.asList(KryoNamespaces.API),
+                        AbstractMap.SimpleEntry.class))
+                .build();
 
         deviceService.addListener(deviceListener);
 
@@ -262,12 +280,25 @@ public class Olt
         if (enableIgmpOnProvisioning) {
             processIgmpFilteringObjectives(port.deviceId(), port.port(), false);
         }
+
+        // Remove if there are any flows for the additional Vlans
+        Collection<? extends Map.Entry<VlanId, VlanId>> vlansList = additionalVlans.get(port).value();
+
+        // Remove the flows for the additional vlans for this subscriber
+        for (Map.Entry<VlanId, VlanId> vlans : vlansList) {
+            unprovisionTransparentFlows(port.deviceId(), uplinkPort.number(), port.port(),
+                    vlans.getValue(), vlans.getKey());
+
+            // Remove it from the map also
+            additionalVlans.remove(port, vlans);
+        }
+
         programmedSubs.remove(port);
         return true;
     }
 
     @Override
-    public boolean provisionSubscriber(AccessSubscriberId subscriberId) {
+    public boolean provisionSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag) {
         // Check if we can find the connect point to which this subscriber is connected
         ConnectPoint subsPort = findSubscriberConnectPoint(subscriberId.toString());
         if (subsPort == null) {
@@ -275,11 +306,26 @@ public class Olt
             return false;
         }
 
-        return provisionSubscriber(subsPort);
+        if (!sTag.isPresent() && !cTag.isPresent()) {
+            return provisionSubscriber(subsPort);
+        } else if (sTag.isPresent() && cTag.isPresent()) {
+            Port uplinkPort = getUplinkPort(deviceService.getDevice(subsPort.deviceId()));
+            if (uplinkPort == null) {
+                log.warn("No uplink port found for OLT device {}", subsPort.deviceId());
+                return false;
+            }
+
+            provisionTransparentFlows(subsPort.deviceId(), uplinkPort.number(), subsPort.port(),
+                    cTag.get(), sTag.get());
+            return true;
+        } else {
+            log.warn("Provisioning failed for subscriber: {}", subscriberId);
+            return false;
+        }
     }
 
     @Override
-    public boolean removeSubscriber(AccessSubscriberId subscriberId) {
+    public boolean removeSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag) {
         // Check if we can find the connect point to which this subscriber is connected
         ConnectPoint subsPort = findSubscriberConnectPoint(subscriberId.toString());
         if (subsPort == null) {
@@ -287,7 +333,23 @@ public class Olt
             return false;
         }
 
-        return removeSubscriber(subsPort);
+        if (!sTag.isPresent() && !cTag.isPresent()) {
+            return removeSubscriber(subsPort);
+        } else if (sTag.isPresent() && cTag.isPresent()) {
+            // Get the uplink port
+            Port uplinkPort = getUplinkPort(deviceService.getDevice(subsPort.deviceId()));
+            if (uplinkPort == null) {
+                log.warn("No uplink port found for OLT device {}", subsPort.deviceId());
+                return false;
+            }
+
+            unprovisionTransparentFlows(subsPort.deviceId(), uplinkPort.number(), subsPort.port(),
+                    cTag.get(), sTag.get());
+            return true;
+        } else {
+            log.warn("Removing subscriber failed for: {}", subscriberId);
+            return false;
+        }
     }
 
     @Override
@@ -526,6 +588,164 @@ public class Olt
                 .withSelector(upstream)
                 .fromApp(appId)
                 .withTreatment(upstreamTreatment);
+    }
+
+    private void provisionTransparentFlows(DeviceId deviceId, PortNumber uplinkPort,
+                                           PortNumber subscriberPort,
+                                           VlanId innerVlan,
+                                           VlanId outerVlan) {
+
+        CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
+        CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
+
+        ForwardingObjective.Builder upFwd = transparentUpBuilder(uplinkPort, subscriberPort,
+                innerVlan, outerVlan);
+
+
+        ForwardingObjective.Builder downFwd = transparentDownBuilder(uplinkPort, subscriberPort,
+                innerVlan, outerVlan);
+
+        ConnectPoint cp = new ConnectPoint(deviceId, subscriberPort);
+
+        additionalVlans.put(cp, new AbstractMap.SimpleEntry(outerVlan, innerVlan));
+
+        flowObjectiveService.forward(deviceId, upFwd.add(new ObjectiveContext() {
+            @Override
+            public void onSuccess(Objective objective) {
+                upFuture.complete(null);
+            }
+
+            @Override
+            public void onError(Objective objective, ObjectiveError error) {
+                upFuture.complete(error);
+            }
+        }));
+
+        flowObjectiveService.forward(deviceId, downFwd.add(new ObjectiveContext() {
+            @Override
+            public void onSuccess(Objective objective) {
+                downFuture.complete(null);
+            }
+
+            @Override
+            public void onError(Objective objective, ObjectiveError error) {
+                downFuture.complete(error);
+            }
+        }));
+
+        upFuture.thenAcceptBothAsync(downFuture, (upStatus, downStatus) -> {
+            if (downStatus != null) {
+                log.error("Flow with innervlan {} and outerVlan {} on device {} " +
+                        "on port {} failed downstream installation: {}",
+                        innerVlan, outerVlan, deviceId, subscriberPort, downStatus);
+            } else if (upStatus != null) {
+                log.error("Flow with innerVlan {} and outerVlan {} on device {} " +
+                        "on port {} failed upstream installation: {}",
+                        innerVlan, outerVlan, deviceId, subscriberPort, upStatus);
+            }
+        }, oltInstallers);
+
+    }
+
+    private ForwardingObjective.Builder transparentDownBuilder(PortNumber uplinkPort,
+                                                               PortNumber subscriberPort,
+                                                               VlanId innerVlan,
+                                                               VlanId outerVlan) {
+        TrafficSelector downstream = DefaultTrafficSelector.builder()
+                .matchVlanId(outerVlan)
+                .matchInPort(uplinkPort)
+                .matchInnerVlanId(innerVlan)
+                .build();
+
+        TrafficTreatment downstreamTreatment = DefaultTrafficTreatment.builder()
+                .setOutput(subscriberPort)
+                .build();
+
+        return DefaultForwardingObjective.builder()
+                .withFlag(ForwardingObjective.Flag.VERSATILE)
+                .withPriority(1000)
+                .makePermanent()
+                .withSelector(downstream)
+                .fromApp(appId)
+                .withTreatment(downstreamTreatment);
+    }
+
+    private ForwardingObjective.Builder transparentUpBuilder(PortNumber uplinkPort,
+                                                             PortNumber subscriberPort,
+                                                             VlanId innerVlan,
+                                                             VlanId outerVlan) {
+        TrafficSelector upstream = DefaultTrafficSelector.builder()
+                .matchVlanId(outerVlan)
+                .matchInPort(subscriberPort)
+                .matchInnerVlanId(innerVlan)
+                .build();
+
+        TrafficTreatment upstreamTreatment = DefaultTrafficTreatment.builder()
+                .setOutput(uplinkPort)
+                .build();
+
+        return DefaultForwardingObjective.builder()
+                .withFlag(ForwardingObjective.Flag.VERSATILE)
+                .withPriority(1000)
+                .makePermanent()
+                .withSelector(upstream)
+                .fromApp(appId)
+                .withTreatment(upstreamTreatment);
+    }
+
+    private void unprovisionTransparentFlows(DeviceId deviceId, PortNumber uplink,
+                                             PortNumber subscriberPort, VlanId innerVlan,
+                                             VlanId outerVlan) {
+
+        ConnectPoint cp = new ConnectPoint(deviceId, subscriberPort);
+
+        additionalVlans.remove(cp, new AbstractMap.SimpleEntry(outerVlan, innerVlan));
+
+        CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
+        CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
+
+        ForwardingObjective.Builder upFwd = transparentUpBuilder(uplink, subscriberPort,
+                innerVlan, outerVlan);
+        ForwardingObjective.Builder downFwd = transparentDownBuilder(uplink, subscriberPort,
+                innerVlan, outerVlan);
+
+
+        flowObjectiveService.forward(deviceId, upFwd.remove(new ObjectiveContext() {
+            @Override
+            public void onSuccess(Objective objective) {
+                upFuture.complete(null);
+            }
+
+            @Override
+            public void onError(Objective objective, ObjectiveError error) {
+                upFuture.complete(error);
+            }
+        }));
+
+        flowObjectiveService.forward(deviceId, downFwd.remove(new ObjectiveContext() {
+            @Override
+            public void onSuccess(Objective objective) {
+                downFuture.complete(null);
+            }
+
+            @Override
+            public void onError(Objective objective, ObjectiveError error) {
+                downFuture.complete(error);
+            }
+        }));
+
+        upFuture.thenAcceptBothAsync(downFuture, (upStatus, downStatus) -> {
+            if (downStatus != null) {
+                log.error("Flow with innerVlan {} and outerVlan {} on device {} " +
+                        "on port {} failed downstream uninstallation: {}",
+                        innerVlan, outerVlan, deviceId, subscriberPort, downStatus);
+            } else if (upStatus != null) {
+                log.error("Flow with innerVlan {} and outerVlan {} on device {} " +
+                        "on port {} failed upstream uninstallation: {}",
+                        innerVlan, outerVlan, deviceId, subscriberPort, upStatus);
+            }
+        }, oltInstallers);
+
     }
 
     private void processEapolFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
