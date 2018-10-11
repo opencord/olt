@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a575e1e_0dbc4739",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-10-11T19:18:06Z",
+      "side": 1,
+      "message": "From your description in the JIRA these additional vlans means that packets coming out of OLT could have 4 vlans -- is this correct?\nTwo for the PON and two for a gfast network (DPU) beyond the PON.\n\nIn this case, it is typical to still call these S_tag and C_tag?\nAren\u0027t they differentiated in any way from the S and C that belong to the PON?\n\nOr am I reading this wrong - i.e there are no vlans for the pon, these vlans belong to the network beyond the pon, and the pon transparently forwards both tags -- no pushing, popping etc anywhere in the OLT or ONU",
+      "revId": "e1d3f094cdec2850e2dd88af2ce3b132601ca1c4",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ed165eb5_7b742691",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-10-11T19:18:06Z",
+      "side": 1,
+      "message": "Perhaps you should add the subscriber provisioning failed for subid {}",
+      "revId": "e1d3f094cdec2850e2dd88af2ce3b132601ca1c4",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "00684587_857a08fa",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-10-11T19:18:06Z",
+      "side": 1,
+      "message": "Perhaps add because  tag info is missing",
+      "revId": "e1d3f094cdec2850e2dd88af2ce3b132601ca1c4",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e826d829_2278e67e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-10-11T19:18:06Z",
+      "side": 1,
+      "message": "Cannot remove subId",
+      "revId": "e1d3f094cdec2850e2dd88af2ce3b132601ca1c4",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "34394da2_73f0955f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-10-11T19:18:06Z",
+      "side": 1,
+      "message": "Missing tag info",
+      "revId": "e1d3f094cdec2850e2dd88af2ce3b132601ca1c4",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5707ee40_f40bd926",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 750,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-10-11T19:18:06Z",
+      "side": 1,
+      "message": "There is considerable code duplication in these 4  methods compared to the ones that already exist for regular vlans. Perhaps they can be merged to handle both cases.",
+      "revId": "e1d3f094cdec2850e2dd88af2ce3b132601ca1c4",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
