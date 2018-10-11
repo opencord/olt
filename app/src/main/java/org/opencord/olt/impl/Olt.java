@@ -232,7 +232,8 @@ public class Olt
         }
 
         if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(port.deviceId(), port.port(), true);
+            processDhcpFilteringObjectives(port.deviceId(), port.port(), true,
+                                           true);
         }
         log.info("Programming vlans for subscriber: {}", sub);
         Optional<VlanId> defaultVlan = Optional.empty();
@@ -269,7 +270,8 @@ public class Olt
         }
 
         if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(port.deviceId(), port.port(), false);
+            processDhcpFilteringObjectives(port.deviceId(), port.port(), false,
+                                           true);
         }
 
         log.info("Removing programmed vlans for subscriber: {}", subscriber);
@@ -790,7 +792,7 @@ public class Olt
      */
     private void processNniFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
         processLldpFilteringObjective(devId, port, install);
-        processDhcpFilteringObjectives(devId, port, install);
+        processDhcpFilteringObjectives(devId, port, install, false);
     }
 
     private void processLldpFilteringObjective(DeviceId devId, PortNumber port, boolean install) {
@@ -825,18 +827,32 @@ public class Olt
 
     }
 
-    private void processDhcpFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
+    /**
+     * Trap dhcp packets to the controller.
+     *
+     * @param devId the device identifier
+     * @param port the port for which this trap flow is designated
+     * @param install true to install the flow, false to remove the flow
+     * @param upstream true if trapped packets are flowing upstream towards
+     *            server, false if packets are flowing dowstream towards client
+     */
+    private void processDhcpFilteringObjectives(DeviceId devId, PortNumber port,
+                                                boolean install,
+                                                boolean upstream) {
         if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
-        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
 
+        int udpSrc = (upstream) ? 68 : 67;
+        int udpDst = (upstream) ? 67 : 68;
+
+        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         FilteringObjective dhcpUpstream = (install ? builder.permit() : builder.deny())
                 .withKey(Criteria.matchInPort(port))
                 .addCondition(Criteria.matchEthType(EthType.EtherType.IPV4.ethType()))
                 .addCondition(Criteria.matchIPProtocol(IPv4.PROTOCOL_UDP))
-                .addCondition(Criteria.matchUdpSrc(TpPort.tpPort(68)))
-                .addCondition(Criteria.matchUdpDst(TpPort.tpPort(67)))
+                .addCondition(Criteria.matchUdpSrc(TpPort.tpPort(udpSrc)))
+                .addCondition(Criteria.matchUdpDst(TpPort.tpPort(udpDst)))
                 .withMeta(DefaultTrafficTreatment.builder()
                                   .setOutput(PortNumber.CONTROLLER).build())
                 .fromApp(appId)
