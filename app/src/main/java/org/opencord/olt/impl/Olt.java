@@ -45,6 +45,7 @@ import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.Service;
 import org.onlab.packet.EthType;
 import org.onlab.packet.IPv4;
+import org.onlab.packet.IPv6;
 import org.onlab.packet.TpPort;
 import org.onlab.packet.VlanId;
 import org.onlab.util.Tools;
@@ -136,6 +137,14 @@ public class Olt
             label = "Create the DHCP Flow rules when a subscriber is provisioned")
     protected boolean enableDhcpOnProvisioning = false;
 
+    @Property(name = "enableDhcpV4", boolValue = true,
+            label = "Enable flows for DHCP v4")
+    protected boolean enableDhcpV4 = true;
+
+    @Property(name = "enableDhcpV6", boolValue = true,
+            label = "Enable flows for DHCP v6")
+    protected boolean enableDhcpV6 = false;
+
     @Property(name = "enableIgmpOnProvisioning", boolValue = false,
             label = "Create IGMP Flow rules when a subscriber is provisioned")
     protected boolean enableIgmpOnProvisioning = false;
@@ -203,10 +212,23 @@ public class Olt
                 enableDhcpOnProvisioning = o;
             }
 
+            Boolean v4 = Tools.isPropertyEnabled(properties, "enableDhcpV4");
+            if (v4 != null) {
+                enableDhcpV4 = v4;
+            }
+
+            Boolean v6 = Tools.isPropertyEnabled(properties, "enableDhcpV6");
+            if (v6 != null) {
+                enableDhcpV6 = v6;
+            }
+
             Boolean p = Tools.isPropertyEnabled(properties, "enableIgmpOnProvisioning");
             if (p != null) {
                 enableIgmpOnProvisioning = p;
             }
+
+            log.info("DHCP Settings [enableDhcpOnProvisioning: {}, enableDhcpV4: {}, enableDhcpV6: {}]",
+                     enableDhcpOnProvisioning, enableDhcpV4, enableDhcpV6);
 
         } catch (Exception e) {
             defaultVlan = DEFAULT_VLAN;
@@ -792,7 +814,9 @@ public class Olt
      */
     private void processNniFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
         processLldpFilteringObjective(devId, port, install);
-        processDhcpFilteringObjectives(devId, port, install, false);
+        if (enableDhcpOnProvisioning) {
+            processDhcpFilteringObjectives(devId, port, install, false);
+        }
     }
 
     private void processLldpFilteringObjective(DeviceId devId, PortNumber port, boolean install) {
@@ -811,13 +835,13 @@ public class Olt
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("LLDP filter for {} on {} {}.",
+                        log.info("LLDP filter for device {} on port {} {}.",
                                 devId, port, (install) ? "installed" : "removed");
                     }
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
-                        log.info("LLDP filter for {} on {} failed {} because {}",
+                        log.info("LLDP filter for device {} on port {} failed {} because {}",
                                 devId, port, (install) ? "installation" : "removal",
                                 error);
                     }
@@ -843,14 +867,41 @@ public class Olt
             return;
         }
 
-        int udpSrc = (upstream) ? 68 : 67;
-        int udpDst = (upstream) ? 67 : 68;
+        if (enableDhcpV4) {
+            int udpSrc = (upstream) ? 68 : 67;
+            int udpDst = (upstream) ? 67 : 68;
+
+            EthType ethType = EthType.EtherType.IPV4.ethType();
+            byte protocol = IPv4.PROTOCOL_UDP;
+
+            this.addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType, protocol, install);
+        }
+
+        if (enableDhcpV6) {
+            int udpSrc = (upstream) ? 547 : 546;
+            int udpDst = (upstream) ? 546 : 547;
+
+            EthType ethType = EthType.EtherType.IPV6.ethType();
+            byte protocol = IPv6.PROTOCOL_UDP;
+
+            this.addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType, protocol, install);
+        }
+
+    }
+
+    private void addDhcpFilteringObjectives(DeviceId devId,
+                                            PortNumber port,
+                                            int udpSrc,
+                                            int udpDst,
+                                            EthType ethType,
+                                            byte protocol,
+                                            boolean install) {
 
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         FilteringObjective dhcpUpstream = (install ? builder.permit() : builder.deny())
                 .withKey(Criteria.matchInPort(port))
-                .addCondition(Criteria.matchEthType(EthType.EtherType.IPV4.ethType()))
-                .addCondition(Criteria.matchIPProtocol(IPv4.PROTOCOL_UDP))
+                .addCondition(Criteria.matchEthType(ethType))
+                .addCondition(Criteria.matchIPProtocol(protocol))
                 .addCondition(Criteria.matchUdpSrc(TpPort.tpPort(udpSrc)))
                 .addCondition(Criteria.matchUdpDst(TpPort.tpPort(udpDst)))
                 .withMeta(DefaultTrafficTreatment.builder()
@@ -860,15 +911,17 @@ public class Olt
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("DHCP filter for {} on {} {}.",
-                                devId, port, (install) ? "installed" : "removed");
+                        log.info("DHCP {} filter for device {} on port {} {}.",
+                                 (ethType.equals(EthType.EtherType.IPV4.ethType())) ? "v4" : "v6",
+                                 devId, port, (install) ? "installed" : "removed");
                     }
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
-                        log.info("DHCP filter for {} on {} failed {} because {}",
-                                devId, port, (install) ? "installation" : "removal",
-                                error);
+                        log.info("DHCP {} filter for device {} on port {} failed {} because {}",
+                                 (ethType.equals(EthType.EtherType.IPV4.ethType())) ? "v4" : "v6",
+                                 devId, port, (install) ? "installation" : "removal",
+                                 error);
                     }
                 });
 
