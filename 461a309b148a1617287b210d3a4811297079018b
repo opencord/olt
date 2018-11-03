@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "99a83a72_9f1b34be",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-11-03T05:00:20Z",
+      "side": 1,
+      "message": "We could have the default value for enableDhcpV4 as true; that way if we enable just enableDhcpOnProvisioning to true then we get IPv4 DHCP, basically same behaviour as today",
+      "revId": "461a309b148a1617287b210d3a4811297079018b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a21e267_9fd5911d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 817,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-11-03T05:00:20Z",
+      "side": 1,
+      "message": "I think the call provision the DHCP rules on the NNI port should be outside this check. The enableDhcpOnProvisioning is basically to push or not the DHCP rules on the UNI port when a UNI port is added.",
+      "revId": "461a309b148a1617287b210d3a4811297079018b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
