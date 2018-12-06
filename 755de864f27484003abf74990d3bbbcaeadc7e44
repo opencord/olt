@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "94a3165b_c7c7748b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1000480
+      },
+      "writtenOn": "2018-12-06T04:55:06Z",
+      "side": 1,
+      "message": "Later, it references  \"meter count\" \u003d\u003d 0. Is this property to auto-delete on meter or flow count? \n\nShould the default be true?\n\nIs this temporary?",
+      "range": {
+        "startLine": 168,
+        "startChar": 4,
+        "endLine": 168,
+        "endChar": 5
+      },
+      "revId": "755de864f27484003abf74990d3bbbcaeadc7e44",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2207a3c2_62e9d14b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 557,
+      "author": {
+        "id": 1000480
+      },
+      "writtenOn": "2018-12-06T04:55:06Z",
+      "side": 1,
+      "message": "What happens if subscriber record is missing techProfileId? Is it guaranteed to return -1 in that condition as you check later for -1.",
+      "range": {
+        "startLine": 557,
+        "startChar": 8,
+        "endLine": 557,
+        "endChar": 11
+      },
+      "revId": "755de864f27484003abf74990d3bbbcaeadc7e44",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3e9af09e_d9e5ffc1",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 903,
+      "author": {
+        "id": 1000480
+      },
+      "writtenOn": "2018-12-06T04:55:06Z",
+      "side": 1,
+      "message": "VOLTHA OpenOLT Adapter is expecting a Tech Profile ID (a.k.a Table ID) in the EAPOL Filtering Objective.",
+      "range": {
+        "startLine": 903,
+        "startChar": 0,
+        "endLine": 903,
+        "endChar": 100
+      },
+      "revId": "755de864f27484003abf74990d3bbbcaeadc7e44",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "191e091c_52e6f08b",
+        "filename": "app/src/main/resources/any_vlan_cfg.json",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000480
+      },
+      "writtenOn": "2018-12-06T04:55:06Z",
+      "side": 1,
+      "message": "extra tab",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 7
+      },
+      "revId": "755de864f27484003abf74990d3bbbcaeadc7e44",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "67801809_923e6161",
+        "filename": "app/src/main/resources/cfg.json",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000480
+      },
+      "writtenOn": "2018-12-06T04:55:06Z",
+      "side": 1,
+      "message": "are we still using \"pmc-olt\" as driver? I have seen \"voltha\" also used. Not sure which is correct.",
+      "range": {
+        "startLine": 29,
+        "startChar": 12,
+        "endLine": 29,
+        "endChar": 13
+      },
+      "revId": "755de864f27484003abf74990d3bbbcaeadc7e44",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "01f140f1_708c3278",
+        "filename": "app/src/main/resources/vlan_cfg.json",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000480
+      },
+      "writtenOn": "2018-12-06T04:55:06Z",
+      "side": 1,
+      "message": "extra tab",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 7
+      },
+      "revId": "755de864f27484003abf74990d3bbbcaeadc7e44",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
