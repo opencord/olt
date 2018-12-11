@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2ff18b33_f924c937",
+        "filename": "api/pom.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-12-11T10:08:38Z",
+      "side": 1,
+      "message": "Should we change the version to 3.0.0-SNAPSHOT?",
+      "revId": "0be4d1f02e341cca3595a1b92aba176bee56db8d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1f9b6a81_23681a3e",
+        "filename": "app/pom.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-12-11T10:08:38Z",
+      "side": 1,
+      "message": "Should we change the version to 3.0.0-SNAPSHOT?",
+      "revId": "0be4d1f02e341cca3595a1b92aba176bee56db8d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7ccd093b_0a590ffe",
+        "filename": "pom.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2018-12-11T10:08:38Z",
+      "side": 1,
+      "message": "Should we change the version to 3.0.0-SNAPSHOT?",
+      "revId": "0be4d1f02e341cca3595a1b92aba176bee56db8d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
