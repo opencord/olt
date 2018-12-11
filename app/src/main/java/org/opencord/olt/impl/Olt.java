@@ -272,16 +272,12 @@ public class Olt
 
     @Override
     public boolean removeSubscriber(ConnectPoint port) {
-        // Get the subscriber connected to this port from Sadis
-        SubscriberAndDeviceInformation subscriber = getSubscriber(port);
+        // Get the subscriber connected to this port from the local cache
+        // as if we don't know about the subscriber there's no need to remove it
+        SubscriberAndDeviceInformation subscriber = programmedSubs.get(port);
         if (subscriber == null) {
-            log.warn("Subscriber on port {} not found in sadis .. checking "
-                    + "local cache", port);
-            subscriber = programmedSubs.get(port);
-            if (subscriber == null) {
-                log.warn("Subscriber on port {} was not previously programmed", port);
-                return false;
-            }
+            log.warn("Subscriber on port {} was not previously programmed, no need to remove it", port);
+            return true;
         }
 
         // Get the uplink port
@@ -1026,13 +1022,13 @@ public class Olt
     /**
      * Return the subscriber on a port.
      *
-     * @param port On which to find the subscriber
+     * @param cp ConnectPoint on which to find the subscriber
      * @return subscriber if found else null
      */
-    private SubscriberAndDeviceInformation getSubscriber(ConnectPoint port) {
-        String portName = deviceService.getPort(port).annotations()
-                .value(AnnotationKeys.PORT_NAME);
-
+    SubscriberAndDeviceInformation getSubscriber(ConnectPoint cp) {
+        Port port = deviceService.getPort(cp);
+        checkNotNull(port, "Invalid connect point");
+        String portName = port.annotations().value(AnnotationKeys.PORT_NAME);
         return subsService.get(portName);
     }
 
