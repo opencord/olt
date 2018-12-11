@@ -272,16 +272,13 @@ public class Olt
 
     @Override
     public boolean removeSubscriber(ConnectPoint port) {
-        // Get the subscriber connected to this port from Sadis
-        SubscriberAndDeviceInformation subscriber = getSubscriber(port);
+
+        // Get the subscriber connected to this port from the local cache
+        // as if we don't know about the subscriber there's no need to remove it
+        SubscriberAndDeviceInformation subscriber = programmedSubs.get(port);
         if (subscriber == null) {
-            log.warn("Subscriber on port {} not found in sadis .. checking "
-                    + "local cache", port);
-            subscriber = programmedSubs.get(port);
-            if (subscriber == null) {
-                log.warn("Subscriber on port {} was not previously programmed", port);
-                return false;
-            }
+            log.warn("Subscriber on port {} was not previously programmed, no need to remove it", port);
+            return true;
         }
 
         // Get the uplink port
