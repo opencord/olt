@@ -59,6 +59,30 @@
     },
     {
       "key": {
+        "uuid": "913b691a_7a285ed7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1314,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2018-12-11T16:17:17Z",
+      "side": 1,
+      "message": "Hi Craig, the scenario is like that:\n\n- When the meter is not used from a flow (there is no reference for this meter), the system sends METER_REFERENCE_COUNT_ZERO event. \n- When vOLT gets this event, it deletes the meter\n- When the meter is deleted, we get METER_REMOVED event\n- So, I delete it from the related map\n\nFinally, we do not need to update any flow. :)\nPlease note that we do not delete the meters explicitly (from rest API or CLI).",
+      "parentUuid": "65768337_c0543882",
+      "range": {
+        "startLine": 1314,
+        "startChar": 21,
+        "endLine": 1314,
+        "endChar": 41
+      },
+      "revId": "0be4d1f02e341cca3595a1b92aba176bee56db8d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7ccd093b_0a590ffe",
         "filename": "pom.xml",
         "patchSetId": 7
