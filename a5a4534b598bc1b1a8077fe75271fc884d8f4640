@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "694c83eb_deb9d812",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-12-11T23:45:28Z",
+      "side": 1,
+      "message": "So what was wrong with the earlier logic? The only difference I see is that it is now returning true.\n\nI don\u0027t see why asking sadis first could be an issue",
+      "revId": "a5a4534b598bc1b1a8077fe75271fc884d8f4640",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
