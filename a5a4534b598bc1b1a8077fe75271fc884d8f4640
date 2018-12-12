@@ -16,6 +16,24 @@
       "revId": "a5a4534b598bc1b1a8077fe75271fc884d8f4640",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8590b58a_9ea4cbf6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2018-12-12T00:04:24Z",
+      "side": 1,
+      "message": "If we call getSubscriber(port) with a non-existing port that method throws and exception, and that was blocking everything.\n\nAlso what\u0027s the advantage of asking SADIS for something we already know?",
+      "parentUuid": "694c83eb_deb9d812",
+      "revId": "a5a4534b598bc1b1a8077fe75271fc884d8f4640",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
