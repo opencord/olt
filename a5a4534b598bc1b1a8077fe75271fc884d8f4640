@@ -34,6 +34,24 @@
       "revId": "a5a4534b598bc1b1a8077fe75271fc884d8f4640",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bfeaa783_43dbdd97",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2018-12-12T00:46:48Z",
+      "side": 1,
+      "message": "What do you mean by non-existing port? The \u0027port\u0027 here is a connectPoint. When does this method get called with a non-existing connectPoint? \nIf getSubscriber(port) results in  NPE, then that is a problem with that method, which should be fixed by checking for valid connectPoint first before trying its annotations (eg. portname).\nFinally, I agree with you -- here it is ok to check the cache. I was just curious under what circumstances does the older logic fail.\nAppreciate if you can answer my question above about the non-existing connectPoint, and also fix the getSubscriber method with a null check\n\ncheckNotNull(deviceService.getPort(port.deviceId(), port.port()),\n                \"Invalid connect point\");",
+      "parentUuid": "8590b58a_9ea4cbf6",
+      "revId": "a5a4534b598bc1b1a8077fe75271fc884d8f4640",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
