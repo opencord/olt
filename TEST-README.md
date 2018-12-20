@@ -27,7 +27,7 @@ mvn clean install
 onos-app localhost install ~/voltha-projects/sadis/app/target/sadis-app-3.0.0.oar
 onos-app localhost activate org.opencord.sadis
 
-onos-app localhost install ~/voltha-projects/olt/app/target/olt-app-3.0.0-SNAPSHOT.oar
+onos-app localhost install ~/voltha-projects/olt/app/target/olt-app-3.0.1-SNAPSHOT.oar
 onos-app localhost activate org.opencord.olt
 ```
 
