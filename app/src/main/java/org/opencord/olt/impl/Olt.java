@@ -116,6 +116,8 @@ public class Olt
     private static final String APP_NAME = "org.opencord.olt";
 
     private static final short DEFAULT_VLAN = 0;
+    private static final int DEFAULT_TP_ID = 64;
+    private static final String DEFAULT_BP_ID = "Default";
     private static final String ADDITIONAL_VLANS = "additional-vlans";
 
     private final Logger log = getLogger(getClass());
@@ -168,6 +170,14 @@ public class Olt
     @Property(name = "deleteMeters", boolValue = false,
             label = "Deleting Meters based on flow count statistics")
     protected boolean deleteMeters = false;
+
+    @Property(name = "defaultTechProfileId", intValue = DEFAULT_TP_ID,
+            label = "Default technology profile id that is used for authentication trap flows")
+    protected int defaultTechProfileId = DEFAULT_TP_ID;
+
+    @Property(name = "defaultBpId", value = DEFAULT_BP_ID,
+            label = "Default bandwidth profile id that is used for authentication trap flows")
+    protected String defaultBpId = DEFAULT_BP_ID;
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final MeterListener meterListener = new InternalMeterListener();
@@ -258,12 +268,18 @@ public class Olt
             }
 
             log.info("DHCP Settings [enableDhcpOnProvisioning: {}, enableDhcpV4: {}, enableDhcpV6: {}]",
-                     enableDhcpOnProvisioning, enableDhcpV4, enableDhcpV6);
+                    enableDhcpOnProvisioning, enableDhcpV4, enableDhcpV6);
 
             Boolean d = Tools.isPropertyEnabled(properties, "deleteMeters");
             if (d != null) {
                 deleteMeters = d;
             }
+
+            String tpId = get(properties, "defaultTechProfileId");
+            defaultTechProfileId = isNullOrEmpty(s) ? DEFAULT_TP_ID : Integer.parseInt(tpId.trim());
+
+            String bpId = get(properties, "defaultBpId");
+            defaultBpId = bpId;
 
         } catch (Exception e) {
             defaultVlan = DEFAULT_VLAN;
@@ -415,7 +431,7 @@ public class Olt
             if (getOltInfo(d) == null) {
                 continue; // not an olt, or not configured in sadis
             }
-            for (Port p: deviceService.getPorts(d.id())) {
+            for (Port p : deviceService.getPorts(d.id())) {
                 if (isUniPort(d, p) && p.isEnabled()) {
                     ConnectPoint cp = new ConnectPoint(d.id(), p.number());
 
@@ -647,10 +663,8 @@ public class Olt
 
         meterBands.add(createMeterBand(bpInfo.committedInformationRate(), bpInfo.committedBurstSize()));
         meterBands.add(createMeterBand(bpInfo.exceededInformationRate(), bpInfo.exceededBurstSize()));
+        meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));
 
-        if (bpInfo.assuredInformationRate() != 0) {
-            meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));
-        }
         return meterBands;
     }
 
@@ -742,6 +756,7 @@ public class Olt
                 .fromApp(appId)
                 .withTreatment(upstreamTreatmentBuilder.build());
     }
+
     private void provisionTransparentFlows(DeviceId deviceId, PortNumber uplinkPort,
                                            PortNumber subscriberPort,
                                            VlanId innerVlan,
@@ -905,11 +920,21 @@ public class Olt
             return;
         }
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+        TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+
+        BandwidthProfileInformation defaultBpInfo = getBandwidthProfileInformation(defaultBpId);
+        if (defaultBpInfo != null) {
+            MeterId meterId = createMeter(devId, defaultBpInfo);
+            treatmentBuilder.meter(meterId);
+        } else {
+            log.warn("Default bandwidth profile is not found. Authentication flow will be installed without meter");
+        }
 
         FilteringObjective eapol = (install ? builder.permit() : builder.deny())
                 .withKey(Criteria.matchInPort(port))
                 .addCondition(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
-                .withMeta(DefaultTrafficTreatment.builder()
+                .withMeta(treatmentBuilder
+                        .transition(defaultTechProfileId)
                         .setOutput(PortNumber.CONTROLLER).build())
                 .fromApp(appId)
                 .withPriority(10000)
@@ -936,8 +961,8 @@ public class Olt
      * Installs trap filtering objectives for particular traffic types on an
      * NNI port.
      *
-     * @param devId device ID
-     * @param port port number
+     * @param devId   device ID
+     * @param port    port number
      * @param install true to install, false to remove
      */
     private void processNniFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
@@ -982,11 +1007,11 @@ public class Olt
     /**
      * Trap dhcp packets to the controller.
      *
-     * @param devId the device identifier
-     * @param port the port for which this trap flow is designated
-     * @param install true to install the flow, false to remove the flow
+     * @param devId    the device identifier
+     * @param port     the port for which this trap flow is designated
+     * @param install  true to install the flow, false to remove the flow
      * @param upstream true if trapped packets are flowing upstream towards
-     *            server, false if packets are flowing dowstream towards client
+     *                 server, false if packets are flowing dowstream towards client
      */
     private void processDhcpFilteringObjectives(DeviceId devId, PortNumber port,
                                                 boolean install,
@@ -1040,16 +1065,16 @@ public class Olt
                     @Override
                     public void onSuccess(Objective objective) {
                         log.info("DHCP {} filter for device {} on port {} {}.",
-                                 (ethType.equals(EthType.EtherType.IPV4.ethType())) ? "v4" : "v6",
-                                 devId, port, (install) ? "installed" : "removed");
+                                (ethType.equals(EthType.EtherType.IPV4.ethType())) ? "v4" : "v6",
+                                devId, port, (install) ? "installed" : "removed");
                     }
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
                         log.info("DHCP {} filter for device {} on port {} failed {} because {}",
-                                 (ethType.equals(EthType.EtherType.IPV4.ethType())) ? "v4" : "v6",
-                                 devId, port, (install) ? "installation" : "removal",
-                                 error);
+                                (ethType.equals(EthType.EtherType.IPV4.ethType())) ? "v4" : "v6",
+                                devId, port, (install) ? "installation" : "removal",
+                                error);
                     }
                 });
 
@@ -1121,7 +1146,7 @@ public class Olt
 
     /**
      * Get the uplink for of the OLT device.
-     *
+     * <p>
      * This assumes that the OLT has a single uplink port. When more uplink ports need to be supported
      * this logic needs to be changed
      *
@@ -1138,7 +1163,7 @@ public class Olt
             return null;
         }
         // Return the port that has been configured as the uplink port of this OLT in Sadis
-        for (Port p: deviceService.getPorts(dev.id())) {
+        for (Port p : deviceService.getPorts(dev.id())) {
             if (p.number().toLong() == deviceInfo.uplinkPort()) {
                 log.debug("getUplinkPort: Found port {}", p);
                 return p;
