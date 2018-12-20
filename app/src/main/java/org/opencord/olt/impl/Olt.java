@@ -116,6 +116,8 @@ public class Olt
     private static final String APP_NAME = "org.opencord.olt";
 
     private static final short DEFAULT_VLAN = 0;
+    private static final int DEFAULT_TP_ID = 10;
+    private static final String DEFAULT_BP_ID = "Default";
     private static final String ADDITIONAL_VLANS = "additional-vlans";
 
     private final Logger log = getLogger(getClass());
@@ -168,6 +170,14 @@ public class Olt
     @Property(name = "deleteMeters", boolValue = false,
             label = "Deleting Meters based on flow count statistics")
     protected boolean deleteMeters = false;
+
+    @Property(name = "defaultTechProfileId", intValue = DEFAULT_TP_ID,
+            label = "Default technology profile id that is used for authentication trap flows")
+    protected int defaultTechProfileId = DEFAULT_TP_ID;
+
+    @Property(name = "defaultBpId", value = DEFAULT_BP_ID,
+            label = "Default bandwidth profile id that is used for authentication trap flows")
+    protected String defaultBpId = DEFAULT_BP_ID;
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final MeterListener meterListener = new InternalMeterListener();
@@ -258,12 +268,18 @@ public class Olt
             }
 
             log.info("DHCP Settings [enableDhcpOnProvisioning: {}, enableDhcpV4: {}, enableDhcpV6: {}]",
-                     enableDhcpOnProvisioning, enableDhcpV4, enableDhcpV6);
+                    enableDhcpOnProvisioning, enableDhcpV4, enableDhcpV6);
 
             Boolean d = Tools.isPropertyEnabled(properties, "deleteMeters");
             if (d != null) {
                 deleteMeters = d;
             }
+
+            String tpId = get(properties, "defaultTechProfileId");
+            defaultTechProfileId = isNullOrEmpty(s) ? DEFAULT_TP_ID : Integer.parseInt(tpId.trim());
+
+            String bpId = get(properties, "defaultBpId");
+            defaultBpId = bpId;
 
         } catch (Exception e) {
             defaultVlan = DEFAULT_VLAN;
@@ -647,10 +663,8 @@ public class Olt
 
         meterBands.add(createMeterBand(bpInfo.committedInformationRate(), bpInfo.committedBurstSize()));
         meterBands.add(createMeterBand(bpInfo.exceededInformationRate(), bpInfo.exceededBurstSize()));
+        meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));
 
-        if (bpInfo.assuredInformationRate() != 0) {
-            meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));
-        }
         return meterBands;
     }
 
@@ -684,9 +698,7 @@ public class Olt
             downstreamTreatmentBuilder.meter(meterId);
         }
 
-        if (techProfId != -1) {
-            downstreamTreatmentBuilder.transition(techProfId);
-        }
+        downstreamTreatmentBuilder.writeMetadata(createMetadata(subscriberVlan, techProfId, subscriberPort), 0);
 
         return DefaultForwardingObjective.builder()
                 .withFlag(ForwardingObjective.Flag.VERSATILE)
@@ -729,10 +741,7 @@ public class Olt
             upstreamTreatmentBuilder.meter(meterId);
         }
 
-        if (technologyProfileId != -1) {
-            upstreamTreatmentBuilder.transition(technologyProfileId);
-
-        }
+        upstreamTreatmentBuilder.writeMetadata(createMetadata(deviceVlan, technologyProfileId, uplinkPort), 0L);
 
         return DefaultForwardingObjective.builder()
                 .withFlag(ForwardingObjective.Flag.VERSATILE)
@@ -905,11 +914,21 @@ public class Olt
             return;
         }
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+        TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+
+        BandwidthProfileInformation defaultBpInfo = getBandwidthProfileInformation(defaultBpId);
+        if (defaultBpInfo != null) {
+            MeterId meterId = createMeter(devId, defaultBpInfo);
+            treatmentBuilder.meter(meterId);
+        } else {
+            log.warn("Default bandwidth profile is not found. Authentication flow will be installed without meter");
+        }
 
         FilteringObjective eapol = (install ? builder.permit() : builder.deny())
                 .withKey(Criteria.matchInPort(port))
                 .addCondition(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
-                .withMeta(DefaultTrafficTreatment.builder()
+                .withMeta(treatmentBuilder
+                        .writeMetadata((long) defaultTechProfileId << 32, 0)
                         .setOutput(PortNumber.CONTROLLER).build())
                 .fromApp(appId)
                 .withPriority(10000)
@@ -1160,6 +1179,15 @@ public class Olt
         checkNotNull(port, "Invalid connect point");
         String portName = port.annotations().value(AnnotationKeys.PORT_NAME);
         return subsService.get(portName);
+    }
+
+    private Long createMetadata(VlanId innerVlan, int techProfileId, PortNumber egressPort) {
+
+        if (techProfileId == -1) {
+            techProfileId = DEFAULT_TP_ID;
+        }
+
+        return ((long) (innerVlan.id()) << 48 | (long) techProfileId << 32) | egressPort.toLong();
     }
 
     private boolean isUniPort(Device d, Port p) {
