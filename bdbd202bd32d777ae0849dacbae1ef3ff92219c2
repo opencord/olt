@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d4eff9c7_1ad3249d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 917,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-01-30T04:16:38Z",
+      "side": 1,
+      "message": "Some comments/documentation for the location of the techprofileid in the meta data would help",
+      "revId": "bdbd202bd32d777ae0849dacbae1ef3ff92219c2",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "75c089b4_638aac0c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1184,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-01-30T04:16:38Z",
+      "side": 1,
+      "message": "A little bit of documentation here (comments) as to how the meta data should look like (how many bits for the vid, techprofileid, port and at which locations would help in maintenence of the code",
+      "revId": "bdbd202bd32d777ae0849dacbae1ef3ff92219c2",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "32d3cb1a_7cf98422",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-01-30T04:16:38Z",
+      "side": 1,
+      "message": "should we upgrade the version to 3.0.1-SNAPSHOT?",
+      "revId": "bdbd202bd32d777ae0849dacbae1ef3ff92219c2",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
