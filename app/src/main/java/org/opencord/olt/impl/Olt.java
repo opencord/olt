@@ -116,7 +116,7 @@ public class Olt
     private static final String APP_NAME = "org.opencord.olt";
 
     private static final short DEFAULT_VLAN = 0;
-    private static final int DEFAULT_TP_ID = 10;
+    private static final int DEFAULT_TP_ID = 64;
     private static final String DEFAULT_BP_ID = "Default";
     private static final String ADDITIONAL_VLANS = "additional-vlans";
 
@@ -166,10 +166,9 @@ public class Olt
             label = "Create IGMP Flow rules when a subscriber is provisioned")
     protected boolean enableIgmpOnProvisioning = false;
 
-    // needed because no implementation for meter statistics in Voltha yet
-    @Property(name = "deleteMeters", boolValue = false,
+    @Property(name = "deleteMeters", boolValue = true,
             label = "Deleting Meters based on flow count statistics")
-    protected boolean deleteMeters = false;
+    protected boolean deleteMeters = true;
 
     @Property(name = "defaultTechProfileId", intValue = DEFAULT_TP_ID,
             label = "Default technology profile id that is used for authentication trap flows")
@@ -910,7 +909,16 @@ public class Olt
 
     }
 
-    private void processEapolFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
+    private int getDefaultTechProfileId(DeviceId devId, PortNumber portNumber) {
+        Port port = deviceService.getPort(devId, portNumber);
+        SubscriberAndDeviceInformation info = subsService.get(port.annotations().value(AnnotationKeys.PORT_NAME));
+        if (info != null && info.technologyProfileId() != -1) {
+            return info.technologyProfileId();
+        }
+        return defaultTechProfileId;
+    }
+
+    private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, boolean install) {
         if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
@@ -925,12 +933,15 @@ public class Olt
             log.warn("Default bandwidth profile is not found. Authentication flow will be installed without meter");
         }
 
-        //Authentication trap flow uses only tech profile id as metadata
+        int techProfileId = getDefaultTechProfileId(devId, portNumber);
+        log.debug("Eapol trap flow will be installed using the tech profile id {}", techProfileId);
+
+        //Authentication trap flow uses only tech profile id as write metadata value
         FilteringObjective eapol = (install ? builder.permit() : builder.deny())
-                .withKey(Criteria.matchInPort(port))
+                .withKey(Criteria.matchInPort(portNumber))
                 .addCondition(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
                 .withMeta(treatmentBuilder
-                        .writeMetadata((long) defaultTechProfileId << 32, 0)
+                        .writeMetadata((long) techProfileId << 32, 0)
                         .setOutput(PortNumber.CONTROLLER).build())
                 .fromApp(appId)
                 .withPriority(10000)
@@ -938,13 +949,13 @@ public class Olt
                     @Override
                     public void onSuccess(Objective objective) {
                         log.info("Eapol filter for {} on {} {}.",
-                                devId, port, (install) ? "installed" : "removed");
+                                devId, portNumber, (install) ? "installed" : "removed");
                     }
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
                         log.info("Eapol filter for {} on {} failed {} because {}",
-                                devId, port, (install) ? "installation" : "removal",
+                                devId, portNumber, (install) ? "installation" : "removal",
                                 error);
                     }
                 });
@@ -1320,13 +1331,13 @@ public class Olt
         @Override
         public void event(MeterEvent meterEvent) {
             if (deleteMeters && MeterEvent.Type.METER_REFERENCE_COUNT_ZERO.equals(meterEvent.type())) {
-                log.debug("Zero Count Meter Event is received. Meter is {}", meterEvent.subject());
+                log.info("Zero Count Meter Event is received. Meter is {}", meterEvent.subject());
                 Meter meter = meterEvent.subject();
                 if (meter != null && appId.equals(meter.appId())) {
                     deleteMeter(meter.deviceId(), meter.id());
                 }
             } else if (MeterEvent.Type.METER_REMOVED.equals(meterEvent.type())) {
-                log.debug("Meter removed event is received. Meter is {}", meterEvent.subject());
+                log.info("Meter removed event is received. Meter is {}", meterEvent.subject());
                 removeMeterFromBpMap(meterEvent.subject());
             }
         }
