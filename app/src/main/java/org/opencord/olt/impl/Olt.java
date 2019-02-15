@@ -166,10 +166,9 @@ public class Olt
             label = "Create IGMP Flow rules when a subscriber is provisioned")
     protected boolean enableIgmpOnProvisioning = false;
 
-    // needed because no implementation for meter statistics in Voltha yet
-    @Property(name = "deleteMeters", boolValue = false,
+    @Property(name = "deleteMeters", boolValue = true,
             label = "Deleting Meters based on flow count statistics")
-    protected boolean deleteMeters = false;
+    protected boolean deleteMeters = true;
 
     @Property(name = "defaultTechProfileId", intValue = DEFAULT_TP_ID,
             label = "Default technology profile id that is used for authentication trap flows")
@@ -1320,13 +1319,13 @@ public class Olt
         @Override
         public void event(MeterEvent meterEvent) {
             if (deleteMeters && MeterEvent.Type.METER_REFERENCE_COUNT_ZERO.equals(meterEvent.type())) {
-                log.debug("Zero Count Meter Event is received. Meter is {}", meterEvent.subject());
+                log.info("Zero Count Meter Event is received. Meter is {}", meterEvent.subject());
                 Meter meter = meterEvent.subject();
                 if (meter != null && appId.equals(meter.appId())) {
                     deleteMeter(meter.deviceId(), meter.id());
                 }
             } else if (MeterEvent.Type.METER_REMOVED.equals(meterEvent.type())) {
-                log.debug("Meter removed event is received. Meter is {}", meterEvent.subject());
+                log.info("Meter removed event is received. Meter is {}", meterEvent.subject());
                 removeMeterFromBpMap(meterEvent.subject());
             }
         }
