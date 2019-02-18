@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6687fe67_dec5d3ef",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2019-02-18T08:44:13Z",
+      "side": 1,
+      "message": "Can you please change this to 64",
+      "revId": "b168c20a335b35f21e021d73b5af65d014ecb0ab",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
