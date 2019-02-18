@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f50b0cc8_0cc60263",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 929,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-02-18T08:06:19Z",
+      "side": 1,
+      "message": "Don\u0027t we need protection here before accessing info? Should we not check for it being null?",
+      "revId": "e46be13bd3a7349a4e694b3935671c9121875145",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
