@@ -35,6 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.common.collect.Lists;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -196,6 +197,7 @@ public class Olt
     protected ExecutorService eventExecutor;
 
     private Map<ConnectPoint, SubscriberAndDeviceInformation> programmedSubs;
+    private List<MeterId> programmedMeters;
 
     @Activate
     public void activate(ComponentContext context) {
@@ -204,6 +206,7 @@ public class Olt
         appId = coreService.registerApplication(APP_NAME);
         componentConfigService.registerProperties(getClass());
         programmedSubs = Maps.newConcurrentMap();
+        programmedMeters = Lists.newArrayList();
 
         eventDispatcher.addSink(AccessDeviceEvent.class, listenerRegistry);
 
@@ -493,6 +496,15 @@ public class Olt
         return bpService.get(bandwidthProfile);
     }
 
+    private String getUpstreamBandwidthProfileId(ConnectPoint connectPoint) {
+
+        SubscriberAndDeviceInformation sub = programmedSubs.get(connectPoint);
+        if (sub != null) {
+            return sub.upstreamBandwidthProfile();
+        }
+        return null;
+    }
+
     private void unprovisionSubscriber(DeviceId deviceId, PortNumber uplink,
                                        PortNumber subscriberPort, SubscriberAndDeviceInformation subscriber,
                                        Optional<VlanId> defaultVlan) {
@@ -502,6 +514,11 @@ public class Olt
 
         VlanId deviceVlan = subscriber.sTag();
         VlanId subscriberVlan = subscriber.cTag();
+
+        //delete Eapol authentication flow with the real upstream bandwidth profile
+        //re-install Eapol authentication flow with the default bandwidth profile
+        processEapolFilteringObjectives(deviceId, subscriberPort, subscriber.upstreamBandwidthProfile(), false);
+        processEapolFilteringObjectives(deviceId, subscriberPort, defaultBpId, true);
 
         MeterId upstreamMeterId = bpInfoToMeter.get(subscriber.upstreamBandwidthProfile());
         MeterId downstreamMeterId = bpInfoToMeter.get(subscriber.downstreamBandwidthProfile());
@@ -554,6 +571,10 @@ public class Olt
             }
         }, oltInstallers);
 
+        programmedMeters.remove(upstreamMeterId);
+        programmedMeters.remove(downstreamMeterId);
+        log.debug("programmed Meters size {}", programmedMeters.size());
+
     }
 
     private void provisionVlans(ConnectPoint port, PortNumber uplinkPort, Optional<VlanId> defaultVlan,
@@ -566,6 +587,12 @@ public class Olt
         VlanId deviceVlan = sub.sTag();
         VlanId subscriberVlan = sub.cTag();
         int techProfId = sub.technologyProfileId();
+
+        //delete Eapol authentication flow with default bandwidth
+        //re-install Eapol authentication flow with the real upstream bandwidth profile
+        processEapolFilteringObjectives(deviceId, subscriberPort, defaultBpId, false);
+        programmedMeters.remove(bpInfoToMeter.get(defaultBpId));
+        processEapolFilteringObjectives(deviceId, subscriberPort, sub.upstreamBandwidthProfile(), true);
 
         BandwidthProfileInformation upstreamBpInfo = getBandwidthProfileInformation(sub.upstreamBandwidthProfile());
         BandwidthProfileInformation downstreamBpInfo = getBandwidthProfileInformation(sub.downstreamBandwidthProfile());
@@ -654,6 +681,8 @@ public class Olt
         Meter meter = meterService.submit(meterRequest);
         bpInfoToMeter.put(bpInfo.id(), meter.id());
         log.info("Meter is created. Meter Id {}", meter.id());
+        programmedMeters.add(meter.id());
+        log.debug("programmed Meters size {}", programmedMeters.size());
         return meter.id();
     }
 
@@ -918,23 +947,24 @@ public class Olt
         return defaultTechProfileId;
     }
 
-    private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, boolean install) {
+    private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, String bpId, boolean install) {
         if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+        MeterId meterId;
 
-        BandwidthProfileInformation defaultBpInfo = getBandwidthProfileInformation(defaultBpId);
+        BandwidthProfileInformation defaultBpInfo = getBandwidthProfileInformation(bpId);
         if (defaultBpInfo != null) {
-            MeterId meterId = createMeter(devId, defaultBpInfo);
+            meterId = createMeter(devId, defaultBpInfo);
             treatmentBuilder.meter(meterId);
         } else {
-            log.warn("Default bandwidth profile is not found. Authentication flow will be installed without meter");
+            log.warn("Bandwidth profile is not found. Authentication flow will not be installed");
+            return;
         }
 
         int techProfileId = getDefaultTechProfileId(devId, portNumber);
-        log.debug("Eapol trap flow will be installed using the tech profile id {}", techProfileId);
 
         //Authentication trap flow uses only tech profile id as write metadata value
         FilteringObjective eapol = (install ? builder.permit() : builder.deny())
@@ -948,14 +978,14 @@ public class Olt
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("Eapol filter for {} on {} {}.",
-                                devId, portNumber, (install) ? "installed" : "removed");
+                        log.info("Eapol filter for {} on {} {} with meter {}.",
+                                devId, portNumber, (install) ? "installed" : "removed", meterId);
                     }
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
-                        log.info("Eapol filter for {} on {} failed {} because {}",
-                                devId, portNumber, (install) ? "installation" : "removal",
+                        log.info("Eapol filter for {} on {} with meter {} failed {} because {}",
+                                devId, portNumber, meterId, (install) ? "installation" : "removal",
                                 error);
                     }
                 });
@@ -1142,7 +1172,7 @@ public class Olt
             // This is an OLT device as per Sadis, we create flows for UNI and NNI ports
             for (Port p : deviceService.getPorts(dev.id())) {
                 if (isUniPort(dev, p)) {
-                    processEapolFilteringObjectives(dev.id(), p.number(), true);
+                    processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, true);
                 } else {
                     processNniFilteringObjectives(dev.id(), p.number(), true);
                 }
@@ -1196,7 +1226,7 @@ public class Olt
 
     /**
      * Write metadata instruction value (metadata) is 8 bytes.
-     *
+     * <p>
      * MS 2 bytes: C Tag
      * Next 2 bytes: Technology Profile Id
      * Next 4 bytes: Port number (uni or nni)
@@ -1230,6 +1260,7 @@ public class Olt
             eventExecutor.execute(() -> {
                 DeviceId devId = event.subject().id();
                 Device dev = event.subject();
+                Port port = event.port();
 
                 if (event.type() == DeviceEvent.Type.PORT_STATS_UPDATED) {
                     return;
@@ -1246,38 +1277,42 @@ public class Olt
                     //TODO: Port handling and bookkeeping should be improved once
                     // olt firmware handles correct behaviour.
                     case PORT_ADDED:
-                        if (isUniPort(dev, event.port())) {
-                            post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, event.port()));
+                        if (isUniPort(dev, port)) {
+                            post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
 
-                            if (event.port().isEnabled()) {
-                                processEapolFilteringObjectives(devId, event.port().number(), true);
+                            if (port.isEnabled()) {
+                                processEapolFilteringObjectives(devId, port.number(), defaultBpId, true);
                             }
                         } else {
                             checkAndCreateDeviceFlows(dev);
                         }
                         break;
                     case PORT_REMOVED:
-                        if (isUniPort(dev, event.port())) {
-                            if (event.port().isEnabled()) {
-                                processEapolFilteringObjectives(devId, event.port().number(), false);
-                                removeSubscriber(new ConnectPoint(devId, event.port().number()));
+                        if (isUniPort(dev, port)) {
+                            if (port.isEnabled()) {
+                                processEapolFilteringObjectives(devId, port.number(),
+                                        getUpstreamBandwidthProfileId(new ConnectPoint(devId, port.number())),
+                                        false);
+                                removeSubscriber(new ConnectPoint(devId, port.number()));
                             }
 
-                            post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, event.port()));
+                            post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
 
                         break;
                     case PORT_UPDATED:
-                        if (!isUniPort(dev, event.port())) {
+                        if (!isUniPort(dev, port)) {
                             break;
                         }
 
-                        if (event.port().isEnabled()) {
-                            processEapolFilteringObjectives(devId, event.port().number(), true);
-                            post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, event.port()));
+                        if (port.isEnabled()) {
+                            processEapolFilteringObjectives(devId, port.number(), defaultBpId, true);
+                            post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
                         } else {
-                            processEapolFilteringObjectives(devId, event.port().number(), false);
-                            post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, event.port()));
+                            processEapolFilteringObjectives(devId, port.number(),
+                                    getUpstreamBandwidthProfileId(new ConnectPoint(devId, port.number())),
+                                    false);
+                            post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
                         break;
                     case DEVICE_ADDED:
@@ -1333,7 +1368,7 @@ public class Olt
             if (deleteMeters && MeterEvent.Type.METER_REFERENCE_COUNT_ZERO.equals(meterEvent.type())) {
                 log.info("Zero Count Meter Event is received. Meter is {}", meterEvent.subject());
                 Meter meter = meterEvent.subject();
-                if (meter != null && appId.equals(meter.appId())) {
+                if (meter != null && appId.equals(meter.appId()) && !programmedMeters.contains(meter.id())) {
                     deleteMeter(meter.deviceId(), meter.id());
                 }
             } else if (MeterEvent.Type.METER_REMOVED.equals(meterEvent.type())) {
@@ -1344,15 +1379,17 @@ public class Olt
 
         private void deleteMeter(DeviceId deviceId, MeterId meterId) {
             Meter meter = meterService.getMeter(deviceId, meterId);
-            MeterRequest meterRequest = DefaultMeterRequest.builder()
-                    .withBands(meter.bands())
-                    .withUnit(meter.unit())
-                    .forDevice(deviceId)
-                    .fromApp(appId)
-                    .burst()
-                    .remove();
+            if (meter != null) {
+                MeterRequest meterRequest = DefaultMeterRequest.builder()
+                        .withBands(meter.bands())
+                        .withUnit(meter.unit())
+                        .forDevice(deviceId)
+                        .fromApp(appId)
+                        .burst()
+                        .remove();
 
-            meterService.withdraw(meterRequest, meterId);
+                meterService.withdraw(meterRequest, meterId);
+            }
 
         }
 
