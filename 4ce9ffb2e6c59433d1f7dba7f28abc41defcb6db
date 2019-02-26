@@ -1,0 +1,276 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "158174b7_8f06c0f2",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Consider using a thread-safe list",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4fdfdfdf_40bd9b0d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 510,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Please change the comment to say -- \n\"Removes subscriber vlan flows and returns the meter id used in the upstream bandwidth profile. This meter-id is also referenced by other upsteam trap flows for this subscriber\"",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eb6f9c62_630ecc74",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 517,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "incomplete javadocs",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "31138638_75977d34",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 519,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "This method should be renamed upprovisionVlans to go with the provisionVlans, just like provisionTransparentFlows goes with unprovisionTransparentFlows.\n\nIt helps to avoid confusion with provisionSubscriber and removeSubscriver methods.",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "24336e58_e4160594",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "This logic should be kept separate from the unprovisionVlans work which is the primary purpose of this method. Better to do the eapol handling in the removeSubscriber method.",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5d8979a0_14b2b2f7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 593,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Please change the comment to say -- \n\"Adds subscriber vlan flows and returns the meter id used in the upstream bandwidth profile. This meter-id will also be referenced by other upsteam trap flows for this subscriber\"",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "73edaf0b_4bae270e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "incomplete javadocs",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "969362cf_5cdbc5f2",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 616,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Please handle this in the \"provisionSubscriber\" method. Let this method only deal with vlan provisioning.",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "85c7f162_80ee0be0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 805,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Consult with Girish/Amit if eapol delete/re-add is necessary in transparent vlan case?",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ab02e77f_62ee4b49",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 908,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Consult with Girish/Amit if eapol delete/re-add is necessary in transparent vlan case?",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a051f50_47eb7000",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 976,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "incomplete javadocs",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5add3d64_6773ab55",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 982,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Good to add javadocs",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7513ac87_60c60628",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 995,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Please add reference to \u0027bpId\u0027 that was not found in this warning message",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "688d687d_cad7e755",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1082,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "Missing techProfileId param.\n\nAlso add comment that null or -1 can be sent if no meter or techprofile id needs to be referenced",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1de0f3d5_84326207",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1355,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "This line assumes that the port got removed \u0027after\u0027 the eapol flow was provisioned with the subscriber bandwidth profile. But it is possible that it got removed after the eapol flow was provisioned with the default bandwidth profile (ie before successful RG authentication).\n\nMaybe you need to keep track by making programmedMeters a map.",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a0d27a81_7d085455",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1374,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T01:03:43Z",
+      "side": 1,
+      "message": "This line assumes that the port got disabled \u0027after\u0027 the eapol flow was provisioned with the subscriber bandwidth profile. But it is possible that it got disabled after the eapol flow was provisioned with the default bandwidth profile (ie before successful RG authentication).\n\nMaybe you need to keep track by making programmedMeters a map.",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
