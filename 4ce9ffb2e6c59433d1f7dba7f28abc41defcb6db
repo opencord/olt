@@ -317,6 +317,24 @@
     },
     {
       "key": {
+        "uuid": "f461a062_be5113cc",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 805,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-02-26T16:15:31Z",
+      "side": 1,
+      "message": "EAPOL delete/re-add is not needed in this case. This is used (only available through REST) to provision more vlans on the same port. this gets used in case of a DPU from which more than 1 S/C tags would show up",
+      "parentUuid": "b260f42c_9b10b172",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ab02e77f_62ee4b49",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 4
@@ -328,6 +346,24 @@
       "writtenOn": "2019-02-26T01:03:43Z",
       "side": 1,
       "message": "Consult with Girish/Amit if eapol delete/re-add is necessary in transparent vlan case?",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b5badf46_7aab4647",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 908,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-02-26T16:15:31Z",
+      "side": 1,
+      "message": "EAPOL delete/re-add not needed in this case as mentioned above.",
+      "parentUuid": "ab02e77f_62ee4b49",
       "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
