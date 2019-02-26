@@ -299,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "b260f42c_9b10b172",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 805,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-02-26T13:19:53Z",
+      "side": 1,
+      "message": "Is there any scenario that we use this method? Currently, my all tests depend on volt-add command. Is it related to SEBA? It seems that it can only be called from rest api.",
+      "parentUuid": "85c7f162_80ee0be0",
+      "revId": "4ce9ffb2e6c59433d1f7dba7f28abc41defcb6db",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ab02e77f_62ee4b49",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 4
