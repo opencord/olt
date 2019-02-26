@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ca4b370_87b56ae8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T22:20:00Z",
+      "side": 1,
+      "message": "Instead of \u0027real\u0027 I would say \u0027subscriber\u0027s\u0027",
+      "revId": "47afc580c0eb971cea8ebf3dca444f357f0c478d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "370b86bb_f1f28178",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T22:20:00Z",
+      "side": 1,
+      "message": "Are you going to handle the ordering issue between eapol and HSIA flow in a different commit?",
+      "revId": "47afc580c0eb971cea8ebf3dca444f357f0c478d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6f44504d_65563bf3",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T22:20:00Z",
+      "side": 1,
+      "message": "same comment about \u0027real\u0027",
+      "revId": "47afc580c0eb971cea8ebf3dca444f357f0c478d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "71cacd4b_b3255827",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 536,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T22:20:00Z",
+      "side": 1,
+      "message": "I think you may need to add descriptions for the params, otherwise Checkstyle may complain",
+      "revId": "47afc580c0eb971cea8ebf3dca444f357f0c478d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "57408882_a50e32aa",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 613,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-26T22:20:00Z",
+      "side": 1,
+      "message": "Possible Checkstyle complaint",
+      "revId": "47afc580c0eb971cea8ebf3dca444f357f0c478d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
