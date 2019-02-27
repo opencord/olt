@@ -66,9 +66,17 @@ import org.onosproject.net.device.DeviceListener;
 import org.onosproject.net.device.DeviceService;
 import org.onosproject.net.flow.DefaultTrafficSelector;
 import org.onosproject.net.flow.DefaultTrafficTreatment;
+import org.onosproject.net.flow.FlowRule;
+import org.onosproject.net.flow.FlowRuleEvent;
+import org.onosproject.net.flow.FlowRuleListener;
+import org.onosproject.net.flow.FlowRuleService;
 import org.onosproject.net.flow.TrafficSelector;
 import org.onosproject.net.flow.TrafficTreatment;
 import org.onosproject.net.flow.criteria.Criteria;
+import org.onosproject.net.flow.criteria.Criterion;
+import org.onosproject.net.flow.criteria.EthTypeCriterion;
+import org.onosproject.net.flow.criteria.PortCriterion;
+import org.onosproject.net.flow.instructions.Instructions;
 import org.onosproject.net.flowobjective.DefaultFilteringObjective;
 import org.onosproject.net.flowobjective.DefaultForwardingObjective;
 import org.onosproject.net.flowobjective.FilteringObjective;
@@ -132,6 +140,9 @@ public class Olt
     protected FlowObjectiveService flowObjectiveService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected FlowRuleService flowRuleService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected MastershipService mastershipService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
@@ -186,6 +197,7 @@ public class Olt
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final MeterListener meterListener = new InternalMeterListener();
+    private final FlowRuleListener flowRuleListener = new InternalFlowRuleListener();
 
     private ApplicationId appId;
     protected BaseInformationService<SubscriberAndDeviceInformation> subsService;
@@ -233,6 +245,7 @@ public class Olt
 
         deviceService.addListener(deviceListener);
         meterService.addListener(meterListener);
+        flowRuleService.addListener(flowRuleListener);
 
         log.info("Started with Application ID {}", appId.id());
     }
@@ -242,6 +255,7 @@ public class Olt
         componentConfigService.unregisterProperties(getClass(), false);
         deviceService.removeListener(deviceListener);
         meterService.removeListener(meterListener);
+        flowRuleService.removeListener(flowRuleListener);
         eventDispatcher.removeSink(AccessDeviceEvent.class);
         log.info("Stopped");
     }
@@ -321,19 +335,6 @@ public class Olt
         programmedMeters.remove(bpInfoToMeter.get(defaultBpId));
         processEapolFilteringObjectives(deviceId, subscriberPortNo, sub.upstreamBandwidthProfile(), true);
 
-        log.info("Programming vlans for subscriber: {}", sub);
-        Optional<VlanId> defaultVlan = Optional.empty();
-        MeterId upstreamMeterId = provisionVlans(connectPoint, uplinkPort.number(), defaultVlan, sub);
-
-        if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(deviceId, subscriberPortNo, upstreamMeterId,
-                    sub.technologyProfileId(), true, true);
-        }
-
-        if (enableIgmpOnProvisioning) {
-            processIgmpFilteringObjectives(deviceId, subscriberPortNo, upstreamMeterId,
-                    sub.technologyProfileId(), true);
-        }
         // cache subscriber info
         programmedSubs.put(connectPoint, sub);
         return true;
@@ -365,35 +366,6 @@ public class Olt
         //re-install Eapol authentication flow with the default bandwidth profile
         processEapolFilteringObjectives(deviceId, subscriberPortNo, subscriber.upstreamBandwidthProfile(), false);
         processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, true);
-
-        log.info("Removing programmed vlans for subscriber: {}", subscriber);
-        Optional<VlanId> defaultVlan = Optional.empty();
-        MeterId upstreamMeterId = unprovisionVlans(deviceId, uplinkPort.number(),
-                subscriberPortNo, subscriber, defaultVlan);
-
-        if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(deviceId, subscriberPortNo,
-                    upstreamMeterId, subscriber.technologyProfileId(), false, true);
-        }
-
-        if (enableIgmpOnProvisioning) {
-            processIgmpFilteringObjectives(deviceId, subscriberPortNo,
-                    upstreamMeterId, subscriber.technologyProfileId(), false);
-        }
-
-        // Remove if there are any flows for the additional Vlans
-        Collection<? extends Map.Entry<VlanId, VlanId>> vlansList = additionalVlans.get(connectPoint).value();
-
-        // Remove the flows for the additional vlans for this subscriber
-        for (Map.Entry<VlanId, VlanId> vlans : vlansList) {
-            unprovisionTransparentFlows(deviceId, uplinkPort.number(), subscriberPortNo,
-                    vlans.getValue(), vlans.getKey());
-
-            // Remove it from the map also
-            additionalVlans.remove(connectPoint, vlans);
-        }
-
-        programmedSubs.remove(connectPoint);
         return true;
     }
 
@@ -1492,6 +1464,114 @@ public class Olt
                     break;
                 }
             }
+        }
+    }
+
+    private class InternalFlowRuleListener implements FlowRuleListener {
+
+        @Override
+        public void event(FlowRuleEvent flowRuleEvent) {
+            FlowRule flowRule = flowRuleEvent.subject();
+            if (FlowRuleEvent.Type.RULE_ADDED.equals(flowRuleEvent.type()) && appId.id() == (flowRule.appId())) {
+
+                TrafficSelector selector = flowRule.selector();
+
+                //check whether it is an eapol rule or not
+                EthTypeCriterion ethType = (EthTypeCriterion) selector.getCriterion(Criterion.Type.ETH_TYPE);
+                if (ethType != null && EthType.EtherType.EAPOL.ethType().equals(ethType.ethType())) {
+
+                    //subscriber must be found in programmedSubs to move on
+                    //first authentication trap flow (before the provisioning) will return
+                    PortCriterion inPortCriterion = (PortCriterion) selector.getCriterion(Criterion.Type.IN_PORT);
+                    ConnectPoint connectPoint = new ConnectPoint(flowRule.deviceId(), inPortCriterion.port());
+                    if (programmedSubs.get(connectPoint) == null) {
+                        log.warn("Subscriber has not been provisioned for the connect point {}", connectPoint);
+                        return;
+                    }
+
+                    //find the bandwidth profile
+                    //decide provision / unprovision process based on the bandwidth profile
+                    //if the bandwidth profile is default and the subscriber is found in programmedSubs,
+                    //then unprovision the subscriber
+                    //else provision the subscriber
+                    Instructions.MeterInstruction meterInstruction = flowRule.treatment().metered();
+                    Optional<String> bandwidthProfileId = bpInfoToMeter.entrySet().stream()
+                            .filter(entry -> meterInstruction.meterId().equals(entry.getValue()))
+                            .map(entry -> entry.getKey())
+                            .findAny();
+
+                    if (bandwidthProfileId.isPresent()) {
+                        if (DEFAULT_BP_ID.equals(bandwidthProfileId.get())) {
+                            log.info("EAPOL re-installed successfully. " +
+                                    "Subscriber will be unprovisioned for the connect point {}", connectPoint);
+                            unprovisionSubscriberAfterEapol(connectPoint);
+                        } else {
+                            log.info("EAPOL re-installed successfully. " +
+                                    "Subscriber will be provisioned for the connect point {}", connectPoint);
+                            provisionSubscriberAfterEapol(connectPoint);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void provisionSubscriberAfterEapol(ConnectPoint connectPoint) {
+
+            SubscriberAndDeviceInformation sub = programmedSubs.get(connectPoint);
+            Port uplinkPort = getUplinkPort(deviceService.getDevice(connectPoint.deviceId()));
+
+            log.info("Programming vlans for subscriber: {}", sub);
+            Optional<VlanId> defaultVlan = Optional.empty();
+            MeterId upstreamMeterId = provisionVlans(connectPoint, uplinkPort.number(),
+                    defaultVlan, sub);
+
+            if (enableDhcpOnProvisioning) {
+                processDhcpFilteringObjectives(connectPoint.deviceId(), connectPoint.port(), upstreamMeterId,
+                        sub.technologyProfileId(), true, true);
+            }
+
+            if (enableIgmpOnProvisioning) {
+                processIgmpFilteringObjectives(connectPoint.deviceId(), connectPoint.port(), upstreamMeterId,
+                        sub.technologyProfileId(), true);
+            }
+        }
+
+        private void unprovisionSubscriberAfterEapol(ConnectPoint connectPoint) {
+
+            SubscriberAndDeviceInformation subscriber = programmedSubs.get(connectPoint);
+            DeviceId deviceId = connectPoint.deviceId();
+            PortNumber subscriberPortNo = connectPoint.port();
+            Port uplinkPort = getUplinkPort(deviceService.getDevice(deviceId));
+
+
+            log.info("Removing programmed vlans for subscriber: {}", subscriber);
+            Optional<VlanId> defaultVlan = Optional.empty();
+            MeterId upstreamMeterId = unprovisionVlans(deviceId, uplinkPort.number(),
+                    subscriberPortNo, subscriber, defaultVlan);
+
+            if (enableDhcpOnProvisioning) {
+                processDhcpFilteringObjectives(deviceId, subscriberPortNo,
+                        upstreamMeterId, subscriber.technologyProfileId(), false, true);
+            }
+
+            if (enableIgmpOnProvisioning) {
+                processIgmpFilteringObjectives(deviceId, subscriberPortNo,
+                        upstreamMeterId, subscriber.technologyProfileId(), false);
+            }
+
+            // Remove if there are any flows for the additional Vlans
+            Collection<? extends Map.Entry<VlanId, VlanId>> vlansList = additionalVlans.get(connectPoint).value();
+
+            // Remove the flows for the additional vlans for this subscriber
+            for (Map.Entry<VlanId, VlanId> vlans : vlansList) {
+                unprovisionTransparentFlows(deviceId, uplinkPort.number(), subscriberPortNo,
+                        vlans.getValue(), vlans.getKey());
+
+                // Remove it from the map also
+                additionalVlans.remove(connectPoint, vlans);
+            }
+
+            programmedSubs.remove(connectPoint);
         }
     }
 }
