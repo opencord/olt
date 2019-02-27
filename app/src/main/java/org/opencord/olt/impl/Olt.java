@@ -184,6 +184,10 @@ public class Olt
             label = "Default bandwidth profile id that is used for authentication trap flows")
     protected String defaultBpId = DEFAULT_BP_ID;
 
+    @Property(name = "enableEapol", boolValue = true,
+            label = "Send EAPOL authentication trap flows before subscriber provisioning")
+    protected boolean enableEapol = true;
+
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final MeterListener meterListener = new InternalMeterListener();
 
@@ -288,6 +292,11 @@ public class Olt
             String bpId = get(properties, "defaultBpId");
             defaultBpId = bpId;
 
+            Boolean eap = Tools.isPropertyEnabled(properties, "enableEapol");
+            if (eap != null) {
+                enableEapol = eap;
+            }
+
         } catch (Exception e) {
             defaultVlan = DEFAULT_VLAN;
         }
@@ -315,25 +324,32 @@ public class Olt
             return false;
         }
 
-        //delete Eapol authentication flow with default bandwidth
-        //re-install Eapol authentication flow with the subscribers' upstream bandwidth profile
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, false);
-        programmedMeters.remove(bpInfoToMeter.get(defaultBpId));
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, sub.upstreamBandwidthProfile(), true);
+        if (enableEapol) {
 
-        log.info("Programming vlans for subscriber: {}", sub);
-        Optional<VlanId> defaultVlan = Optional.empty();
-        MeterId upstreamMeterId = provisionVlans(connectPoint, uplinkPort.number(), defaultVlan, sub);
+            CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
 
-        if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(deviceId, subscriberPortNo, upstreamMeterId,
-                    sub.technologyProfileId(), true, true);
+            //delete Eapol authentication flow with default bandwidth
+            //re-install Eapol authentication flow with the subscribers' upstream bandwidth profile
+            //wait until new Eapol rule is installed to install subscriber-based rules (wait for RULE_ADDED event)
+            processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, null, false);
+            programmedMeters.remove(bpInfoToMeter.get(defaultBpId));
+            processEapolFilteringObjectives(deviceId, subscriberPortNo, sub.upstreamBandwidthProfile(),
+                    filterFuture, true);
+
+
+            filterFuture.thenAcceptAsync(filterStatus -> {
+                if (filterStatus == null) {
+                    log.info("EAPOL filtering objective is re-installed using the subscribers' " +
+                            "upstream bandwidth: {}", sub.upstreamBandwidthProfile());
+                    provisionVlans(connectPoint, uplinkPort.number(), Optional.empty(), sub);
+                }
+            });
+
+        } else {
+            //if eapol is not enabled, install subscriber-based rules
+            provisionVlans(connectPoint, uplinkPort.number(), Optional.empty(), sub);
         }
 
-        if (enableIgmpOnProvisioning) {
-            processIgmpFilteringObjectives(deviceId, subscriberPortNo, upstreamMeterId,
-                    sub.technologyProfileId(), true);
-        }
         // cache subscriber info
         programmedSubs.put(connectPoint, sub);
         return true;
@@ -361,36 +377,29 @@ public class Olt
             return false;
         }
 
-        //delete Eapol authentication flow with the subscribers' upstream bandwidth profile
-        //re-install Eapol authentication flow with the default bandwidth profile
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, subscriber.upstreamBandwidthProfile(), false);
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, true);
+        if (enableEapol) {
 
-        log.info("Removing programmed vlans for subscriber: {}", subscriber);
-        Optional<VlanId> defaultVlan = Optional.empty();
-        MeterId upstreamMeterId = unprovisionVlans(deviceId, uplinkPort.number(),
-                subscriberPortNo, subscriber, defaultVlan);
+            CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
 
-        if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(deviceId, subscriberPortNo,
-                    upstreamMeterId, subscriber.technologyProfileId(), false, true);
-        }
+            //delete Eapol authentication flow with the subscribers' upstream bandwidth profile
+            //re-install Eapol authentication flow with the default bandwidth profile
+            //wait until new Eapol flow is installed to remove subscriber-based rules (wait for RULE_ADDED event)
+            processEapolFilteringObjectives(deviceId, subscriberPortNo,
+                    subscriber.upstreamBandwidthProfile(), null, false);
+            processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, filterFuture, true);
 
-        if (enableIgmpOnProvisioning) {
-            processIgmpFilteringObjectives(deviceId, subscriberPortNo,
-                    upstreamMeterId, subscriber.technologyProfileId(), false);
-        }
+            filterFuture.thenAcceptAsync(filterStatus -> {
+                if (filterStatus == null) {
+                    log.info("EAPOL filtering objective is re-installed using " +
+                            "the default bandwidth: {}", defaultBpId);
+                    unprovisionVlans(deviceId, uplinkPort.number(), subscriberPortNo, subscriber, Optional.empty());
+                }
+            });
 
-        // Remove if there are any flows for the additional Vlans
-        Collection<? extends Map.Entry<VlanId, VlanId>> vlansList = additionalVlans.get(connectPoint).value();
 
-        // Remove the flows for the additional vlans for this subscriber
-        for (Map.Entry<VlanId, VlanId> vlans : vlansList) {
-            unprovisionTransparentFlows(deviceId, uplinkPort.number(), subscriberPortNo,
-                    vlans.getValue(), vlans.getKey());
-
-            // Remove it from the map also
-            additionalVlans.remove(connectPoint, vlans);
+        } else {
+            //if eapol is not enabled, remove subscriber-based rules
+            unprovisionVlans(deviceId, uplinkPort.number(), subscriberPortNo, subscriber, Optional.empty());
         }
 
         programmedSubs.remove(connectPoint);
@@ -539,6 +548,8 @@ public class Olt
     private MeterId unprovisionVlans(DeviceId deviceId, PortNumber uplink,
                                      PortNumber subscriberPort, SubscriberAndDeviceInformation subscriber,
                                      Optional<VlanId> defaultVlan) {
+
+        log.info("Unprovisioning vlans...");
 
         CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
         CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
@@ -991,12 +1002,15 @@ public class Olt
     /**
      * Trap eapol authentication packets to the controller.
      *
-     * @param devId      the device identifier
-     * @param portNumber the port for which this trap flow is designated
-     * @param bpId       bandwidth profile id to add the related meter to the flow
-     * @param install    true to install the flow, false to remove the flow
+     * @param devId        the device identifier
+     * @param portNumber   the port for which this trap flow is designated
+     * @param bpId         bandwidth profile id to add the related meter to the flow
+     * @param filterFuture completable future for this filtering objective operation
+     * @param install      true to install the flow, false to remove the flow
      */
-    private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, String bpId, boolean install) {
+    private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, String bpId,
+                                                 CompletableFuture<ObjectiveError> filterFuture,
+                                                 boolean install) {
         if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
@@ -1029,6 +1043,9 @@ public class Olt
                     public void onSuccess(Objective objective) {
                         log.info("Eapol filter for {} on {} {} with meter {}.",
                                 devId, portNumber, (install) ? INSTALLED : REMOVED, meterId);
+                        if (filterFuture != null) {
+                            filterFuture.complete(null);
+                        }
                     }
 
                     @Override
@@ -1036,6 +1053,9 @@ public class Olt
                         log.info("Eapol filter for {} on {} with meter {} failed {} because {}",
                                 devId, portNumber, meterId, (install) ? INSTALLATION : REMOVAL,
                                 error);
+                        if (filterFuture != null) {
+                            filterFuture.complete(error);
+                        }
                     }
                 });
 
@@ -1255,7 +1275,9 @@ public class Olt
             // This is an OLT device as per Sadis, we create flows for UNI and NNI ports
             for (Port p : deviceService.getPorts(dev.id())) {
                 if (isUniPort(dev, p)) {
-                    processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, true);
+                    if (enableEapol) {
+                        processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, null, true);
+                    }
                 } else {
                     processNniFilteringObjectives(dev.id(), p.number(), true);
                 }
@@ -1363,8 +1385,9 @@ public class Olt
                         if (isUniPort(dev, port)) {
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
 
-                            if (port.isEnabled()) {
-                                processEapolFilteringObjectives(devId, port.number(), defaultBpId, true);
+                            if (port.isEnabled() && enableEapol) {
+                                processEapolFilteringObjectives(devId, port.number(), defaultBpId,
+                                        null, true);
                             }
                         } else {
                             checkAndCreateDeviceFlows(dev);
@@ -1373,9 +1396,11 @@ public class Olt
                     case PORT_REMOVED:
                         if (isUniPort(dev, port)) {
                             if (port.isEnabled()) {
-                                processEapolFilteringObjectives(devId, port.number(),
-                                        getCurrentBandwidthProfile(new ConnectPoint(devId, port.number())),
-                                        false);
+                                if (enableEapol) {
+                                    processEapolFilteringObjectives(devId, port.number(),
+                                            getCurrentBandwidthProfile(new ConnectPoint(devId, port.number())),
+                                            null, false);
+                                }
                                 removeSubscriber(new ConnectPoint(devId, port.number()));
                             }
 
@@ -1389,12 +1414,17 @@ public class Olt
                         }
 
                         if (port.isEnabled()) {
-                            processEapolFilteringObjectives(devId, port.number(), defaultBpId, true);
+                            if (enableEapol) {
+                                processEapolFilteringObjectives(devId, port.number(), defaultBpId,
+                                        null, true);
+                            }
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
                         } else {
-                            processEapolFilteringObjectives(devId, port.number(),
-                                    getCurrentBandwidthProfile(new ConnectPoint(devId, port.number())),
-                                    false);
+                            if (enableEapol) {
+                                processEapolFilteringObjectives(devId, port.number(),
+                                        getCurrentBandwidthProfile(new ConnectPoint(devId, port.number())),
+                                        null, false);
+                            }
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
                         break;
