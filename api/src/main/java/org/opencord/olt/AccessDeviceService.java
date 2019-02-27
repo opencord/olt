@@ -21,10 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.common.collect.ImmutableSet;
 import org.onlab.packet.VlanId;
 import org.onosproject.event.ListenerService;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
+import org.onosproject.net.meter.MeterKey;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 
 import com.google.common.collect.ImmutableMap;
@@ -87,10 +89,26 @@ public interface AccessDeviceService
 
     /**
      * Returns information about subscribers that have been programmed in the
-     * dataplane.
+     * data-plane.
      *
      * @return an immutable map of locations and subscriber information
      */
     ImmutableMap<ConnectPoint, SubscriberAndDeviceInformation> getProgSubs();
+
+    /**
+     * Returns information about device-meter mappings that have been programmed in the
+     * data-plane.
+     *
+     * @return an immutable set of device-meter mappings
+     */
+    ImmutableSet<MeterKey> getProgMeters();
+
+    /**
+     * Returns information about bandwidthProfile-meterKey (device / meter) mappings
+     * that have been programmed in the data-plane.
+     *
+     * @return an immutable map of bandwidthProfile-meterKey (device / meter) mappings
+     */
+    ImmutableMap<String, List<MeterKey>> getBpMeterMappings();
 
 }

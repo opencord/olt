@@ -39,6 +39,12 @@
         <command>
             <action class="org.opencord.olt.cli.ShowProgrammedSubscribersCommand"/>
         </command>
+        <command>
+            <action class="org.opencord.olt.cli.ShowProgrammedMetersCommand"/>
+        </command>
+        <command>
+            <action class="org.opencord.olt.cli.ShowBpMeterMappingsCommand"/>
+        </command>
     </command-bundle>
 
     <bean id="deviceIdCompleter" class="org.onosproject.cli.net.DeviceIdCompleter"/>

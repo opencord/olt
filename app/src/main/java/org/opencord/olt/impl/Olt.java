@@ -23,20 +23,21 @@ import static org.onlab.util.Tools.groupedThreads;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.common.collect.ImmutableSet;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -78,19 +79,22 @@ import org.onosproject.net.flowobjective.ForwardingObjective;
 import org.onosproject.net.flowobjective.Objective;
 import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
-import org.onosproject.net.meter.Band;
-import org.onosproject.net.meter.DefaultBand;
-import org.onosproject.net.meter.DefaultMeterRequest;
-import org.onosproject.net.meter.Meter;
-import org.onosproject.net.meter.MeterEvent;
-import org.onosproject.net.meter.MeterId;
-import org.onosproject.net.meter.MeterListener;
-import org.onosproject.net.meter.MeterRequest;
-import org.onosproject.net.meter.MeterService;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.ConsistentMultimap;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
+import org.onosproject.net.meter.Band;
+import org.onosproject.net.meter.DefaultBand;
+import org.onosproject.net.meter.DefaultMeterRequest;
+import org.onosproject.net.meter.Meter;
+import org.onosproject.net.meter.MeterContext;
+import org.onosproject.net.meter.MeterFailReason;
+import org.onosproject.net.meter.MeterKey;
+import org.onosproject.net.meter.MeterService;
+import org.onosproject.net.meter.MeterListener;
+import org.onosproject.net.meter.MeterRequest;
+import org.onosproject.net.meter.MeterId;
+import org.onosproject.net.meter.MeterEvent;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
@@ -183,6 +187,10 @@ public class Olt
             label = "Default bandwidth profile id that is used for authentication trap flows")
     protected String defaultBpId = DEFAULT_BP_ID;
 
+    @Property(name = "enableEapol", boolValue = true,
+            label = "Send EAPOL authentication trap flows before subscriber provisioning")
+    protected boolean enableEapol = true;
+
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final MeterListener meterListener = new InternalMeterListener();
 
@@ -190,7 +198,7 @@ public class Olt
     protected BaseInformationService<SubscriberAndDeviceInformation> subsService;
     private BaseInformationService<BandwidthProfileInformation> bpService;
 
-    private Map<String, MeterId> bpInfoToMeter = new HashMap<>();
+    private Map<String, List<MeterKey>> bpInfoToMeter = new ConcurrentHashMap<>();
 
     private ExecutorService oltInstallers = Executors.newFixedThreadPool(4,
             groupedThreads("onos/olt-service",
@@ -201,7 +209,7 @@ public class Olt
     protected ExecutorService eventExecutor;
 
     private Map<ConnectPoint, SubscriberAndDeviceInformation> programmedSubs;
-    private List<MeterId> programmedMeters;
+    private Set<MeterKey> programmedMeters;
 
     @Activate
     public void activate(ComponentContext context) {
@@ -214,10 +222,10 @@ public class Olt
         // making flows pushed earlier invalid
         componentConfigService
                 .preSetProperty("org.onosproject.net.flow.impl.FlowRuleManager",
-                                "purgeOnDisconnection", "true");
+                        "purgeOnDisconnection", "true");
         componentConfigService.registerProperties(getClass());
         programmedSubs = Maps.newConcurrentMap();
-        programmedMeters = new CopyOnWriteArrayList<>();
+        programmedMeters = ConcurrentHashMap.newKeySet();
 
         eventDispatcher.addSink(AccessDeviceEvent.class, listenerRegistry);
 
@@ -294,6 +302,11 @@ public class Olt
             String bpId = get(properties, "defaultBpId");
             defaultBpId = bpId;
 
+            Boolean eap = Tools.isPropertyEnabled(properties, "enableEapol");
+            if (eap != null) {
+                enableEapol = eap;
+            }
+
         } catch (Exception e) {
             defaultVlan = DEFAULT_VLAN;
         }
@@ -321,25 +334,20 @@ public class Olt
             return false;
         }
 
+        CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
+
         //delete Eapol authentication flow with default bandwidth
-        //re-install Eapol authentication flow with the subscribers' upstream bandwidth profile
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, false);
-        programmedMeters.remove(bpInfoToMeter.get(defaultBpId));
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, sub.upstreamBandwidthProfile(), true);
+        //wait until Eapol rule with defaultBpId is removed to install subscriber-based rules
+        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, filterFuture, false);
+        removeMeterIdFromBpMapping(deviceId, defaultBpId);
 
-        log.info("Programming vlans for subscriber: {}", sub);
-        Optional<VlanId> defaultVlan = Optional.empty();
-        MeterId upstreamMeterId = provisionVlans(connectPoint, uplinkPort.number(), defaultVlan, sub);
+        //install subscriber flows
+        filterFuture.thenAcceptAsync(filterStatus -> {
+            if (filterStatus == null) {
+                provisionSubscriberBasedFlows(connectPoint, uplinkPort.number(), Optional.empty(), sub);
+            }
+        });
 
-        if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(deviceId, subscriberPortNo, upstreamMeterId,
-                    sub.technologyProfileId(), true, true);
-        }
-
-        if (enableIgmpOnProvisioning) {
-            processIgmpFilteringObjectives(deviceId, subscriberPortNo, upstreamMeterId,
-                    sub.technologyProfileId(), true);
-        }
         // cache subscriber info
         programmedSubs.put(connectPoint, sub);
         return true;
@@ -367,25 +375,19 @@ public class Olt
             return false;
         }
 
-        //delete Eapol authentication flow with the subscribers' upstream bandwidth profile
-        //re-install Eapol authentication flow with the default bandwidth profile
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, subscriber.upstreamBandwidthProfile(), false);
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, true);
+        //delete dhcp & igmp trap flows
+        MeterId upstreamMeterId = getMeterIdFromBpMapping(deviceId, subscriber.upstreamBandwidthProfile());
 
-        log.info("Removing programmed vlans for subscriber: {}", subscriber);
-        Optional<VlanId> defaultVlan = Optional.empty();
-        MeterId upstreamMeterId = unprovisionVlans(deviceId, uplinkPort.number(),
-                subscriberPortNo, subscriber, defaultVlan);
+        //process dhcp filtering
+        processDhcpFilteringObjectives(deviceId, subscriberPortNo,
+                upstreamMeterId, subscriber.technologyProfileId(), false, true);
 
-        if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(deviceId, subscriberPortNo,
-                    upstreamMeterId, subscriber.technologyProfileId(), false, true);
-        }
+        //process igmp filtering
+        processIgmpFilteringObjectives(deviceId, subscriberPortNo,
+                upstreamMeterId, subscriber.technologyProfileId(), false);
 
-        if (enableIgmpOnProvisioning) {
-            processIgmpFilteringObjectives(deviceId, subscriberPortNo,
-                    upstreamMeterId, subscriber.technologyProfileId(), false);
-        }
+        //unprovision vlans
+        unprovisionVlans(deviceId, uplinkPort.number(), subscriberPortNo, subscriber, Optional.empty());
 
         // Remove if there are any flows for the additional Vlans
         Collection<? extends Map.Entry<VlanId, VlanId>> vlansList = additionalVlans.get(connectPoint).value();
@@ -398,6 +400,11 @@ public class Olt
             // Remove it from the map also
             additionalVlans.remove(connectPoint, vlans);
         }
+
+        //re-install eapol
+        processEapolFilteringObjectives(deviceId, subscriberPortNo,
+                subscriber.upstreamBandwidthProfile(), null, false);
+        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, null, true);
 
         programmedSubs.remove(connectPoint);
         return true;
@@ -490,6 +497,16 @@ public class Olt
     }
 
     @Override
+    public ImmutableSet<MeterKey> getProgMeters() {
+        return ImmutableSet.copyOf(programmedMeters);
+    }
+
+    @Override
+    public ImmutableMap<String, List<MeterKey>> getBpMeterMappings() {
+        return ImmutableMap.copyOf(bpInfoToMeter);
+    }
+
+    @Override
     public List<DeviceId> fetchOlts() {
         // look through all the devices and find the ones that are OLTs as per Sadis
         List<DeviceId> olts = new ArrayList<>();
@@ -532,19 +549,19 @@ public class Olt
     }
 
     /**
-     * Removes subscriber vlan flows and returns the meter id used in the upstream bandwidth profile.
-     * This meter-id is also referenced by other upstream trap flows for this subscriber.
+     * Removes subscriber vlan flows.
      *
      * @param deviceId       the device identifier
      * @param uplink         uplink port of the OLT
      * @param subscriberPort uni port
      * @param subscriber     subscriber info that includes s, c tags, tech profile and bandwidth profile references
      * @param defaultVlan    default vlan of the subscriber
-     * @return the meter id used in the upstream bandwidth profile
      */
-    private MeterId unprovisionVlans(DeviceId deviceId, PortNumber uplink,
-                                     PortNumber subscriberPort, SubscriberAndDeviceInformation subscriber,
-                                     Optional<VlanId> defaultVlan) {
+    private void unprovisionVlans(DeviceId deviceId, PortNumber uplink,
+                                  PortNumber subscriberPort, SubscriberAndDeviceInformation subscriber,
+                                  Optional<VlanId> defaultVlan) {
+
+        log.info("Unprovisioning vlans...");
 
         CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
         CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
@@ -552,8 +569,8 @@ public class Olt
         VlanId deviceVlan = subscriber.sTag();
         VlanId subscriberVlan = subscriber.cTag();
 
-        MeterId upstreamMeterId = bpInfoToMeter.get(subscriber.upstreamBandwidthProfile());
-        MeterId downstreamMeterId = bpInfoToMeter.get(subscriber.downstreamBandwidthProfile());
+        MeterId upstreamMeterId = getMeterIdFromBpMapping(deviceId, subscriber.upstreamBandwidthProfile());
+        MeterId downstreamMeterId = getMeterIdFromBpMapping(deviceId, subscriber.downstreamBandwidthProfile());
 
         ForwardingObjective.Builder upFwd = upBuilder(uplink, subscriberPort,
                 subscriberVlan, deviceVlan,
@@ -603,24 +620,21 @@ public class Olt
             }
         }, oltInstallers);
 
-        programmedMeters.remove(upstreamMeterId);
-        programmedMeters.remove(downstreamMeterId);
+        programmedMeters.remove(MeterKey.key(deviceId, upstreamMeterId));
+        programmedMeters.remove(MeterKey.key(deviceId, downstreamMeterId));
         log.debug("programmed Meters size {}", programmedMeters.size());
-        return upstreamMeterId;
     }
 
     /**
-     * Adds subscriber vlan flows and returns the meter id used in the upstream bandwidth profile.
-     * This meter-id will also be referenced by other upstream trap flows for this subscriber
+     * Adds subscriber vlan flows, dhcp, eapol and igmp trap flows for the related uni port.
      *
      * @param port        the connection point of the subscriber
      * @param uplinkPort  uplink port of the OLT
      * @param defaultVlan default vlan of the subscriber
      * @param sub         subscriber information that includes s, c tags, tech profile and bandwidth profile references
-     * @return the meter id used in the upstream bandwidth profile
      */
-    private MeterId provisionVlans(ConnectPoint port, PortNumber uplinkPort, Optional<VlanId> defaultVlan,
-                                   SubscriberAndDeviceInformation sub) {
+    private void provisionSubscriberBasedFlows(ConnectPoint port, PortNumber uplinkPort, Optional<VlanId> defaultVlan,
+                                               SubscriberAndDeviceInformation sub) {
 
         log.info("Provisioning vlans...");
 
@@ -633,46 +647,84 @@ public class Olt
         BandwidthProfileInformation upstreamBpInfo = getBandwidthProfileInformation(sub.upstreamBandwidthProfile());
         BandwidthProfileInformation downstreamBpInfo = getBandwidthProfileInformation(sub.downstreamBandwidthProfile());
 
-        MeterId upstreamMeterId = createMeter(deviceId, upstreamBpInfo);
-        MeterId downstreamMeterId = createMeter(deviceId, downstreamBpInfo);
-
         CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
         CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
+        CompletableFuture<Object> upstreamMeterFuture = new CompletableFuture<>();
+        CompletableFuture<Object> downsteamMeterFuture = new CompletableFuture<>();
 
-        ForwardingObjective.Builder upFwd = upBuilder(uplinkPort, subscriberPort,
-                subscriberVlan, deviceVlan,
-                defaultVlan, upstreamMeterId, techProfId);
+        MeterId upstreamMeterId = createMeter(deviceId, upstreamBpInfo, upstreamMeterFuture);
+        MeterId downstreamMeterId = createMeter(deviceId, downstreamBpInfo, downsteamMeterFuture);
 
-        ForwardingObjective.Builder downFwd = downBuilder(uplinkPort, subscriberPort,
-                subscriberVlan, deviceVlan,
-                defaultVlan, downstreamMeterId, techProfId);
+        //install upstream flows
+        upstreamMeterFuture.thenAcceptAsync(result -> {
+            if (result == null) {
+                log.info("Upstream Meter {} is sent to the device {}. " +
+                        "Sending subscriber flows.", upstreamMeterId, deviceId);
+                ForwardingObjective.Builder upFwd = upBuilder(uplinkPort, subscriberPort,
+                        subscriberVlan, deviceVlan,
+                        defaultVlan, upstreamMeterId, techProfId);
 
-        flowObjectiveService.forward(deviceId, upFwd.add(new ObjectiveContext() {
-            @Override
-            public void onSuccess(Objective objective) {
-                upFuture.complete(null);
+
+                flowObjectiveService.forward(deviceId, upFwd.add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        upFuture.complete(null);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        upFuture.complete(error);
+                    }
+                }));
+            } else {
+                log.warn("Meter installation error while sending upstream flows. " +
+                        "Result {} and MeterId {}", result, upstreamMeterId);
             }
+        });
 
-            @Override
-            public void onError(Objective objective, ObjectiveError error) {
-                upFuture.complete(error);
+        //install downstream flows
+        downsteamMeterFuture.thenAcceptAsync(result -> {
+            if (result == null) {
+                log.info("Downstream Meter {} is sent to the device {}. " +
+                        "Sending subscriber flows.", downstreamMeterId, deviceId);
+                ForwardingObjective.Builder downFwd = downBuilder(uplinkPort, subscriberPort,
+                        subscriberVlan, deviceVlan,
+                        defaultVlan, downstreamMeterId, techProfId);
+
+                flowObjectiveService.forward(deviceId, downFwd.add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        downFuture.complete(null);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        downFuture.complete(error);
+                    }
+                }));
+            } else {
+                log.warn("Meter installation error while sending downstream flows. " +
+                        "Result {} and MeterId {}", result, downstreamMeterId);
             }
-        }));
+        });
 
-        flowObjectiveService.forward(deviceId, downFwd.add(new ObjectiveContext() {
-            @Override
-            public void onSuccess(Objective objective) {
-                downFuture.complete(null);
-            }
-
-            @Override
-            public void onError(Objective objective, ObjectiveError error) {
-                downFuture.complete(error);
-            }
-        }));
-
+        //send eapol & dhcp & igmp flows
+        //send Subscriber Registered event
         upFuture.thenAcceptBothAsync(downFuture, (upStatus, downStatus) -> {
             if (upStatus == null && downStatus == null) {
+
+                if (upstreamMeterId != null) {
+                    //re-install Eapol authentication flow with the subscribers' upstream bandwidth profile
+                    processEapolFilteringObjectives(deviceId, subscriberPort, sub.upstreamBandwidthProfile(),
+                            null, true);
+
+                    processDhcpFilteringObjectives(deviceId, subscriberPort,
+                            upstreamMeterId, sub.technologyProfileId(), true, true);
+
+                    processIgmpFilteringObjectives(deviceId, subscriberPort,
+                            upstreamMeterId, sub.technologyProfileId(), true);
+                }
+
                 post(new AccessDeviceEvent(AccessDeviceEvent.Type.SUBSCRIBER_REGISTERED,
                         deviceId,
                         deviceVlan,
@@ -688,20 +740,19 @@ public class Olt
                         subscriberVlan, deviceId, subscriberPort, upStatus);
             }
         }, oltInstallers);
-
-        return upstreamMeterId;
     }
 
-    private MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo) {
-
+    private MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
+                                CompletableFuture<Object> meterFuture) {
         if (bpInfo == null) {
             log.warn("Bandwidth profile information is not found");
             return null;
         }
 
-        MeterId meterId = bpInfoToMeter.get(bpInfo.id());
+        MeterId meterId = getMeterIdFromBpMapping(deviceId, bpInfo.id());
         if (meterId != null) {
             log.info("Meter is already added. MeterId {}", meterId);
+            meterFuture.complete(null);
             return meterId;
         }
 
@@ -710,15 +761,27 @@ public class Olt
         MeterRequest meterRequest = DefaultMeterRequest.builder()
                 .withBands(meterBands)
                 .withUnit(Meter.Unit.KB_PER_SEC)
+                .withContext(new MeterContext() {
+                    @Override
+                    public void onSuccess(MeterRequest op) {
+                        log.debug("meter addition completed");
+                        meterFuture.complete(null);
+                    }
+
+                    @Override
+                    public void onError(MeterRequest op, MeterFailReason reason) {
+                        meterFuture.complete(reason);
+                    }
+                })
                 .forDevice(deviceId)
                 .fromApp(appId)
                 .burst()
                 .add();
 
         Meter meter = meterService.submit(meterRequest);
-        bpInfoToMeter.put(bpInfo.id(), meter.id());
+        addMeterIdToBpMapping(deviceId, meter.id(), bpInfo.id());
         log.info("Meter is created. Meter Id {}", meter.id());
-        programmedMeters.add(meter.id());
+        programmedMeters.add(MeterKey.key(deviceId, meter.id()));
         log.debug("programmed Meters size {}", programmedMeters.size());
         return meter.id();
     }
@@ -997,56 +1060,83 @@ public class Olt
     /**
      * Trap eapol authentication packets to the controller.
      *
-     * @param devId      the device identifier
-     * @param portNumber the port for which this trap flow is designated
-     * @param bpId       bandwidth profile id to add the related meter to the flow
-     * @param install    true to install the flow, false to remove the flow
+     * @param devId        the device identifier
+     * @param portNumber   the port for which this trap flow is designated
+     * @param bpId         bandwidth profile id to add the related meter to the flow
+     * @param filterFuture completable future for this filtering objective operation
+     * @param install      true to install the flow, false to remove the flow
      */
-    private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, String bpId, boolean install) {
+    private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, String bpId,
+                                                 CompletableFuture<ObjectiveError> filterFuture,
+                                                 boolean install) {
+
+        if (!enableEapol) {
+            log.debug("Eapol filtering is disabled.");
+            if (filterFuture != null) {
+                filterFuture.complete(null);
+            }
+            return;
+        }
+
         if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+        CompletableFuture<Object> meterFuture = new CompletableFuture<>();
         MeterId meterId;
 
         BandwidthProfileInformation bpInfo = getBandwidthProfileInformation(bpId);
         if (bpInfo != null) {
-            meterId = createMeter(devId, bpInfo);
+            meterId = createMeter(devId, bpInfo, meterFuture);
             treatmentBuilder.meter(meterId);
         } else {
             log.warn("Bandwidth profile {} is not found. Authentication flow will not be installed", bpId);
             return;
         }
 
-        int techProfileId = getDefaultTechProfileId(devId, portNumber);
+        meterFuture.thenAcceptAsync(result -> {
+            if (result == null) {
+                log.info("Meter {} for the device {} is installed. " +
+                        "{} EAPOL trap flow", meterId, devId, install ? "Installing " : "Removing ");
+                int techProfileId = getDefaultTechProfileId(devId, portNumber);
 
-        //Authentication trap flow uses only tech profile id as write metadata value
-        FilteringObjective eapol = (install ? builder.permit() : builder.deny())
-                .withKey(Criteria.matchInPort(portNumber))
-                .addCondition(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
-                .withMeta(treatmentBuilder
-                        .writeMetadata(createTechProfValueForWm(techProfileId), 0)
-                        .setOutput(PortNumber.CONTROLLER).build())
-                .fromApp(appId)
-                .withPriority(10000)
-                .add(new ObjectiveContext() {
-                    @Override
-                    public void onSuccess(Objective objective) {
-                        log.info("Eapol filter for {} on {} {} with meter {}.",
-                                devId, portNumber, (install) ? INSTALLED : REMOVED, meterId);
-                    }
+                //Authentication trap flow uses only tech profile id as write metadata value
+                FilteringObjective eapol = (install ? builder.permit() : builder.deny())
+                        .withKey(Criteria.matchInPort(portNumber))
+                        .addCondition(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
+                        .withMeta(treatmentBuilder
+                                .writeMetadata(createTechProfValueForWm(techProfileId), 0)
+                                .setOutput(PortNumber.CONTROLLER).build())
+                        .fromApp(appId)
+                        .withPriority(10000)
+                        .add(new ObjectiveContext() {
+                            @Override
+                            public void onSuccess(Objective objective) {
+                                log.info("Eapol filter for {} on {} {} with meter {}.",
+                                        devId, portNumber, (install) ? INSTALLED : REMOVED, meterId);
+                                if (filterFuture != null) {
+                                    filterFuture.complete(null);
+                                }
+                            }
 
-                    @Override
-                    public void onError(Objective objective, ObjectiveError error) {
-                        log.info("Eapol filter for {} on {} with meter {} failed {} because {}",
-                                devId, portNumber, meterId, (install) ? INSTALLATION : REMOVAL,
-                                error);
-                    }
-                });
+                            @Override
+                            public void onError(Objective objective, ObjectiveError error) {
+                                log.info("Eapol filter for {} on {} with meter {} failed {} because {}",
+                                        devId, portNumber, meterId, (install) ? INSTALLATION : REMOVAL,
+                                        error);
+                                if (filterFuture != null) {
+                                    filterFuture.complete(error);
+                                }
+                            }
+                        });
 
-        flowObjectiveService.filter(devId, eapol);
-
+                flowObjectiveService.filter(devId, eapol);
+            } else {
+                log.warn("Meter installation error while sending eapol trap flow. " +
+                        "Result {} and MeterId {}", result, meterId);
+            }
+        });
     }
 
     /**
@@ -1059,9 +1149,7 @@ public class Olt
      */
     private void processNniFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
         processLldpFilteringObjective(devId, port, install);
-        if (enableDhcpOnProvisioning) {
-            processDhcpFilteringObjectives(devId, port, null, -1, install, false);
-        }
+        processDhcpFilteringObjectives(devId, port, null, -1, install, false);
     }
 
     private void processLldpFilteringObjective(DeviceId devId, PortNumber port, boolean install) {
@@ -1116,6 +1204,12 @@ public class Olt
                                                 int techProfileId,
                                                 boolean install,
                                                 boolean upstream) {
+
+        if (!enableDhcpOnProvisioning) {
+            log.debug("Dhcp provisioning is disabled.");
+            return;
+        }
+
         if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
@@ -1199,6 +1293,12 @@ public class Olt
                                                 MeterId upstreamMeterId,
                                                 int techProfileId,
                                                 boolean install) {
+
+        if (enableIgmpOnProvisioning) {
+            log.debug("Igmp provisioning is disabled.");
+            return;
+        }
+
         if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
@@ -1261,7 +1361,7 @@ public class Olt
             // This is an OLT device as per Sadis, we create flows for UNI and NNI ports
             for (Port p : deviceService.getPorts(dev.id())) {
                 if (isUniPort(dev, p)) {
-                    processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, true);
+                    processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, null, true);
                 } else {
                     processNniFilteringObjectives(dev.id(), p.number(), true);
                 }
@@ -1343,6 +1443,44 @@ public class Olt
         return subsService.get(devSerialNo);
     }
 
+    private MeterId getMeterIdFromBpMapping(DeviceId deviceId, String bandwidthProfile) {
+
+        if (bpInfoToMeter.get(bandwidthProfile) == null) {
+            log.warn("Bandwidth Profile '{}' is not found in bandwidth profile map.", bandwidthProfile);
+            return null;
+        }
+
+        Optional<MeterKey> meterKeyForDevice = bpInfoToMeter.get(bandwidthProfile)
+                .stream()
+                .filter(meterKey -> meterKey.deviceId().equals(deviceId))
+                .findFirst();
+        return meterKeyForDevice.isPresent() ? meterKeyForDevice.get().meterId() : null;
+    }
+
+    private void addMeterIdToBpMapping(DeviceId deviceId, MeterId meterId, String bandwidthProfile) {
+
+        if (bpInfoToMeter.get(bandwidthProfile) == null) {
+            bpInfoToMeter.put(bandwidthProfile,
+                    new ArrayList<>(Arrays.asList(MeterKey.key(deviceId, meterId))));
+        } else {
+
+            List<MeterKey> meterKeyListForBp = bpInfoToMeter.get(bandwidthProfile);
+            meterKeyListForBp.add(MeterKey.key(deviceId, meterId));
+        }
+    }
+
+    private void removeMeterIdFromBpMapping(DeviceId deviceId, String bandwidthProfileId) {
+        List<MeterKey> meterKeysForBp = bpInfoToMeter.get(bandwidthProfileId);
+        if (meterKeysForBp != null) {
+            meterKeysForBp.stream()
+                    .filter(meterKey -> meterKey.deviceId().equals(deviceId))
+                    .findFirst().ifPresent(mk -> {
+                meterKeysForBp.remove(mk);
+                programmedMeters.remove(mk);
+            });
+        }
+    }
+
     private class InternalDeviceListener implements DeviceListener {
         @Override
         public void event(DeviceEvent event) {
@@ -1370,7 +1508,8 @@ public class Olt
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
 
                             if (port.isEnabled()) {
-                                processEapolFilteringObjectives(devId, port.number(), defaultBpId, true);
+                                processEapolFilteringObjectives(devId, port.number(), defaultBpId,
+                                        null, true);
                             }
                         } else {
                             checkAndCreateDeviceFlows(dev);
@@ -1381,7 +1520,8 @@ public class Olt
                             if (port.isEnabled()) {
                                 processEapolFilteringObjectives(devId, port.number(),
                                         getCurrentBandwidthProfile(new ConnectPoint(devId, port.number())),
-                                        false);
+                                        null, false);
+
                                 removeSubscriber(new ConnectPoint(devId, port.number()));
                             }
 
@@ -1395,12 +1535,14 @@ public class Olt
                         }
 
                         if (port.isEnabled()) {
-                            processEapolFilteringObjectives(devId, port.number(), defaultBpId, true);
+                            processEapolFilteringObjectives(devId, port.number(), defaultBpId,
+                                    null, true);
+
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
                         } else {
                             processEapolFilteringObjectives(devId, port.number(),
                                     getCurrentBandwidthProfile(new ConnectPoint(devId, port.number())),
-                                    false);
+                                    null, false);
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
                         break;
@@ -1465,7 +1607,8 @@ public class Olt
             if (deleteMeters && MeterEvent.Type.METER_REFERENCE_COUNT_ZERO.equals(meterEvent.type())) {
                 log.info("Zero Count Meter Event is received. Meter is {}", meterEvent.subject());
                 Meter meter = meterEvent.subject();
-                if (meter != null && appId.equals(meter.appId()) && !programmedMeters.contains(meter.id())) {
+                if (meter != null && appId.equals(meter.appId()) &&
+                        !programmedMeters.contains(MeterKey.key(meter.deviceId(), meter.id()))) {
                     deleteMeter(meter.deviceId(), meter.id());
                 }
             } else if (MeterEvent.Type.METER_REMOVED.equals(meterEvent.type())) {
@@ -1487,17 +1630,17 @@ public class Olt
 
                 meterService.withdraw(meterRequest, meterId);
             }
-
         }
 
         private void removeMeterFromBpMap(Meter meter) {
-            for (Map.Entry<String, MeterId> entry : bpInfoToMeter.entrySet()) {
-                if (entry.getValue().equals(meter.id())) {
-                    bpInfoToMeter.remove(entry.getKey());
-                    log.info("Deleted from the internal map. Profile {} and Meter {}", entry.getKey(), meter.id());
-                    break;
-                }
-            }
+            bpInfoToMeter.values().forEach(meterKeys -> meterKeys.stream()
+                    .filter(meterKey -> (meterKey.deviceId().equals(meter.deviceId()))
+                            && meterKey.meterId().equals(meter.id())).findFirst().
+                            ifPresent(mk -> {
+                                meterKeys.remove(mk);
+                                log.info("Deleted from the internal map. MeterKey {}", mk);
+                                log.info("Programmed meters {}", programmedMeters);
+                            }));
         }
     }
 }
