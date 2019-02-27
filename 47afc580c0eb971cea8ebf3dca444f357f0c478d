@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "ce24845f_419fcbd5",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2019-02-27T05:51:18Z",
+      "side": 1,
+      "message": "Yes, I had the same question about ordering issues. Will it be addressed in this or next review?",
+      "parentUuid": "370b86bb_f1f28178",
+      "revId": "47afc580c0eb971cea8ebf3dca444f357f0c478d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6f44504d_65563bf3",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 5
