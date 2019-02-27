@@ -84,6 +84,23 @@
       "revId": "47afc580c0eb971cea8ebf3dca444f357f0c478d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ab4c9d68_f73ace72",
+        "filename": "pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-02-27T04:52:54Z",
+      "side": 1,
+      "message": "Please make these 1.13.9-rc1.\nThen it will build",
+      "revId": "47afc580c0eb971cea8ebf3dca444f357f0c478d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
