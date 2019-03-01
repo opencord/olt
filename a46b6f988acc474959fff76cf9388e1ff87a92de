@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bfa4dee7_2cbe264d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-03-01T06:35:17Z",
+      "side": 1,
+      "message": "With this change we are mandating that to provision a subscriber with vlans first EAPOL filtering flows need to be successfully added. This is fine for AT\u0026T workflow but will not be the case for other workflows. If some operator (for e.g. DT) does not wish to use EAPOL then there is no way the vlans for the subscriber to be provisioned.",
+      "revId": "a46b6f988acc474959fff76cf9388e1ff87a92de",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
