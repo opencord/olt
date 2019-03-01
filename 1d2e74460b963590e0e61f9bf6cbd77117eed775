@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "15fefddb_566124a0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1255,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-03-01T13:25:41Z",
+      "side": 1,
+      "message": "Instead of \u0026\u0026 enableEapol....\n\nit should be \nif(port.isEnabled()) {\n    if(enableEapol) {\n    }\n}\nlike what has been done below, else it will install the NNiFilteringObjectives on the UNI port also",
+      "revId": "1d2e74460b963590e0e61f9bf6cbd77117eed775",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6b86bbee_a49d17a7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1506,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-03-01T13:25:41Z",
+      "side": 1,
+      "message": "We can live without this check also. In the below code there already is check for the FLOW being added to be for the EAPOL flow, so this check is redundant.",
+      "revId": "1d2e74460b963590e0e61f9bf6cbd77117eed775",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
