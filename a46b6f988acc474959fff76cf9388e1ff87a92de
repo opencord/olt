@@ -33,6 +33,24 @@
       "revId": "a46b6f988acc474959fff76cf9388e1ff87a92de",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "350d6e1c_0bcc75ee",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-02T01:45:41Z",
+      "side": 1,
+      "message": "Amit, while it is true that in this method, provisioning a subscriber did imply having to remove/re-add eapol flows, it was not necessarily a problem with this patch. \n\nThe whole app made that assumption - for example checkAndCreateDeviceFlows would have given you eapol flows whether you wanted them or not.\n\nThe problem is that -- not wanting to use eapol has never been publicly documented until TT submitted their workflow recently. But we haven\u0027t started working on the TT workflow yet -- my plan was to do something in the future, similar to what Gamze has done now. Since she has already done, all is good. Up until we find the next feature that someone needs that has not been publicly documented.\n\nI encourage you to convince DT to submit a SEBA DT workflow, even if they just want to use parts of SEBA\u0027s implementation choices.",
+      "parentUuid": "bfa4dee7_2cbe264d",
+      "revId": "a46b6f988acc474959fff76cf9388e1ff87a92de",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
