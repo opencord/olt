@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "b8f7cac4_f2d19089",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-02T01:28:18Z",
+      "side": 1,
+      "message": "By design, apps that use the FlowObjective service should not also depend on the FlowRuleService. Please follow the suggestions made by Charles and refer to the proper usage from\nhttps://github.com/opennetworkinglab/onos/blob/master/apps/segmentrouting/app/src/main/java/org/onosproject/segmentrouting/xconnect/impl/XconnectManager.java#L665",
+      "revId": "a46b6f988acc474959fff76cf9388e1ff87a92de",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bfa4dee7_2cbe264d",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
