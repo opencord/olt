@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b1a15a6b_909af603",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 539,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-02T01:28:18Z",
+      "side": 1,
+      "message": "If you must log then please give some minimal info in it -  dev \u0026 subscriber",
+      "revId": "46bedfee19784ec0a4bf3fdb110db1c25e1958b2",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1460930b_c8e08f93",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1361,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-02T01:28:18Z",
+      "side": 1,
+      "message": "Please remove this comment - it is very old",
+      "revId": "46bedfee19784ec0a4bf3fdb110db1c25e1958b2",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
