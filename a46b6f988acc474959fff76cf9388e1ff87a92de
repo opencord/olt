@@ -51,6 +51,24 @@
       "revId": "a46b6f988acc474959fff76cf9388e1ff87a92de",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d02e822a_82ea39d3",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-03-04T04:35:40Z",
+      "side": 1,
+      "message": "Agree with your comments Saurav that the app assumes that EAPOL is  always going to use. But if you look at the existing implementation the changes needed (whenever someone submits that request) to not have EAPOL would be simple. \n\nWhat I was trying to point out is that the change we are bringing in is tying EAPOL all the more and removing this coupling later on would become difficult (there definitely would be more changes on top of current Gamze\u0027s patch); so if we could structure the code knowing that this requirement would definitely come in later.",
+      "parentUuid": "350d6e1c_0bcc75ee",
+      "revId": "a46b6f988acc474959fff76cf9388e1ff87a92de",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
