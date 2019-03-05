@@ -23,10 +23,11 @@ import static org.onlab.util.Tools.groupedThreads;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,19 +78,19 @@ import org.onosproject.net.flowobjective.ForwardingObjective;
 import org.onosproject.net.flowobjective.Objective;
 import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
-import org.onosproject.store.serializers.KryoNamespaces;
-import org.onosproject.store.service.ConsistentMultimap;
-import org.onosproject.store.service.Serializer;
-import org.onosproject.store.service.StorageService;
 import org.onosproject.net.meter.Band;
 import org.onosproject.net.meter.DefaultBand;
 import org.onosproject.net.meter.DefaultMeterRequest;
 import org.onosproject.net.meter.Meter;
-import org.onosproject.net.meter.MeterService;
+import org.onosproject.net.meter.MeterEvent;
+import org.onosproject.net.meter.MeterId;
 import org.onosproject.net.meter.MeterListener;
 import org.onosproject.net.meter.MeterRequest;
-import org.onosproject.net.meter.MeterId;
-import org.onosproject.net.meter.MeterEvent;
+import org.onosproject.net.meter.MeterService;
+import org.onosproject.store.serializers.KryoNamespaces;
+import org.onosproject.store.service.ConsistentMultimap;
+import org.onosproject.store.service.Serializer;
+import org.onosproject.store.service.StorageService;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
@@ -100,8 +101,6 @@ import org.opencord.sadis.SadisService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
-
-import java.util.HashMap;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -209,9 +208,16 @@ public class Olt
         eventExecutor = newSingleThreadScheduledExecutor(groupedThreads("onos/olt", "events-%d", log));
         modified(context);
         appId = coreService.registerApplication(APP_NAME);
+
+        // ensure that flow rules are purged from flow-store upon olt-disconnection
+        // when olt reconnects, the port-numbers may change for the ONUs
+        // making flows pushed earlier invalid
+        componentConfigService
+                .preSetProperty("org.onosproject.net.flow.impl.FlowRuleManager",
+                                "purgeOnDisconnection", "true");
         componentConfigService.registerProperties(getClass());
         programmedSubs = Maps.newConcurrentMap();
-        programmedMeters = new CopyOnWriteArrayList();
+        programmedMeters = new CopyOnWriteArrayList<>();
 
         eventDispatcher.addSink(AccessDeviceEvent.class, listenerRegistry);
 
