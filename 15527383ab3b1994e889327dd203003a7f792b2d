@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "ef366517_139780fa",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-07T03:31:46Z",
+      "side": 1,
+      "message": "MeterIds are unique, no?\nConsider using a ConcurrentHashSet which will have faster removal than a CopyOnWriteArrayList when there are thousands of meters",
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca690800_2603f6d6",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 7
