@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eb2fdcbb_baeeac57",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-07T01:09:04Z",
+      "side": 1,
+      "message": "better if this is ConcurrentHashMap",
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ca690800_2603f6d6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-07T01:09:04Z",
+      "side": 1,
+      "message": "Right now the sequence is\ndeleteEapol-defaultBw\nadd eapol - sub up bw\n   -wait for add\n          - provisionVlans\nadd dhcp - sub up bw\nadd igmp - sub up bw\n\nI think the dhcp and igmp are not waiting for addEapol filterFuture, so there could be some timing issues.\n\n\nIt feels to me like it would be cleaner if you\n\ndeleteEapol-defaultBw\n   - wait for delete\n        - provisionVlans-subscriber bw up and down\n               - wait for provision\n                      -add eapol - sub up bw\n                      -add dhcp - sub up bw\n                      -add igmp - sub up bw",
+      "range": {
+        "startLine": 329,
+        "startChar": 0,
+        "endLine": 366,
+        "endChar": 9
+      },
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "120b65c9_08005d5e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 431,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-07T01:09:04Z",
+      "side": 1,
+      "message": "I don\u0027t see why you need to wait to unprovison vlans.\n\nAgain here I feel it is cleaner/better if you did the reverse\n\ndelete dhcp\ndelete igmp\nunprovision vlans\ndelete eapol\n - wait for delete\n        - add eapol default bw\n\nActually you may not even have to wait for delete of eapol, because flowobjective sub-system will ensure that delete happens before add",
+      "range": {
+        "startLine": 395,
+        "startChar": 1,
+        "endLine": 431,
+        "endChar": 9
+      },
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dfde8c1c_90c079e7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-07T01:09:04Z",
+      "side": 1,
+      "message": "This no longer needs to return MeterId",
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6eaf0814_1b60a324",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 667,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-07T01:09:04Z",
+      "side": 1,
+      "message": "This no longer needs to return MeterId",
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
