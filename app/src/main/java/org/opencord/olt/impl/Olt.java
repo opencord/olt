@@ -108,6 +108,7 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Provisions rules on access devices.
@@ -210,6 +211,7 @@ public class Olt
 
     private Map<ConnectPoint, SubscriberAndDeviceInformation> programmedSubs;
     private Set<MeterKey> programmedMeters;
+
 
     @Activate
     public void activate(ComponentContext context) {
@@ -1482,6 +1484,8 @@ public class Olt
     }
 
     private class InternalDeviceListener implements DeviceListener {
+        private Set<DeviceId> programmedDevices = Sets.newConcurrentHashSet();
+
         @Override
         public void event(DeviceEvent event) {
             eventExecutor.execute(() -> {
@@ -1494,8 +1498,14 @@ public class Olt
                 }
 
                 if (getOltInfo(dev) == null) {
-                    log.debug("No device info found, this is not an OLT");
-                    return;
+                    // it's possible that we got an event for a previously
+                    // programmed OLT that is no longer available in SADIS
+                    // we let such events go through
+                    if (!programmedDevices.contains(devId)) {
+                        log.warn("No device info found for {}, this is either "
+                                + "not an OLT or not known to sadis", dev);
+                        return;
+                    }
                 }
 
                 log.debug("OLT got {} event for {}", event.type(), event.subject());
@@ -1550,7 +1560,7 @@ public class Olt
                         post(new AccessDeviceEvent(
                                 AccessDeviceEvent.Type.DEVICE_CONNECTED, devId,
                                 null, null));
-
+                        programmedDevices.add(devId);
                         // Send UNI_ADDED events for all existing ports
                         deviceService.getPorts(devId).stream()
                                 .filter(p -> isUniPort(dev, p))
@@ -1565,7 +1575,7 @@ public class Olt
                                 .filter(p -> isUniPort(dev, p))
                                 .forEach(p -> post(new AccessDeviceEvent(
                                         AccessDeviceEvent.Type.UNI_REMOVED, devId, p)));
-
+                        programmedDevices.remove(devId);
                         post(new AccessDeviceEvent(
                                 AccessDeviceEvent.Type.DEVICE_DISCONNECTED, devId,
                                 null, null));
@@ -1575,8 +1585,10 @@ public class Olt
                             post(new AccessDeviceEvent(
                                     AccessDeviceEvent.Type.DEVICE_CONNECTED, devId,
                                     null, null));
+                        programmedDevices.add(devId);
                             checkAndCreateDeviceFlows(dev);
                         } else {
+                        programmedDevices.remove(devId);
                             post(new AccessDeviceEvent(
                                     AccessDeviceEvent.Type.DEVICE_DISCONNECTED, devId,
                                     null, null));
