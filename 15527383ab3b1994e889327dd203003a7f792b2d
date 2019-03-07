@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "182b908f_48f91ed3",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-07T15:31:58Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "eb2fdcbb_baeeac57",
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ef366517_139780fa",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 7
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "c31dbb93_3af8307d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-07T15:31:58Z",
+      "side": 1,
+      "message": "Done.\nI think Java does not include ConncurrentHashSet. So, I used ConcurrentHashMap.newKeySet()\n\nAlso, I changed the value of this set from MeterId to MeterKey to support multiple devices (OLTs).\n\nAdditionally, one bandwidth can be used by multiple olts. So, I changed the bpInfoToMeter map values from MeterId to List\u003cMeterKey\u003e.",
+      "parentUuid": "ef366517_139780fa",
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca690800_2603f6d6",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 7
@@ -47,6 +83,30 @@
       "writtenOn": "2019-03-07T01:09:04Z",
       "side": 1,
       "message": "Right now the sequence is\ndeleteEapol-defaultBw\nadd eapol - sub up bw\n   -wait for add\n          - provisionVlans\nadd dhcp - sub up bw\nadd igmp - sub up bw\n\nI think the dhcp and igmp are not waiting for addEapol filterFuture, so there could be some timing issues.\n\n\nIt feels to me like it would be cleaner if you\n\ndeleteEapol-defaultBw\n   - wait for delete\n        - provisionVlans-subscriber bw up and down\n               - wait for provision\n                      -add eapol - sub up bw\n                      -add dhcp - sub up bw\n                      -add igmp - sub up bw",
+      "range": {
+        "startLine": 329,
+        "startChar": 0,
+        "endLine": 366,
+        "endChar": 9
+      },
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "08e41935_456e86c8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-07T15:31:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ca690800_2603f6d6",
       "range": {
         "startLine": 329,
         "startChar": 0,
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "fd248844_ed94dce3",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 431,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-07T15:31:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "120b65c9_08005d5e",
+      "range": {
+        "startLine": 395,
+        "startChar": 1,
+        "endLine": 431,
+        "endChar": 9
+      },
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dfde8c1c_90c079e7",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 7
@@ -99,6 +183,24 @@
     },
     {
       "key": {
+        "uuid": "94a1f4c3_f95d423e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-07T15:31:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dfde8c1c_90c079e7",
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6eaf0814_1b60a324",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 7
@@ -110,6 +212,24 @@
       "writtenOn": "2019-03-07T01:09:04Z",
       "side": 1,
       "message": "This no longer needs to return MeterId",
+      "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fdefeb02_8f2636db",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 667,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-07T15:31:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6eaf0814_1b60a324",
       "revId": "15527383ab3b1994e889327dd203003a7f792b2d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
