@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6a4b2663_b71ebefb",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:36:36Z",
+      "side": 1,
+      "message": "I typically use Sets.newConcurrentHashSet but this is fine too\n\nguava - https://google.github.io/guava/releases/21.0/api/docs/com/google/common/collect/Sets.html",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "141cf2eb_233f8ca5",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 344,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:36:36Z",
+      "side": 1,
+      "message": "What are these (ps)?\nAnd do these need to be info logs?",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d6025d08_a8286894",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:36:36Z",
+      "side": 1,
+      "message": "Consider doing this re-install after the additional vlans below have also been removed",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a00bcf9_7a9bb72d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 545,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:36:36Z",
+      "side": 1,
+      "message": "This comment is no longer valid",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f36b3c2_da063298",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 552,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:36:36Z",
+      "side": 1,
+      "message": "Here too",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3d4c4a1a_fd1af2a3",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 624,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:36:36Z",
+      "side": 1,
+      "message": "This comment is no longer valid",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f59a9e32_91470612",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 630,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:36:36Z",
+      "side": 1,
+      "message": "Here too",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a6afa244_429d2f7e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1442,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:36:36Z",
+      "side": 1,
+      "message": "Not as part of this patch, but consider creating some CLI commands to query the current state of BP to meter mapping, for debugging purposes",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
