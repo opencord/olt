@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "96f1d3b2_eec422ab",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 344,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-08T12:11:13Z",
+      "side": 1,
+      "message": "These are my debug logs actually. Sorry for that, I will remove.",
+      "parentUuid": "141cf2eb_233f8ca5",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d6025d08_a8286894",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 8
@@ -64,6 +82,24 @@
       "writtenOn": "2019-03-08T01:36:36Z",
       "side": 1,
       "message": "Consider doing this re-install after the additional vlans below have also been removed",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "964a1603_3c4850f8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-08T12:11:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d6025d08_a8286894",
       "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -87,6 +123,24 @@
     },
     {
       "key": {
+        "uuid": "12ded82c_ba5f8fd6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 545,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-08T12:11:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a00bcf9_7a9bb72d",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2f36b3c2_da063298",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 8
@@ -98,6 +152,24 @@
       "writtenOn": "2019-03-08T01:36:36Z",
       "side": 1,
       "message": "Here too",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e57e148e_7509c62f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 552,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-08T12:11:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2f36b3c2_da063298",
       "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -121,6 +193,24 @@
     },
     {
       "key": {
+        "uuid": "93d73518_1ce506a7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 624,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-08T12:11:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d4c4a1a_fd1af2a3",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f59a9e32_91470612",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 8
@@ -138,6 +228,24 @@
     },
     {
       "key": {
+        "uuid": "a94a81fa_52282175",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 630,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-08T12:11:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f59a9e32_91470612",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a6afa244_429d2f7e",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 8
@@ -149,6 +257,24 @@
       "writtenOn": "2019-03-08T01:36:36Z",
       "side": 1,
       "message": "Not as part of this patch, but consider creating some CLI commands to query the current state of BP to meter mapping, for debugging purposes",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f3b4254_32538e1d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1442,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-03-08T12:11:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a6afa244_429d2f7e",
       "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
