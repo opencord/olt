@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "68e8acb0_30f7b7d6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:43:11Z",
+      "side": 1,
+      "message": "Gamze, please use the gerrit recommended commit message guidelines\n\nhttps://www.mediawiki.org/wiki/Gerrit/Commit_message_guidelines\n\nRight now all your patches start with \"This patch includes\". Instead the first line should be a short description of the main change \n\nFor example, for this patch it can be:\n\n\"Fixing the ordering of flow programming operations\"\n\nAlso please stay within 80 character limit per line in the subject line as well as in the body.",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6a4b2663_b71ebefb",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 8
@@ -132,6 +149,23 @@
       "writtenOn": "2019-03-08T01:36:36Z",
       "side": 1,
       "message": "Not as part of this patch, but consider creating some CLI commands to query the current state of BP to meter mapping, for debugging purposes",
+      "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3c1ac6a4_57d67e24",
+        "filename": "pom.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-08T01:43:11Z",
+      "side": 1,
+      "message": "Please change to 1.13.9-rc2",
       "revId": "f5679383fe68b11d57fc480ce35f533575c307c7",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
