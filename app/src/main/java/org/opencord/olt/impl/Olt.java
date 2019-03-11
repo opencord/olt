@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -36,6 +37,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.felix.scr.annotations.Activate;
@@ -121,6 +123,7 @@ public class Olt
     private static final String APP_NAME = "org.opencord.olt";
 
     private static final short DEFAULT_VLAN = 0;
+    private static final short EAPOL_DEFAULT_VLAN = 4091;
     private static final int DEFAULT_TP_ID = 64;
     private static final String DEFAULT_BP_ID = "Default";
     private static final String ADDITIONAL_VLANS = "additional-vlans";
@@ -224,6 +227,9 @@ public class Olt
         // making flows pushed earlier invalid
         componentConfigService
                 .preSetProperty("org.onosproject.net.flow.impl.FlowRuleManager",
+                        "purgeOnDisconnection", "true");
+        componentConfigService
+                .preSetProperty("org.onosproject.net.meter.impl.MeterManager",
                         "purgeOnDisconnection", "true");
         componentConfigService.registerProperties(getClass());
         programmedSubs = Maps.newConcurrentMap();
@@ -340,7 +346,8 @@ public class Olt
 
         //delete Eapol authentication flow with default bandwidth
         //wait until Eapol rule with defaultBpId is removed to install subscriber-based rules
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, filterFuture, false);
+        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, filterFuture,
+                VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
         removeMeterIdFromBpMapping(deviceId, defaultBpId);
 
         //install subscriber flows
@@ -405,8 +412,9 @@ public class Olt
 
         //re-install eapol
         processEapolFilteringObjectives(deviceId, subscriberPortNo,
-                subscriber.upstreamBandwidthProfile(), null, false);
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, null, true);
+                subscriber.upstreamBandwidthProfile(), null, subscriber.cTag(), false);
+        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId,
+                null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
 
         programmedSubs.remove(connectPoint);
         return true;
@@ -718,7 +726,7 @@ public class Olt
                 if (upstreamMeterId != null) {
                     //re-install Eapol authentication flow with the subscribers' upstream bandwidth profile
                     processEapolFilteringObjectives(deviceId, subscriberPort, sub.upstreamBandwidthProfile(),
-                            null, true);
+                            null, sub.cTag(), true);
 
                     processDhcpFilteringObjectives(deviceId, subscriberPort,
                             upstreamMeterId, sub.technologyProfileId(), true, true);
@@ -1050,13 +1058,18 @@ public class Olt
     }
 
     /**
-     * Returns the write metadata value including only tech profile reference.
+     * Returns the write metadata value including tech profile reference and innerVlan.
+     * For param cVlan, null can be sent
      *
+     * @param cVlan         c (customer) tag of one subscriber
      * @param techProfileId tech profile id of one subscriber
-     * @return the write metadata value including only tech profile reference
+     * @return the write metadata value including tech profile reference and innerVlan
      */
-    private Long createTechProfValueForWm(int techProfileId) {
-        return (long) techProfileId << 32;
+    private Long createTechProfValueForWm(VlanId cVlan, int techProfileId) {
+        if (cVlan == null) {
+            return (long) techProfileId << 32;
+        }
+        return ((long) (cVlan.id()) << 48 | (long) techProfileId << 32);
     }
 
     /**
@@ -1066,11 +1079,12 @@ public class Olt
      * @param portNumber   the port for which this trap flow is designated
      * @param bpId         bandwidth profile id to add the related meter to the flow
      * @param filterFuture completable future for this filtering objective operation
+     * @param vlanId       the default or customer tag for a subscriber
      * @param install      true to install the flow, false to remove the flow
      */
     private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, String bpId,
                                                  CompletableFuture<ObjectiveError> filterFuture,
-                                                 boolean install) {
+                                                 VlanId vlanId, boolean install) {
 
         if (!enableEapol) {
             log.debug("Eapol filtering is disabled.");
@@ -1107,8 +1121,9 @@ public class Olt
                 FilteringObjective eapol = (install ? builder.permit() : builder.deny())
                         .withKey(Criteria.matchInPort(portNumber))
                         .addCondition(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
+                        .addCondition(Criteria.matchVlanId(vlanId))
                         .withMeta(treatmentBuilder
-                                .writeMetadata(createTechProfValueForWm(techProfileId), 0)
+                                .writeMetadata(createTechProfValueForWm(vlanId, techProfileId), 0)
                                 .setOutput(PortNumber.CONTROLLER).build())
                         .fromApp(appId)
                         .withPriority(10000)
@@ -1258,7 +1273,7 @@ public class Olt
         }
 
         if (techProfileId != -1) {
-            treatmentBuilder.writeMetadata(createTechProfValueForWm(techProfileId), 0);
+            treatmentBuilder.writeMetadata(createTechProfValueForWm(null, techProfileId), 0);
         }
 
         FilteringObjective dhcpUpstream = (install ? builder.permit() : builder.deny())
@@ -1313,7 +1328,7 @@ public class Olt
         }
 
         if (techProfileId != -1) {
-            treatmentBuilder.writeMetadata(createTechProfValueForWm(techProfileId), 0);
+            treatmentBuilder.writeMetadata(createTechProfValueForWm(null, techProfileId), 0);
         }
 
         builder = install ? builder.permit() : builder.deny();
@@ -1363,7 +1378,8 @@ public class Olt
             // This is an OLT device as per Sadis, we create flows for UNI and NNI ports
             for (Port p : deviceService.getPorts(dev.id())) {
                 if (isUniPort(dev, p)) {
-                    processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, null, true);
+                    processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, null,
+                            VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
                 } else {
                     processNniFilteringObjectives(dev.id(), p.number(), true);
                 }
@@ -1519,7 +1535,7 @@ public class Olt
 
                             if (port.isEnabled()) {
                                 processEapolFilteringObjectives(devId, port.number(), defaultBpId,
-                                        null, true);
+                                        null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
                             }
                         } else {
                             checkAndCreateDeviceFlows(dev);
@@ -1528,10 +1544,6 @@ public class Olt
                     case PORT_REMOVED:
                         if (isUniPort(dev, port)) {
                             if (port.isEnabled()) {
-                                processEapolFilteringObjectives(devId, port.number(),
-                                        getCurrentBandwidthProfile(new ConnectPoint(devId, port.number())),
-                                        null, false);
-
                                 removeSubscriber(new ConnectPoint(devId, port.number()));
                             }
 
@@ -1544,15 +1556,20 @@ public class Olt
                             break;
                         }
 
+                        SubscriberAndDeviceInformation sub = programmedSubs
+                                .get(new ConnectPoint(devId, port.number()));
+                        VlanId vlanId = sub == null ? VlanId.vlanId(EAPOL_DEFAULT_VLAN) : sub.cTag();
+
+                        String bpId = getCurrentBandwidthProfile(new ConnectPoint(devId, port.number()));
+
                         if (port.isEnabled()) {
-                            processEapolFilteringObjectives(devId, port.number(), defaultBpId,
-                                    null, true);
+                            processEapolFilteringObjectives(devId, port.number(), bpId,
+                                    null, vlanId, true);
 
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
                         } else {
-                            processEapolFilteringObjectives(devId, port.number(),
-                                    getCurrentBandwidthProfile(new ConnectPoint(devId, port.number())),
-                                    null, false);
+                            processEapolFilteringObjectives(devId, port.number(), bpId,
+                                    null, vlanId, false);
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
                         break;
@@ -1576,6 +1593,7 @@ public class Olt
                                 .forEach(p -> post(new AccessDeviceEvent(
                                         AccessDeviceEvent.Type.UNI_REMOVED, devId, p)));
                         programmedDevices.remove(devId);
+                        removeAllSubscribers(devId);
                         post(new AccessDeviceEvent(
                                 AccessDeviceEvent.Type.DEVICE_DISCONNECTED, devId,
                                 null, null));
@@ -1585,10 +1603,11 @@ public class Olt
                             post(new AccessDeviceEvent(
                                     AccessDeviceEvent.Type.DEVICE_CONNECTED, devId,
                                     null, null));
-                        programmedDevices.add(devId);
+                            programmedDevices.add(devId);
                             checkAndCreateDeviceFlows(dev);
                         } else {
-                        programmedDevices.remove(devId);
+                            programmedDevices.remove(devId);
+                            removeAllSubscribers(devId);
                             post(new AccessDeviceEvent(
                                     AccessDeviceEvent.Type.DEVICE_DISCONNECTED, devId,
                                     null, null));
@@ -1609,6 +1628,14 @@ public class Olt
                 return sub.upstreamBandwidthProfile();
             }
             return defaultBpId;
+        }
+
+        private void removeAllSubscribers(DeviceId deviceId) {
+            List<ConnectPoint> connectPoints = programmedSubs.keySet().stream()
+                    .filter(ks -> Objects.equals(ks.deviceId(), deviceId))
+                    .collect(Collectors.toList());
+
+            connectPoints.forEach(cp -> programmedSubs.remove(cp));
         }
     }
 
@@ -1650,6 +1677,7 @@ public class Olt
                             && meterKey.meterId().equals(meter.id())).findFirst().
                             ifPresent(mk -> {
                                 meterKeys.remove(mk);
+                                programmedMeters.remove(mk);
                                 log.info("Deleted from the internal map. MeterKey {}", mk);
                                 log.info("Programmed meters {}", programmedMeters);
                             }));
