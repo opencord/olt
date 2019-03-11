@@ -225,6 +225,9 @@ public class Olt
         componentConfigService
                 .preSetProperty("org.onosproject.net.flow.impl.FlowRuleManager",
                         "purgeOnDisconnection", "true");
+        componentConfigService
+                .preSetProperty("org.onosproject.net.meter.impl.MeterManager",
+                        "purgeOnDisconnection", "true");
         componentConfigService.registerProperties(getClass());
         programmedSubs = Maps.newConcurrentMap();
         programmedMeters = ConcurrentHashMap.newKeySet();
@@ -1650,6 +1653,7 @@ public class Olt
                             && meterKey.meterId().equals(meter.id())).findFirst().
                             ifPresent(mk -> {
                                 meterKeys.remove(mk);
+                                programmedMeters.remove(mk);
                                 log.info("Deleted from the internal map. MeterKey {}", mk);
                                 log.info("Programmed meters {}", programmedMeters);
                             }));
