@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "206028e9_7f7f8fa0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1060,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-17T05:52:06Z",
+      "side": 1,
+      "message": "Can you please call the param cvlan.",
+      "revId": "bd585b2d4e109a3c74bac65466ba82f22a08855b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "37a62eea_5cdc74b6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1065,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-17T05:52:06Z",
+      "side": 1,
+      "message": "add javadoc for new param",
+      "revId": "bd585b2d4e109a3c74bac65466ba82f22a08855b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9db544f7_b572e282",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1081,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-17T05:52:06Z",
+      "side": 1,
+      "message": "add javadoc for new param",
+      "revId": "bd585b2d4e109a3c74bac65466ba82f22a08855b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "792e52ee_eb28b184",
+        "filename": "pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-17T05:52:06Z",
+      "side": 1,
+      "message": "change to rc3",
+      "revId": "bd585b2d4e109a3c74bac65466ba82f22a08855b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
