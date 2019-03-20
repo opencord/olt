@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3450ca05_5bb2e1f7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 1059,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-20T03:51:29Z",
+      "side": 1,
+      "message": "still says innerVlan on this line",
+      "revId": "785c9c281fc3154993b02d5462604e2b8f461aa3",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
