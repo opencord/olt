@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4acd9eb5_09da315a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1633,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-03-21T21:50:07Z",
+      "side": 1,
+      "message": "This is just cleaning up state in the programmedSubs map -- right?\nIt\u0027s not actually removing the previously programmed flows, which is done by the purgeOnDisconnect.\n\nSo can we name this method better, like clean up subscriber state or something like that",
+      "revId": "da282b4c127ee33bb09fd1edc13c9832fd496e1c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
