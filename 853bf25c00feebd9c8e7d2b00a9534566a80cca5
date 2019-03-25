@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "26427cb4_46bc3e0f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1570,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2019-03-25T12:36:28Z",
+      "side": 1,
+      "message": "Should the event generated be UNI_UPDATED here (if there is such an event). Who listens for these events?",
+      "revId": "853bf25c00feebd9c8e7d2b00a9534566a80cca5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
