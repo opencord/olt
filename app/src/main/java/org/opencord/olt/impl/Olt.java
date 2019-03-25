@@ -1543,10 +1543,7 @@ public class Olt
                         break;
                     case PORT_REMOVED:
                         if (isUniPort(dev, port)) {
-                            if (port.isEnabled()) {
-                                removeSubscriber(new ConnectPoint(devId, port.number()));
-                            }
-
+                            removeSubscriber(new ConnectPoint(devId, port.number()));
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
 
