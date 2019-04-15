@@ -52,6 +52,24 @@
       "revId": "853bf25c00feebd9c8e7d2b00a9534566a80cca5",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c64e20c1_8a63e028",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1570,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-04-15T23:55:38Z",
+      "side": 1,
+      "message": "To NEM right now there isn\u0027t a big difference between a UNI being disabled and a UNI being completely removed. Similarly there isn\u0027t much difference between a UNI being added vs a UNI being enabled. It\u0027s ok for now. In the future, if it is necessary to distinguish between the events, we can add more Event Types",
+      "parentUuid": "c31bfa33_6b0ba239",
+      "revId": "853bf25c00feebd9c8e7d2b00a9534566a80cca5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
