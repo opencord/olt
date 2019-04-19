@@ -422,6 +422,9 @@ public class Olt
 
     @Override
     public boolean provisionSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag) {
+
+        log.info("Provisioning subscriber using subscriberId {}, sTag {}, cTag {}", subscriberId, sTag, cTag);
+
         // Check if we can find the connect point to which this subscriber is connected
         ConnectPoint subsPort = findSubscriberConnectPoint(subscriberId.toString());
         if (subsPort == null) {
@@ -438,8 +441,21 @@ public class Olt
                 return false;
             }
 
-            provisionTransparentFlows(subsPort.deviceId(), uplinkPort.number(), subsPort.port(),
-                    cTag.get(), sTag.get());
+            CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
+
+            //delete Eapol authentication flow with default bandwidth
+            //wait until Eapol rule with defaultBpId is removed to install subscriber-based rules
+            processEapolFilteringObjectives(subsPort.deviceId(), subsPort.port(), defaultBpId, filterFuture,
+                    VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
+            removeMeterIdFromBpMapping(subsPort.deviceId(), defaultBpId);
+
+            //install subscriber flows
+            filterFuture.thenAcceptAsync(filterStatus -> {
+                if (filterStatus == null) {
+                    provisionTransparentFlows(subsPort.deviceId(), uplinkPort.number(), subsPort.port(),
+                            cTag.get(), sTag.get());
+                }
+            });
             return true;
         } else {
             log.warn("Provisioning failed for subscriber: {}", subscriberId);
@@ -468,6 +484,9 @@ public class Olt
 
             unprovisionTransparentFlows(subsPort.deviceId(), uplinkPort.number(), subsPort.port(),
                     cTag.get(), sTag.get());
+
+            programmedSubs.remove(subsPort);
+
             return true;
         } else {
             log.warn("Removing subscriber failed for: {}", subscriberId);
@@ -895,53 +914,91 @@ public class Olt
                                            VlanId innerVlan,
                                            VlanId outerVlan) {
 
-        CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
-        CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
-
-        ForwardingObjective.Builder upFwd = transparentUpBuilder(uplinkPort, subscriberPort,
-                innerVlan, outerVlan);
-
-
-        ForwardingObjective.Builder downFwd = transparentDownBuilder(uplinkPort, subscriberPort,
-                innerVlan, outerVlan);
-
         ConnectPoint cp = new ConnectPoint(deviceId, subscriberPort);
 
+        SubscriberAndDeviceInformation subInfo = getSubscriber(cp);
+
+        BandwidthProfileInformation upstreamBpInfo = getBandwidthProfileInformation(
+                subInfo.upstreamBandwidthProfile());
+        BandwidthProfileInformation downstreamBpInfo = getBandwidthProfileInformation(
+                subInfo.downstreamBandwidthProfile());
+
+        CompletableFuture<Object> upstreamMeterFuture = new CompletableFuture<>();
+        CompletableFuture<Object> downsteamMeterFuture = new CompletableFuture<>();
+        CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
+        CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
+
+        MeterId upstreamMeterId = createMeter(deviceId, upstreamBpInfo, upstreamMeterFuture);
+        MeterId downstreamMeterId = createMeter(deviceId, downstreamBpInfo, downsteamMeterFuture);
+
+        upstreamMeterFuture.thenAcceptAsync(result -> {
+            if (result == null) {
+                log.info("Upstream Meter {} is sent to the device {}. " +
+                        "Sending subscriber flows.", upstreamMeterId, deviceId);
+
+                ForwardingObjective.Builder upFwd = transparentUpBuilder(uplinkPort, subscriberPort,
+                        innerVlan, outerVlan, upstreamMeterId, subInfo);
+
+                flowObjectiveService.forward(deviceId, upFwd.add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        upFuture.complete(null);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        upFuture.complete(error);
+                    }
+                }));
+
+            } else {
+                log.warn("Meter installation error while sending upstream flows. " +
+                        "Result {} and MeterId {}", result, upstreamMeterId);
+            }
+        });
+
+        downsteamMeterFuture.thenAcceptAsync(result -> {
+            if (result == null) {
+                log.info("Downstream Meter {} is sent to the device {}. " +
+                        "Sending subscriber flows.", downstreamMeterId, deviceId);
+
+                ForwardingObjective.Builder downFwd = transparentDownBuilder(uplinkPort, subscriberPort,
+                        innerVlan, outerVlan, downstreamMeterId, subInfo);
+
+                flowObjectiveService.forward(deviceId, downFwd.add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        downFuture.complete(null);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        downFuture.complete(error);
+                    }
+                }));
+            } else {
+                log.warn("Meter installation error while sending upstream flows. " +
+                        "Result {} and MeterId {}", result, downstreamMeterId);
+            }
+        });
+
         additionalVlans.put(cp, new AbstractMap.SimpleEntry(outerVlan, innerVlan));
-
-        flowObjectiveService.forward(deviceId, upFwd.add(new ObjectiveContext() {
-            @Override
-            public void onSuccess(Objective objective) {
-                upFuture.complete(null);
-            }
-
-            @Override
-            public void onError(Objective objective, ObjectiveError error) {
-                upFuture.complete(error);
-            }
-        }));
-
-        flowObjectiveService.forward(deviceId, downFwd.add(new ObjectiveContext() {
-            @Override
-            public void onSuccess(Objective objective) {
-                downFuture.complete(null);
-            }
-
-            @Override
-            public void onError(Objective objective, ObjectiveError error) {
-                downFuture.complete(error);
-            }
-        }));
 
         upFuture.thenAcceptBothAsync(downFuture, (upStatus, downStatus) -> {
             if (downStatus != null) {
                 log.error("Flow with innervlan {} and outerVlan {} on device {} " +
                                 "on port {} failed downstream installation: {}",
-                        innerVlan, outerVlan, deviceId, subscriberPort, downStatus);
+                        innerVlan, outerVlan, deviceId, cp, downStatus);
             } else if (upStatus != null) {
                 log.error("Flow with innerVlan {} and outerVlan {} on device {} " +
                                 "on port {} failed upstream installation: {}",
-                        innerVlan, outerVlan, deviceId, subscriberPort, upStatus);
+                        innerVlan, outerVlan, deviceId, cp, upStatus);
+            } else {
+                processEapolFilteringObjectives(deviceId, subscriberPort, subInfo.upstreamBandwidthProfile(),
+                        null, subInfo.cTag(), true);
+
+                // cache subscriber info
+                programmedSubs.put(cp, subInfo);
             }
         }, oltInstallers);
 
@@ -950,15 +1007,23 @@ public class Olt
     private ForwardingObjective.Builder transparentDownBuilder(PortNumber uplinkPort,
                                                                PortNumber subscriberPort,
                                                                VlanId innerVlan,
-                                                               VlanId outerVlan) {
+                                                               VlanId outerVlan,
+                                                               MeterId downstreamMeterId,
+                                                               SubscriberAndDeviceInformation subInfo) {
         TrafficSelector downstream = DefaultTrafficSelector.builder()
                 .matchVlanId(outerVlan)
                 .matchInPort(uplinkPort)
                 .matchInnerVlanId(innerVlan)
                 .build();
 
-        TrafficTreatment downstreamTreatment = DefaultTrafficTreatment.builder()
+        TrafficTreatment.Builder tBuilder = DefaultTrafficTreatment.builder();
+        if (downstreamMeterId != null) {
+            tBuilder.meter(downstreamMeterId);
+        }
+
+        TrafficTreatment downstreamTreatment = tBuilder
                 .setOutput(subscriberPort)
+                .writeMetadata(createMetadata(subInfo.cTag(), subInfo.technologyProfileId(), subscriberPort), 0)
                 .build();
 
         return DefaultForwardingObjective.builder()
@@ -973,15 +1038,24 @@ public class Olt
     private ForwardingObjective.Builder transparentUpBuilder(PortNumber uplinkPort,
                                                              PortNumber subscriberPort,
                                                              VlanId innerVlan,
-                                                             VlanId outerVlan) {
+                                                             VlanId outerVlan,
+                                                             MeterId upstreamMeterId,
+                                                             SubscriberAndDeviceInformation subInfo) {
+
         TrafficSelector upstream = DefaultTrafficSelector.builder()
                 .matchVlanId(outerVlan)
                 .matchInPort(subscriberPort)
                 .matchInnerVlanId(innerVlan)
                 .build();
 
-        TrafficTreatment upstreamTreatment = DefaultTrafficTreatment.builder()
+        TrafficTreatment.Builder tBuilder = DefaultTrafficTreatment.builder();
+        if (upstreamMeterId != null) {
+            tBuilder.meter(upstreamMeterId);
+        }
+
+        TrafficTreatment upstreamTreatment = tBuilder
                 .setOutput(uplinkPort)
+                .writeMetadata(createMetadata(subInfo.sTag(), subInfo.technologyProfileId(), uplinkPort), 0)
                 .build();
 
         return DefaultForwardingObjective.builder()
@@ -999,16 +1073,24 @@ public class Olt
 
         ConnectPoint cp = new ConnectPoint(deviceId, subscriberPort);
 
+        SubscriberAndDeviceInformation subInfo = programmedSubs.get(cp);
+        if (subInfo == null) {
+            log.warn("Subscriber is not programmed before for the connectPoint {}", cp);
+            return;
+        }
+
         additionalVlans.remove(cp, new AbstractMap.SimpleEntry(outerVlan, innerVlan));
 
         CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
         CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
 
-        ForwardingObjective.Builder upFwd = transparentUpBuilder(uplink, subscriberPort,
-                innerVlan, outerVlan);
-        ForwardingObjective.Builder downFwd = transparentDownBuilder(uplink, subscriberPort,
-                innerVlan, outerVlan);
+        MeterId upstreamMeterId = getMeterIdFromBpMapping(deviceId, subInfo.upstreamBandwidthProfile());
+        MeterId downstreamMeterId = getMeterIdFromBpMapping(deviceId, subInfo.downstreamBandwidthProfile());
 
+        ForwardingObjective.Builder upFwd = transparentUpBuilder(uplink, subscriberPort,
+                innerVlan, outerVlan, upstreamMeterId, subInfo);
+        ForwardingObjective.Builder downFwd = transparentDownBuilder(uplink, subscriberPort,
+                innerVlan, outerVlan, downstreamMeterId, subInfo);
 
         flowObjectiveService.forward(deviceId, upFwd.remove(new ObjectiveContext() {
             @Override
@@ -1046,6 +1128,14 @@ public class Olt
             }
         }, oltInstallers);
 
+        //re-install eapol
+        processEapolFilteringObjectives(deviceId, subscriberPort,
+                subInfo.upstreamBandwidthProfile(), null, subInfo.cTag(), false);
+        processEapolFilteringObjectives(deviceId, subscriberPort, defaultBpId,
+                null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
+
+        programmedMeters.remove(MeterKey.key(deviceId, upstreamMeterId));
+        programmedMeters.remove(MeterKey.key(deviceId, downstreamMeterId));
     }
 
     private int getDefaultTechProfileId(DeviceId devId, PortNumber portNumber) {
@@ -1311,7 +1401,7 @@ public class Olt
                                                 int techProfileId,
                                                 boolean install) {
 
-        if (enableIgmpOnProvisioning) {
+        if (!enableIgmpOnProvisioning) {
             log.debug("Igmp provisioning is disabled.");
             return;
         }
@@ -1481,7 +1571,6 @@ public class Olt
             bpInfoToMeter.put(bandwidthProfile,
                     new ArrayList<>(Arrays.asList(MeterKey.key(deviceId, meterId))));
         } else {
-
             List<MeterKey> meterKeyListForBp = bpInfoToMeter.get(bandwidthProfile);
             meterKeyListForBp.add(MeterKey.key(deviceId, meterId));
         }
