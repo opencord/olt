@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2cd8955c_6daaa86b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1404,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2019-04-24T07:05:28Z",
+      "side": 1,
+      "message": "Needs to be negated.",
+      "revId": "d06668e181b287b3886de1b0cdbe1900b51441e9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
