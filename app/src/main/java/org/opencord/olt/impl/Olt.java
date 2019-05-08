@@ -413,8 +413,12 @@ public class Olt
         //re-install eapol
         processEapolFilteringObjectives(deviceId, subscriberPortNo,
                 subscriber.upstreamBandwidthProfile(), null, subscriber.cTag(), false);
-        processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId,
-                null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
+
+        Port port = deviceService.getPort(deviceId, subscriberPortNo);
+        if (port != null && port.isEnabled()) {
+            processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId,
+                    null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
+        }
 
         programmedSubs.remove(connectPoint);
         return true;
@@ -1140,9 +1144,11 @@ public class Olt
 
     private int getDefaultTechProfileId(DeviceId devId, PortNumber portNumber) {
         Port port = deviceService.getPort(devId, portNumber);
-        SubscriberAndDeviceInformation info = subsService.get(port.annotations().value(AnnotationKeys.PORT_NAME));
-        if (info != null && info.technologyProfileId() != -1) {
-            return info.technologyProfileId();
+        if (port != null) {
+            SubscriberAndDeviceInformation info = subsService.get(port.annotations().value(AnnotationKeys.PORT_NAME));
+            if (info != null && info.technologyProfileId() != -1) {
+                return info.technologyProfileId();
+            }
         }
         return defaultTechProfileId;
     }
@@ -1633,6 +1639,9 @@ public class Olt
                     case PORT_REMOVED:
                         if (isUniPort(dev, port)) {
                             removeSubscriber(new ConnectPoint(devId, port.number()));
+                            processEapolFilteringObjectives(devId, port.number(), defaultBpId,
+                                    null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
+
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
 
