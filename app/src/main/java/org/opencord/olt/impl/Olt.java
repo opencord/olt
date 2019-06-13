@@ -328,6 +328,15 @@ public class Olt
 
         checkNotNull(deviceService.getPort(deviceId, subscriberPortNo),
                 "Invalid connect point");
+
+        // If the subscriber is modified then first remove the previous and proceed
+        SubscriberAndDeviceInformation subscriber = programmedSubs.get(connectPoint);
+        if (subscriber != null) {
+            log.info("Subscriber on connectionPoint {} was previously programmed, " +
+                    "remove it before adding again", connectPoint);
+            removeSubscriber(connectPoint);
+        }
+
         // Find the subscriber on this connect point
         SubscriberAndDeviceInformation sub = getSubscriber(connectPoint);
         if (sub == null) {
