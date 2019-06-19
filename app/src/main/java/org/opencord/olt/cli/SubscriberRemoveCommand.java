@@ -28,7 +28,7 @@ import org.opencord.olt.AccessDeviceService;
  * Adds a subscriber to an access device.
  */
 @Command(scope = "onos", name = "volt-remove-subscriber-access",
-        description = "Adds a subscriber to an access device")
+        description = "Removes a subscriber to an access device")
 public class SubscriberRemoveCommand extends AbstractShellCommand {
 
     @Argument(index = 0, name = "deviceId", description = "Access device ID",
