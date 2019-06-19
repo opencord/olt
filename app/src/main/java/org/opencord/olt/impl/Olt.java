@@ -23,8 +23,8 @@ import static org.onlab.util.Tools.groupedThreads;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.List;
@@ -39,7 +39,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableSet;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -81,22 +80,22 @@ import org.onosproject.net.flowobjective.ForwardingObjective;
 import org.onosproject.net.flowobjective.Objective;
 import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
-import org.onosproject.store.serializers.KryoNamespaces;
-import org.onosproject.store.service.ConsistentMultimap;
-import org.onosproject.store.service.Serializer;
-import org.onosproject.store.service.StorageService;
 import org.onosproject.net.meter.Band;
 import org.onosproject.net.meter.DefaultBand;
 import org.onosproject.net.meter.DefaultMeterRequest;
 import org.onosproject.net.meter.Meter;
 import org.onosproject.net.meter.MeterContext;
+import org.onosproject.net.meter.MeterEvent;
 import org.onosproject.net.meter.MeterFailReason;
+import org.onosproject.net.meter.MeterId;
 import org.onosproject.net.meter.MeterKey;
-import org.onosproject.net.meter.MeterService;
 import org.onosproject.net.meter.MeterListener;
 import org.onosproject.net.meter.MeterRequest;
-import org.onosproject.net.meter.MeterId;
-import org.onosproject.net.meter.MeterEvent;
+import org.onosproject.net.meter.MeterService;
+import org.onosproject.store.serializers.KryoNamespaces;
+import org.onosproject.store.service.ConsistentMultimap;
+import org.onosproject.store.service.Serializer;
+import org.onosproject.store.service.StorageService;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
@@ -109,6 +108,7 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -322,7 +322,7 @@ public class Olt
 
     @Override
     public boolean provisionSubscriber(ConnectPoint connectPoint) {
-
+        log.info("Call to provision subscriber at {}", connectPoint);
         DeviceId deviceId = connectPoint.deviceId();
         PortNumber subscriberPortNo = connectPoint.port();
 
@@ -342,10 +342,19 @@ public class Olt
             return false;
         }
 
-        CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
+        SubscriberAndDeviceInformation prgSub = programmedSubs.get(connectPoint);
+        if (prgSub != null) {
+            log.warn("Subscriber {} on connectionPoint {} was previously programmed .. "
+                    + "taking no action. Note that updating a subscribers params "
+                    + "(vlans, bw, tpid etc) requires removing the subscriber"
+                    + "before re-provisioning the subscriber", prgSub.id(),
+                     connectPoint);
+            return true;
+        }
 
         //delete Eapol authentication flow with default bandwidth
         //wait until Eapol rule with defaultBpId is removed to install subscriber-based rules
+        CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
         processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, filterFuture,
                 VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
         removeMeterIdFromBpMapping(deviceId, defaultBpId);
@@ -364,9 +373,10 @@ public class Olt
 
     @Override
     public boolean removeSubscriber(ConnectPoint connectPoint) {
-        // Get the subscriber connected to this port from the local cache
-        // as if we don't know about the subscriber there's no need to remove it
+        log.info("Call to un-provision subscriber at {}", connectPoint);
 
+        // Get the subscriber connected to this port from the local cache
+        // If we don't know about the subscriber there's no need to remove it
         DeviceId deviceId = connectPoint.deviceId();
         PortNumber subscriberPortNo = connectPoint.port();
 
@@ -387,11 +397,11 @@ public class Olt
         //delete dhcp & igmp trap flows
         MeterId upstreamMeterId = getMeterIdFromBpMapping(deviceId, subscriber.upstreamBandwidthProfile());
 
-        //process dhcp filtering
+        // remove dhcp filters
         processDhcpFilteringObjectives(deviceId, subscriberPortNo,
                 upstreamMeterId, subscriber.technologyProfileId(), false, true);
 
-        //process igmp filtering
+        // remove igmp filters
         processIgmpFilteringObjectives(deviceId, subscriberPortNo,
                 upstreamMeterId, subscriber.technologyProfileId(), false);
 
@@ -410,7 +420,7 @@ public class Olt
             additionalVlans.remove(connectPoint, vlans);
         }
 
-        //re-install eapol
+        // re-install eapol with default bandwidth profile
         processEapolFilteringObjectives(deviceId, subscriberPortNo,
                 subscriber.upstreamBandwidthProfile(), null, subscriber.cTag(), false);
 
@@ -418,6 +428,9 @@ public class Olt
         if (port != null && port.isEnabled()) {
             processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId,
                     null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
+        } else {
+            log.debug("Port {} is no longer enabled or it's unavailable. Not "
+                    + "reprogramming default eapol flow", connectPoint);
         }
 
         programmedSubs.remove(connectPoint);
@@ -593,8 +606,8 @@ public class Olt
     private void unprovisionVlans(DeviceId deviceId, PortNumber uplink,
                                   PortNumber subscriberPort, SubscriberAndDeviceInformation subscriber,
                                   Optional<VlanId> defaultVlan) {
-
-        log.info("Unprovisioning vlans...");
+        log.info("Unprovisioning vlans for subscriber {} on dev/port: {}/{}",
+                 subscriber, deviceId, subscriberPort);
 
         CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
         CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
@@ -666,10 +679,12 @@ public class Olt
      * @param defaultVlan default vlan of the subscriber
      * @param sub         subscriber information that includes s, c tags, tech profile and bandwidth profile references
      */
-    private void provisionSubscriberBasedFlows(ConnectPoint port, PortNumber uplinkPort, Optional<VlanId> defaultVlan,
+    private void provisionSubscriberBasedFlows(ConnectPoint port, PortNumber uplinkPort,
+                                               Optional<VlanId> defaultVlan,
                                                SubscriberAndDeviceInformation sub) {
 
-        log.info("Provisioning vlans...");
+        log.info("Provisioning vlans for subscriber {} on dev/port: {}",
+                 sub, port);
 
         DeviceId deviceId = port.deviceId();
         PortNumber subscriberPort = port.port();
@@ -691,7 +706,7 @@ public class Olt
         //install upstream flows
         upstreamMeterFuture.thenAcceptAsync(result -> {
             if (result == null) {
-                log.info("Upstream Meter {} is sent to the device {}. " +
+                log.info("Upstream Meter {} is in the device {}. " +
                         "Sending subscriber flows.", upstreamMeterId, deviceId);
                 ForwardingObjective.Builder upFwd = upBuilder(uplinkPort, subscriberPort,
                         subscriberVlan, deviceVlan,
@@ -718,7 +733,7 @@ public class Olt
         //install downstream flows
         downsteamMeterFuture.thenAcceptAsync(result -> {
             if (result == null) {
-                log.info("Downstream Meter {} is sent to the device {}. " +
+                log.info("Downstream Meter {} is in the device {}. " +
                         "Sending subscriber flows.", downstreamMeterId, deviceId);
                 ForwardingObjective.Builder downFwd = downBuilder(uplinkPort, subscriberPort,
                         subscriberVlan, deviceVlan,
@@ -778,13 +793,14 @@ public class Olt
     private MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
                                 CompletableFuture<Object> meterFuture) {
         if (bpInfo == null) {
-            log.warn("Bandwidth profile information is not found");
+            log.warn("Bandwidth profile information cannot be null when creating meter");
             return null;
         }
 
         MeterId meterId = getMeterIdFromBpMapping(deviceId, bpInfo.id());
         if (meterId != null) {
-            log.info("Meter is already added. MeterId {}", meterId);
+            log.debug("Meter {} was previously created for bp {}", meterId,
+                     bpInfo.id());
             meterFuture.complete(null);
             return meterId;
         }
@@ -797,7 +813,7 @@ public class Olt
                 .withContext(new MeterContext() {
                     @Override
                     public void onSuccess(MeterRequest op) {
-                        log.debug("meter addition completed");
+                        log.debug("meter addition confirmed for bpInfo:{}", bpInfo);
                         meterFuture.complete(null);
                     }
 
@@ -813,9 +829,8 @@ public class Olt
 
         Meter meter = meterService.submit(meterRequest);
         addMeterIdToBpMapping(deviceId, meter.id(), bpInfo.id());
-        log.info("Meter is created. Meter Id {}", meter.id());
+        log.info("Meter creation message sent for Meter Id {}", meter.id());
         programmedMeters.add(MeterKey.key(deviceId, meter.id()));
-        log.debug("programmed Meters size {}", programmedMeters.size());
         return meter.id();
     }
 
@@ -1496,7 +1511,7 @@ public class Olt
     private Port getUplinkPort(Device dev) {
         // check if this device is provisioned in Sadis
         SubscriberAndDeviceInformation deviceInfo = getOltInfo(dev);
-        log.debug("getUplinkPort: deviceInfo {}", deviceInfo);
+        log.trace("getUplinkPort: deviceInfo {}", deviceInfo);
         if (deviceInfo == null) {
             log.warn("Device {} is not configured in SADIS .. cannot fetch device"
                     + " info", dev.id());
@@ -1505,12 +1520,12 @@ public class Olt
         // Return the port that has been configured as the uplink port of this OLT in Sadis
         for (Port p : deviceService.getPorts(dev.id())) {
             if (p.number().toLong() == deviceInfo.uplinkPort()) {
-                log.debug("getUplinkPort: Found port {}", p);
+                log.trace("getUplinkPort: Found port {}", p);
                 return p;
             }
         }
 
-        log.debug("getUplinkPort: " + NO_UPLINK_PORT, dev.id());
+        log.warn("getUplinkPort: " + NO_UPLINK_PORT, dev.id());
         return null;
     }
 
@@ -1558,9 +1573,9 @@ public class Olt
     }
 
     private MeterId getMeterIdFromBpMapping(DeviceId deviceId, String bandwidthProfile) {
-
         if (bpInfoToMeter.get(bandwidthProfile) == null) {
-            log.warn("Bandwidth Profile '{}' is not found in bandwidth profile map.", bandwidthProfile);
+            log.warn("Bandwidth Profile '{}' is not currently mapped to a meter",
+                      bandwidthProfile);
             return null;
         }
 
@@ -1568,7 +1583,15 @@ public class Olt
                 .stream()
                 .filter(meterKey -> meterKey.deviceId().equals(deviceId))
                 .findFirst();
-        return meterKeyForDevice.isPresent() ? meterKeyForDevice.get().meterId() : null;
+        if (meterKeyForDevice.isPresent()) {
+            log.debug("Found meter {} for bandwidth profile {}",
+                      meterKeyForDevice.get().meterId(), bandwidthProfile);
+            return meterKeyForDevice.get().meterId();
+        } else {
+            log.warn("Bandwidth profile '{}' is not currently mapped to a meter",
+                     bandwidthProfile);
+            return null;
+        }
     }
 
     private void addMeterIdToBpMapping(DeviceId deviceId, MeterId meterId, String bandwidthProfile) {
@@ -1619,7 +1642,8 @@ public class Olt
                     }
                 }
 
-                log.debug("OLT got {} event for {}", event.type(), event.subject());
+                log.debug("OLT got {} event for {}: {}", event.type(),
+                          event.subject().id(), event);
 
                 switch (event.type()) {
                     //TODO: Port handling and bookkeeping should be improved once
@@ -1627,7 +1651,6 @@ public class Olt
                     case PORT_ADDED:
                         if (isUniPort(dev, port)) {
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
-
                             if (port.isEnabled()) {
                                 processEapolFilteringObjectives(devId, port.number(), defaultBpId,
                                         null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
@@ -1739,14 +1762,17 @@ public class Olt
         @Override
         public void event(MeterEvent meterEvent) {
             if (deleteMeters && MeterEvent.Type.METER_REFERENCE_COUNT_ZERO.equals(meterEvent.type())) {
-                log.info("Zero Count Meter Event is received. Meter is {}", meterEvent.subject());
+                log.debug("Zero Count Meter {} received", meterEvent.subject());
                 Meter meter = meterEvent.subject();
                 if (meter != null && appId.equals(meter.appId()) &&
                         !programmedMeters.contains(MeterKey.key(meter.deviceId(), meter.id()))) {
+                    log.info("Deleting unreferenced, no longer programmed Meter {}",
+                             meter.id());
                     deleteMeter(meter.deviceId(), meter.id());
                 }
             } else if (MeterEvent.Type.METER_REMOVED.equals(meterEvent.type())) {
-                log.info("Meter removed event is received. Meter is {}", meterEvent.subject());
+                log.debug("Meter removed event is received. Meter is {}",
+                          meterEvent.subject());
                 removeMeterFromBpMap(meterEvent.subject());
             }
         }
