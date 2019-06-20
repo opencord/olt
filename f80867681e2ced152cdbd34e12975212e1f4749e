@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "424e7f72_81d33f29",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2019-06-20T07:02:59Z",
+      "side": 1,
+      "message": "Shouldn\u0027t we be returning \u0027false\u0027 indicating to the caller that he\u0027s doing something that is not really expected?\n\nFrom an API perspective agree that \u0027true\u0027 makes sense, but am wondering how to indicate to the caller that he needs to correct things at his end.",
+      "revId": "f80867681e2ced152cdbd34e12975212e1f4749e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
