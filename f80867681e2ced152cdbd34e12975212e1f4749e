@@ -16,6 +16,52 @@
       "revId": "f80867681e2ced152cdbd34e12975212e1f4749e",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "870a1845_c52a23c6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 610,
+      "author": {
+        "id": 1000010
+      },
+      "writtenOn": "2019-06-21T22:17:21Z",
+      "side": 1,
+      "message": "subscriber",
+      "range": {
+        "startLine": 610,
+        "startChar": 43,
+        "endLine": 610,
+        "endChar": 52
+      },
+      "revId": "f80867681e2ced152cdbd34e12975212e1f4749e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3033057b_0a867fb4",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 1000010
+      },
+      "writtenOn": "2019-06-21T22:17:21Z",
+      "side": 1,
+      "message": "subscriber",
+      "range": {
+        "startLine": 687,
+        "startChar": 41,
+        "endLine": 687,
+        "endChar": 50
+      },
+      "revId": "f80867681e2ced152cdbd34e12975212e1f4749e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
