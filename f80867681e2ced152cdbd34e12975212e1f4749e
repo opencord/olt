@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "95d9751b_b84069a9",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-06-24T17:55:40Z",
+      "side": 1,
+      "message": "Amit I was going for the rest api idempotency, which XOS assumes. I don\u0027t have a better way to do what you are asking until we have an \u0027update\u0027 rest api call, instead of just add and remove. We held back on the update call because internally it requires a delete and re-add with new params, but as you know the delete has issues in BAL 2.6",
+      "parentUuid": "424e7f72_81d33f29",
+      "revId": "f80867681e2ced152cdbd34e12975212e1f4749e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "870a1845_c52a23c6",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
