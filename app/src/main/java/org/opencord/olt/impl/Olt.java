@@ -366,7 +366,12 @@ public class Olt
         CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
         processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, filterFuture,
                 VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
-        removeMeterIdFromBpMapping(deviceId, defaultBpId);
+        // do not remove meter from bpInfoToMeter mapping as flows for other ONUs
+        // could still be using it - this also prevents duplicate meters from being
+        // created for the same bandwidth profile
+        // we still need to remove from programmedMeters so the meter can be
+        // deleted if its reference count drops to zero
+        removeMeterIdFromPrgMeters(deviceId, defaultBpId);
 
         //install subscriber flows
         filterFuture.thenAcceptAsync(filterStatus -> {
@@ -473,7 +478,12 @@ public class Olt
             //wait until Eapol rule with defaultBpId is removed to install subscriber-based rules
             processEapolFilteringObjectives(subsPort.deviceId(), subsPort.port(), defaultBpId, filterFuture,
                     VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
-            removeMeterIdFromBpMapping(subsPort.deviceId(), defaultBpId);
+            // do not remove meter from bpInfoToMeter mapping as flows for other ONUs
+            // could still be using it - this also prevents duplicate meters from being
+            // created for the same bandwidth profile
+            // we still need to remove from programmedMeters so the meter can be
+            // deleted if its reference count drops to zero
+            removeMeterIdFromPrgMeters(subsPort.deviceId(), defaultBpId);
 
             //install subscriber flows
             filterFuture.thenAcceptAsync(filterStatus -> {
@@ -1205,7 +1215,6 @@ public class Olt
     private void processEapolFilteringObjectives(DeviceId devId, PortNumber portNumber, String bpId,
                                                  CompletableFuture<ObjectiveError> filterFuture,
                                                  VlanId vlanId, boolean install) {
-
         if (!enableEapol) {
             log.debug("Eapol filtering is disabled.");
             if (filterFuture != null) {
@@ -1220,21 +1229,43 @@ public class Olt
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
         CompletableFuture<Object> meterFuture = new CompletableFuture<>();
-        MeterId meterId;
 
         BandwidthProfileInformation bpInfo = getBandwidthProfileInformation(bpId);
-        if (bpInfo != null) {
-            meterId = createMeter(devId, bpInfo, meterFuture);
-            treatmentBuilder.meter(meterId);
-        } else {
-            log.warn("Bandwidth profile {} is not found. Authentication flow will not be installed", bpId);
+        if (bpInfo == null) {
+            log.warn("Bandwidth profile {} is not found. Authentication flow"
+                    + " will not be installed", bpId);
             return;
         }
 
+        // check if meter exists and create it only for an install
+        MeterId meterId = getMeterIdFromBpMapping(devId, bpInfo.id());
+        if (meterId == null) {
+            if (install) {
+                meterId = createMeter(devId, bpInfo, meterFuture);
+                treatmentBuilder.meter(meterId);
+            } else {
+                // this case should not happen as the request to remove an eapol
+                // flow should mean that the flow points to a meter that exists.
+                // Nevertheless we can still delete the flow as we only need the
+                // correct 'match' to do so.
+                log.warn("Unknown meter id for bp {}, still proceeding with "
+                        + "delete of eapol flow for {}/{}", bpInfo.id(), devId,
+                         portNumber);
+                meterFuture.complete(null);
+            }
+        } else {
+            log.debug("Meter {} was previously created for bp {}", meterId,
+                      bpInfo.id());
+            treatmentBuilder.meter(meterId);
+            meterFuture.complete(null);
+        }
+
+        final MeterId mId = meterId;
         meterFuture.thenAcceptAsync(result -> {
             if (result == null) {
-                log.info("Meter {} for the device {} is installed. " +
-                        "{} EAPOL trap flow", meterId, devId, install ? "Installing " : "Removing ");
+                log.info("Meter {} for {} on {}/{} exists. {} EAPOL trap flow",
+                         mId, bpId, devId, portNumber,
+                        (install) ? "Installing " : "Removing ");
                 int techProfileId = getDefaultTechProfileId(devId, portNumber);
 
                 //Authentication trap flow uses only tech profile id as write metadata value
@@ -1251,7 +1282,7 @@ public class Olt
                             @Override
                             public void onSuccess(Objective objective) {
                                 log.info("Eapol filter for {} on {} {} with meter {}.",
-                                        devId, portNumber, (install) ? INSTALLED : REMOVED, meterId);
+                                        devId, portNumber, (install) ? INSTALLED : REMOVED, mId);
                                 if (filterFuture != null) {
                                     filterFuture.complete(null);
                                 }
@@ -1260,7 +1291,7 @@ public class Olt
                             @Override
                             public void onError(Objective objective, ObjectiveError error) {
                                 log.info("Eapol filter for {} on {} with meter {} failed {} because {}",
-                                        devId, portNumber, meterId, (install) ? INSTALLATION : REMOVAL,
+                                        devId, portNumber, mId, (install) ? INSTALLATION : REMOVAL,
                                         error);
                                 if (filterFuture != null) {
                                     filterFuture.complete(error);
@@ -1271,7 +1302,7 @@ public class Olt
                 flowObjectiveService.filter(devId, eapol);
             } else {
                 log.warn("Meter installation error while sending eapol trap flow. " +
-                        "Result {} and MeterId {}", result, meterId);
+                        "Result {} and MeterId {}", result, mId);
             }
         });
     }
@@ -1614,13 +1645,21 @@ public class Olt
         }
     }
 
-    private void removeMeterIdFromBpMapping(DeviceId deviceId, String bandwidthProfileId) {
+    /**
+     * Removes meter key from programmed meters. If the meter has no reference
+     * count in the data plane and is not present in the programmed-meters store
+     * it will be removed.
+     *
+     * @param deviceId device identifier
+     * @param bandwidthProfileId name of bandwidth profile
+     */
+    private void removeMeterIdFromPrgMeters(DeviceId deviceId,
+                                             String bandwidthProfileId) {
         List<MeterKey> meterKeysForBp = bpInfoToMeter.get(bandwidthProfileId);
         if (meterKeysForBp != null) {
             meterKeysForBp.stream()
                     .filter(meterKey -> meterKey.deviceId().equals(deviceId))
                     .findFirst().ifPresent(mk -> {
-                meterKeysForBp.remove(mk);
                 programmedMeters.remove(mk);
             });
         }
