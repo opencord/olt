@@ -33,7 +33,7 @@
 
     <description>OLT application API</description>
     <properties>
-        <sadis.api.version>3.0.0</sadis.api.version>
+        <sadis.api.version>3.1.0</sadis.api.version>
     </properties>
 
     <dependencies>
