@@ -16,7 +16,8 @@
 
 package org.opencord.olt.cli;
 
-import org.apache.karaf.shell.commands.Command;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.meter.MeterKey;
 import org.opencord.olt.AccessDeviceService;
@@ -24,12 +25,13 @@ import org.opencord.olt.AccessDeviceService;
 import java.util.List;
 import java.util.Map;
 
+@Service
 @Command(scope = "onos", name = "volt-bpmeter-mappings",
         description = "Shows information about bandwidthProfile-meterKey (device / meter) mappings")
 public class ShowBpMeterMappingsCommand extends AbstractShellCommand {
 
     @Override
-    protected void execute() {
+    protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
         Map<String, List<MeterKey>> bpMeterMappings = service.getBpMeterMappings();
         bpMeterMappings.forEach(this::display);
