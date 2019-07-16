@@ -16,24 +16,26 @@
 
 package org.opencord.olt.cli;
 
-import java.util.Map;
-
-import org.apache.karaf.shell.commands.Command;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.ConnectPoint;
 import org.opencord.olt.AccessDeviceService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 
+import java.util.Map;
+
 /**
  * Shows subscriber information for those subscriber which have been programmed
  * in the data-plane.
  */
+@Service
 @Command(scope = "onos", name = "volt-programmed-subscribers",
         description = "Shows subscribers programmed in the dataplane")
 public class ShowProgrammedSubscribersCommand extends AbstractShellCommand {
 
     @Override
-    protected void execute() {
+    protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
         Map<ConnectPoint, SubscriberAndDeviceInformation> info = service.getProgSubs();
         info.forEach(this::display);
