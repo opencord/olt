@@ -20,6 +20,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static org.onlab.util.Tools.get;
 import static org.onlab.util.Tools.groupedThreads;
+import static org.opencord.olt.impl.OsgiPropertyConstants.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.AbstractMap;
@@ -39,14 +40,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Modified;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.Service;
+import org.onosproject.event.EventDeliveryService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.onlab.packet.EthType;
 import org.onlab.packet.IPv4;
 import org.onlab.packet.IPv6;
@@ -115,17 +115,24 @@ import com.google.common.collect.Sets;
 /**
  * Provisions rules on access devices.
  */
-@Service
-@Component(immediate = true)
+@Component(immediate = true,
+        property = {
+                DEFAULT_VLAN + ":Integer=" + DEFAULT_VLAN_DEFAULT,
+                ENABLE_DHCP_ON_PROVISIONING + ":Boolean=" + ENABLE_DHCP_ON_PROVISIONING_DEFAULT,
+                ENABLE_DHCP_V4 + ":Boolean=" + ENABLE_DHCP_V4_DEFAULT,
+                ENABLE_DHCP_V6 + ":Boolean=" + ENABLE_DHCP_V6_DEFAULT,
+                ENABLE_IGMP_ON_PROVISIONING + ":Boolean=" + ENABLE_IGMP_ON_PROVISIONING_DEFAULT,
+                DELETE_METERS + ":Boolean=" + DELETE_METERS_DEFAULT,
+                DEFAULT_TP_ID + ":Integer=" + DEFAULT_TP_ID_DEFAULT,
+                DEFAULT_BP_ID + ":String=" + DEFAULT_BP_ID_DEFAULT,
+                ENABLE_EAPOL + ":Boolean=" + ENABLE_EAPOL_DEFAULT,
+        })
 public class Olt
         extends AbstractListenerManager<AccessDeviceEvent, AccessDeviceListener>
         implements AccessDeviceService {
     private static final String APP_NAME = "org.opencord.olt";
 
-    private static final short DEFAULT_VLAN = 0;
     private static final short EAPOL_DEFAULT_VLAN = 4091;
-    private static final int DEFAULT_TP_ID = 64;
-    private static final String DEFAULT_BP_ID = "Default";
     private static final String ADDITIONAL_VLANS = "additional-vlans";
     private static final String NO_UPLINK_PORT = "No uplink port found for OLT device {}";
     private static final String INSTALLED = "installed";
@@ -135,65 +142,77 @@ public class Olt
 
     private final Logger log = getLogger(getClass());
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected FlowObjectiveService flowObjectiveService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected MastershipService mastershipService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected DeviceService deviceService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected CoreService coreService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected ComponentConfigService componentConfigService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected SadisService sadisService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected MeterService meterService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected StorageService storageService;
 
-    @Property(name = "defaultVlan", intValue = DEFAULT_VLAN,
-            label = "Default VLAN RG<->ONU traffic")
-    private int defaultVlan = DEFAULT_VLAN;
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    protected EventDeliveryService eventDispatcher;
 
-    @Property(name = "enableDhcpOnProvisioning", boolValue = true,
-            label = "Create the DHCP Flow rules when a subscriber is provisioned")
-    protected boolean enableDhcpOnProvisioning = false;
+    /**
+     * Default VLAN RG<->ONU traffic
+     **/
+    private int defaultVlan = DEFAULT_VLAN_DEFAULT;
 
-    @Property(name = "enableDhcpV4", boolValue = true,
-            label = "Enable flows for DHCP v4")
-    protected boolean enableDhcpV4 = true;
+    /**
+     * Create the DHCP Flow rules when a subscriber is provisioned
+     **/
+    protected boolean enableDhcpOnProvisioning = ENABLE_DHCP_ON_PROVISIONING_DEFAULT;
 
-    @Property(name = "enableDhcpV6", boolValue = true,
-            label = "Enable flows for DHCP v6")
-    protected boolean enableDhcpV6 = false;
+    /**
+     * Enable flows for DHCP v4
+     **/
+    protected boolean enableDhcpV4 = ENABLE_DHCP_V4_DEFAULT;
 
-    @Property(name = "enableIgmpOnProvisioning", boolValue = false,
-            label = "Create IGMP Flow rules when a subscriber is provisioned")
-    protected boolean enableIgmpOnProvisioning = false;
+    /**
+     * Enable flows for DHCP v6
+     **/
+    protected boolean enableDhcpV6 = ENABLE_DHCP_V6_DEFAULT;
 
-    @Property(name = "deleteMeters", boolValue = true,
-            label = "Deleting Meters based on flow count statistics")
-    protected boolean deleteMeters = true;
+    /**
+     * Create IGMP Flow rules when a subscriber is provisioned
+     **/
+    protected boolean enableIgmpOnProvisioning = ENABLE_IGMP_ON_PROVISIONING_DEFAULT;
 
-    @Property(name = "defaultTechProfileId", intValue = DEFAULT_TP_ID,
-            label = "Default technology profile id that is used for authentication trap flows")
-    protected int defaultTechProfileId = DEFAULT_TP_ID;
+    /**
+     * Deleting Meters based on flow count statistics
+     **/
+    protected boolean deleteMeters = DELETE_METERS_DEFAULT;
 
-    @Property(name = "defaultBpId", value = DEFAULT_BP_ID,
-            label = "Default bandwidth profile id that is used for authentication trap flows")
-    protected String defaultBpId = DEFAULT_BP_ID;
+    /**
+     * Default technology profile id that is used for authentication trap flows
+     **/
+    protected int defaultTechProfileId = DEFAULT_TP_ID_DEFAULT;
 
-    @Property(name = "enableEapol", boolValue = true,
-            label = "Send EAPOL authentication trap flows before subscriber provisioning")
-    protected boolean enableEapol = true;
+    /**
+     * Default bandwidth profile id that is used for authentication trap flows
+     **/
+    protected String defaultBpId = DEFAULT_BP_ID_DEFAULT;
+
+    /**
+     * Send EAPOL authentication trap flows before subscriber provisioning
+     **/
+    protected boolean enableEapol = ENABLE_EAPOL_DEFAULT;
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final MeterListener meterListener = new InternalMeterListener();
@@ -274,7 +293,7 @@ public class Olt
 
         try {
             String s = get(properties, "defaultVlan");
-            defaultVlan = isNullOrEmpty(s) ? DEFAULT_VLAN : Integer.parseInt(s.trim());
+            defaultVlan = isNullOrEmpty(s) ? DEFAULT_VLAN_DEFAULT : Integer.parseInt(s.trim());
 
             Boolean o = Tools.isPropertyEnabled(properties, "enableDhcpOnProvisioning");
             if (o != null) {
@@ -305,7 +324,7 @@ public class Olt
             }
 
             String tpId = get(properties, "defaultTechProfileId");
-            defaultTechProfileId = isNullOrEmpty(s) ? DEFAULT_TP_ID : Integer.parseInt(tpId.trim());
+            defaultTechProfileId = isNullOrEmpty(s) ? DEFAULT_TP_ID_DEFAULT : Integer.parseInt(tpId.trim());
 
             String bpId = get(properties, "defaultBpId");
             defaultBpId = bpId;
@@ -316,7 +335,7 @@ public class Olt
             }
 
         } catch (Exception e) {
-            defaultVlan = DEFAULT_VLAN;
+            defaultVlan = DEFAULT_VLAN_DEFAULT;
         }
     }
 
@@ -1562,7 +1581,7 @@ public class Olt
     private Long createMetadata(VlanId innerVlan, int techProfileId, PortNumber egressPort) {
 
         if (techProfileId == -1) {
-            techProfileId = DEFAULT_TP_ID;
+            techProfileId = defaultTechProfileId;
         }
 
         return ((long) (innerVlan.id()) << 48 | (long) techProfileId << 32) | egressPort.toLong();

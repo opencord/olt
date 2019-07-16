@@ -16,7 +16,8 @@
 
 package org.opencord.olt.cli;
 
-import org.apache.karaf.shell.commands.Command;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.meter.MeterKey;
 import org.opencord.olt.AccessDeviceService;
@@ -27,12 +28,13 @@ import java.util.Set;
  * Shows information about device-meter mappings that have been programmed in the
  * data-plane.
  */
+@Service
 @Command(scope = "onos", name = "volt-programmed-meters",
         description = "Shows device-meter mappings programmed in the data-plane")
 public class ShowProgrammedMetersCommand extends AbstractShellCommand {
 
     @Override
-    protected void execute() {
+    protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
         Set<MeterKey> programmedMeters = service.getProgMeters();
         programmedMeters.forEach(this::display);
