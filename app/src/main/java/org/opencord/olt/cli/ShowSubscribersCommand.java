@@ -16,18 +16,20 @@
 
 package org.opencord.olt.cli;
 
-import java.util.Map;
-
-import org.apache.karaf.shell.commands.Command;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onlab.packet.VlanId;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.ConnectPoint;
 import org.opencord.olt.AccessDeviceService;
 
+import java.util.Map;
+
 /**
  * Shows provisioned (configured) subscribers. The data plane flows for the
  * subscribers may or may not have been programmed.
  */
+@Service
 @Command(scope = "onos", name = "volt-subscribers",
         description = "Shows pre-provisioned subscribers")
 public class ShowSubscribersCommand extends AbstractShellCommand {
@@ -35,7 +37,7 @@ public class ShowSubscribersCommand extends AbstractShellCommand {
     private static final String FORMAT = "port=%s, svlan=%s, cvlan=%s";
 
     @Override
-    protected void execute() {
+    protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
         service.getSubscribers().forEach(this::display);
     }
