@@ -16,19 +16,21 @@
 
 package org.opencord.olt.cli;
 
-import org.apache.karaf.shell.commands.Command;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.opencord.olt.AccessDeviceService;
 
 /**
  * Shows configured OLTs.
  */
+@Service
 @Command(scope = "onos", name = "volt-olts",
         description = "Shows vOLTs connected to ONOS")
 public class ShowOltCommand extends AbstractShellCommand {
 
     @Override
-    protected void execute() {
+    protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
         service.fetchOlts().forEach(did -> {
             print("OLT %s", did);
