@@ -1243,6 +1243,7 @@ public class Olt
             if (install) {
                 meterId = createMeter(devId, bpInfo, meterFuture);
                 treatmentBuilder.meter(meterId);
+                meterFuture.complete(null);
             } else {
                 // this case should not happen as the request to remove an eapol
                 // flow should mean that the flow points to a meter that exists.
