@@ -1751,6 +1751,7 @@ public class Olt
                                         AccessDeviceEvent.Type.UNI_REMOVED, devId, p)));
                         programmedDevices.remove(devId);
                         removeAllSubscribers(devId);
+                        removeDeviceMetersFromBpMap(devId);
                         post(new AccessDeviceEvent(
                                 AccessDeviceEvent.Type.DEVICE_DISCONNECTED, devId,
                                 null, null));
@@ -1765,6 +1766,7 @@ public class Olt
                         } else {
                             programmedDevices.remove(devId);
                             removeAllSubscribers(devId);
+                            removeDeviceMetersFromBpMap(devId);
                             post(new AccessDeviceEvent(
                                     AccessDeviceEvent.Type.DEVICE_DISCONNECTED, devId,
                                     null, null));
@@ -1794,6 +1796,18 @@ public class Olt
 
             connectPoints.forEach(cp -> programmedSubs.remove(cp));
         }
+
+        private void removeDeviceMetersFromBpMap(DeviceId deviceId) {
+            bpInfoToMeter.values().forEach(meterKeys -> meterKeys.stream()
+                    .filter(meterKey -> meterKey.deviceId().equals(deviceId)).findFirst().
+                            ifPresent(mk -> {
+                                meterKeys.remove(mk);
+                                programmedMeters.remove(mk);
+                                log.info("Deleted from the internal map. MeterKey {}", mk);
+                                log.info("Programmed meters {}", programmedMeters);
+                            }));
+        }
+
     }
 
     private class InternalMeterListener implements MeterListener {
