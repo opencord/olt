@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8137ae20_eeb9920c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1800,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-10-29T18:24:08Z",
+      "side": 1,
+      "message": "Since this method is the same as the removeMeterFromBpMap method inside the InternalMeterListener class, it is better to pull the latter out of the inner class and put it here. Please retain that name, because that is what it is really doing -- in other words, it is cleaning up internal state in the app, instead of actually deleting the meter from the meter store.\n\nAfter I do some of my own testing with the meter store, I may end up adding some functionality that actually cleans up the store (or not)",
+      "revId": "2366d2d5836f092044f7616730625253c41ce4ce",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
