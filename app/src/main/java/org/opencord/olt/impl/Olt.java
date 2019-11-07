@@ -1722,11 +1722,14 @@ public class Olt
                         if (port.isEnabled()) {
                             processEapolFilteringObjectives(devId, port.number(), bpId,
                                     null, vlanId, true);
+                            provisionSubscriber(new ConnectPoint(devId, port.number()));
 
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
                         } else {
                             processEapolFilteringObjectives(devId, port.number(), bpId,
                                     null, vlanId, false);
+                            removeSubscriber(new ConnectPoint(devId, port.number()));
+
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
                         break;
