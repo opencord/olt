@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "647885c6_b77a21b8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1725,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-11-08T07:48:13Z",
+      "side": 1,
+      "message": "What is the use-case here? I think when a port is re-enabled, we need to force the subscriber to authenticate again instead of provision.",
+      "revId": "a1b504ec6cde07229414b7e4596ac696e744d83b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
