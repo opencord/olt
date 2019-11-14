@@ -182,47 +182,47 @@ public class Olt
     protected StorageService storageService;
 
     /**
-     * Default VLAN RG<->ONU traffic
+     * Default VLAN RG<->ONU traffic.
      **/
     private int defaultVlan = DEFAULT_VLAN_DEFAULT;
 
     /**
-     * Create the DHCP Flow rules when a subscriber is provisioned
+     * Create the DHCP Flow rules when a subscriber is provisioned.
      **/
     protected boolean enableDhcpOnProvisioning = ENABLE_DHCP_ON_PROVISIONING_DEFAULT;
 
     /**
-     * Enable flows for DHCP v4
+     * Enable flows for DHCP v4.
      **/
     protected boolean enableDhcpV4 = ENABLE_DHCP_V4_DEFAULT;
 
     /**
-     * Enable flows for DHCP v6
+     * Enable flows for DHCP v6.
      **/
     protected boolean enableDhcpV6 = ENABLE_DHCP_V6_DEFAULT;
 
     /**
-     * Create IGMP Flow rules when a subscriber is provisioned
+     * Create IGMP Flow rules when a subscriber is provisioned.
      **/
     protected boolean enableIgmpOnProvisioning = ENABLE_IGMP_ON_PROVISIONING_DEFAULT;
 
     /**
-     * Deleting Meters based on flow count statistics
+     * Deleting Meters based on flow count statistics.
      **/
     protected boolean deleteMeters = DELETE_METERS_DEFAULT;
 
     /**
-     * Default technology profile id that is used for authentication trap flows
+     * Default technology profile id that is used for authentication trap flows.
      **/
     protected int defaultTechProfileId = DEFAULT_TP_ID_DEFAULT;
 
     /**
-     * Default bandwidth profile id that is used for authentication trap flows
+     * Default bandwidth profile id that is used for authentication trap flows.
      **/
     protected String defaultBpId = DEFAULT_BP_ID_DEFAULT;
 
     /**
-     * Send EAPOL authentication trap flows before subscriber provisioning
+     * Send EAPOL authentication trap flows before subscriber provisioning.
      **/
     protected boolean enableEapol = ENABLE_EAPOL_DEFAULT;
 
