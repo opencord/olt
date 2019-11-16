@@ -21,10 +21,11 @@ package org.opencord.olt;
  * It encapsulates the name of the logical port for the subscriber in
  * ONOS.
  * For e.g. if in ONOS you see
- * onos> ports
+ * <pre>
+ * onos&gt; ports
  * id=of:00000000c0a83264, available=true, local-status=connected 3m48s ago, role=MASTER, mfr=VOLTHA Projectd,...
  *   port=32, state=enabled, type=fiber, speed=0 , adminState=enabled, portMac=08:00:00:00:00:20, portName=TWSH80808082
- *
+ * </pre>
  * the subscriber id would encapsulate the string "TWSH80808082"
  */
 public class AccessSubscriberId {
