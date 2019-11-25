@@ -1,6 +1,6 @@
 {
-"apps" : {
-  "org.opencord.sadis" : {
+  "apps" : {
+    "org.opencord.sadis" : {
       "sadis" : {
         "integration" : {
           "cache" : {
@@ -11,12 +11,44 @@
         },
         "entries" : [ {
           "id" : "s1-eth1",
-          "cTag" : 2,
-          "sTag" : 4,
           "nasPortId" : "s1-eth1",
-          "technologyProfileId" : 10,
-          "upstreamBandwidthProfile" : "High-Speed-Internet",
-          "downstreamBandwidthProfile" : "User1-Specific"
+          "uniTagList": [
+            {
+              "uniTagMatch": 35,
+              "ponCTag":33,
+              "ponSTag":7,
+              "technologyProfileId": 2,
+              "upstreamBandwidthProfile":"High-Speed-Internet",
+              "downstreamBandwidthProfile":"Service1"
+            },
+            {
+              "uniTagMatch": 45,
+              "ponCTag":43,
+              "ponSTag":10,
+              "technologyProfileId": 3,
+              "upstreamBandwidthProfile":"VOIP",
+              "downstreamBandwidthProfile":"Service2",
+              "isDhcpRequired":"true"
+            },
+            {
+              "uniTagMatch": 55,
+              "ponCTag": 55,
+              "ponSTag": 550,
+              "technologyProfileId": 4,
+              "upstreamBandwidthProfile": "VOD",
+              "downstreamBandwidthProfile": "Service3",
+              "isDhcpRequired": "true",
+              "isIgmpRequired": "true"
+            },
+            {
+              "ponCTag": 55,
+              "ponSTag": 555,
+              "dsPonCTagPriority": 5,
+              "dsPonSTagPriority": 5,
+              "technologyProfileId": 4,
+              "serviceName": "MC"
+            }
+          ]
         }, {
           "id" : "1",
           "hardwareIdentifier" : "00:00:00:00:00:01",
@@ -24,39 +56,76 @@
           "uplinkPort": "2"
         } ]
       },
-         "bandwidthprofile":{
-            "integration":{
-               "cache":{
-                  "enabled":true,
-                  "maxsize":40,
-                  "ttl":"PT1m"
-               }
-            },
-            "entries":[
-               {
-                  "id":"High-Speed-Internet",
-                  "cir":200000000,
-                  "cbs":348000,
-                  "eir":10000000,
-                  "ebs":348000,
-                  "air":10000000
-               },
-               {
-                  "id":"User1-Specific",
-                  "cir":300000000,
-                  "cbs":348000,
-                  "eir":20000000,
-                  "ebs":348000
-               }
-            ]
-         }
+      "bandwidthprofile":{
+        "integration":{
+          "cache":{
+            "enabled":true,
+            "maxsize":40,
+            "ttl":"PT1m"
+          }
+        },
+        "entries":[
+          {
+            "id":"High-Speed-Internet",
+            "cir": 500000,
+            "cbs": 10000,
+            "eir": 500000,
+            "ebs": 10000,
+            "air": 100000
+          },
+          {
+            "id":"VOIP",
+            "cir": 500000,
+            "cbs": 10000,
+            "eir": 500000,
+            "ebs": 10000,
+            "air": 100000
+          },
+          {
+            "id":"Service1",
+            "cir": 600000,
+            "cbs": 10000,
+            "eir": 400000,
+            "ebs": 10000
+          },
+          {
+            "id":"Service2",
+            "cir": 600000,
+            "cbs": 10000,
+            "eir": 400000,
+            "ebs": 10000
+          },
+          {
+            "id":"VOD",
+            "cir": 600000,
+            "cbs": 10000,
+            "eir": 400000,
+            "ebs": 10000
+          },
+          {
+            "id":"Service3",
+            "cir": 600000,
+            "cbs": 10000,
+            "eir": 400000,
+            "ebs": 10000
+          },
+          {
+            "id":"Default",
+            "cir": 0,
+            "cbs": 0,
+            "eir": 512,
+            "ebs": 30,
+            "air": 0
+          }
+        ]
+      }
     }
   },
-   "devices":{
-      "of:0000000000000001":{
-         "basic":{
-            "driver":"pmc-olt"
-         }
+  "devices":{
+    "of:0000000000000001":{
+      "basic":{
+        "driver":"pmc-olt"
       }
-   }
+    }
+  }
 }

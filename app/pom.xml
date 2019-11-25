@@ -45,7 +45,7 @@
         <onos.app.readme>CORD OLT Access management application</onos.app.readme>
         <api.package>org.opencord.olt.rest</api.package>
         <olt.api.version>${project.version}</olt.api.version>
-        <sadis.api.version>3.1.0</sadis.api.version>
+        <sadis.api.version>3.1.1-SNAPSHOT</sadis.api.version>
     </properties>
 
     <dependencies>
@@ -97,7 +97,6 @@
             <plugin>
                 <groupId>org.onosproject</groupId>
                 <artifactId>onos-maven-plugin</artifactId>
-                <version>1.11</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
