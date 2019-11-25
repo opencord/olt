@@ -17,12 +17,13 @@
 package org.opencord.olt.cli;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.karaf.shell.commands.Command;
-import org.onlab.packet.VlanId;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.ConnectPoint;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.AdditionalVlanInfo;
 
 /**
  * Shows provisioned (configured) subscribers. The data plane flows for the
@@ -40,8 +41,9 @@ public class ShowSubscribersCommand extends AbstractShellCommand {
         service.getSubscribers().forEach(this::display);
     }
 
-    private void display(Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>> subscriber) {
-        print(FORMAT, subscriber.getKey(), subscriber.getValue().getKey(),
-                subscriber.getValue().getValue());
+    private void display(Map.Entry<ConnectPoint, Set<AdditionalVlanInfo>> subscriber) {
+        Set<AdditionalVlanInfo> vlans = subscriber.getValue();
+        vlans.forEach(vlanInfo -> print(FORMAT, subscriber.getKey(), vlanInfo.getPonCTag(),
+                vlanInfo.getPonSTag(), vlanInfo.getTpId()));
     }
 }
