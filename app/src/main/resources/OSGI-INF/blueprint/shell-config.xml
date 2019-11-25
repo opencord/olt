@@ -34,9 +34,6 @@
             <action class="org.opencord.olt.cli.ShowOltCommand"/>
         </command>
         <command>
-            <action class="org.opencord.olt.cli.ShowSubscribersCommand"/>
-        </command>
-        <command>
             <action class="org.opencord.olt.cli.ShowProgrammedSubscribersCommand"/>
         </command>
         <command>
@@ -44,6 +41,12 @@
         </command>
         <command>
             <action class="org.opencord.olt.cli.ShowBpMeterMappingsCommand"/>
+        </command>
+        <command>
+            <action class="org.opencord.olt.cli.UniTagAddCommand"/>
+        </command>
+        <command>
+            <action class="org.opencord.olt.cli.UniTagRemoveCommand"/>
         </command>
     </command-bundle>
 

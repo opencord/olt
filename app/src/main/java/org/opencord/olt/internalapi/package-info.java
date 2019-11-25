@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package org.opencord.olt.cli;
-
-import org.apache.karaf.shell.commands.Command;
-import org.onosproject.cli.AbstractShellCommand;
-import org.opencord.olt.AccessDeviceService;
-
 /**
- * Shows configured OLTs.
+ * Internal APIs for the OLT application.
  */
-@Command(scope = "onos", name = "volt-olts",
-        description = "Shows vOLTs connected to ONOS")
-public class ShowOltCommand extends AbstractShellCommand {
-
-    @Override
-    protected void execute() {
-        AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        service.fetchOlts().forEach(did -> print("OLT %s", did));
-    }
-}
+package org.opencord.olt.internalapi;
