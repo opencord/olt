@@ -18,14 +18,10 @@ package org.opencord.olt.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import org.onlab.packet.ChassisId;
-import org.onlab.packet.Ip4Address;
-import org.onlab.packet.MacAddress;
-import org.onlab.packet.VlanId;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.Annotations;
 import org.onosproject.net.ConnectPoint;
@@ -38,24 +34,15 @@ import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceServiceAdapter;
 import org.onosproject.net.provider.ProviderId;
-import org.opencord.sadis.BandwidthProfileInformation;
-import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
-import org.opencord.sadis.SadisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OltTest {
+public class OltTest extends TestBase {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private Olt olt;
 
-    private static final VlanId CLIENT_C_TAG = VlanId.vlanId((short) 999);
-    private static final VlanId CLIENT_S_TAG = VlanId.vlanId((short) 111);
-    private static final String CLIENT_NAS_PORT_ID = "PON 1/1";
-    private static final String CLIENT_CIRCUIT_ID = "CIR-PON 1/1";
 
-    private static final String OLT_DEV_ID = "of:00000000000000aa";
-    private static final DeviceId DEVICE_ID_1 = DeviceId.deviceId(OLT_DEV_ID);
     private static final String SCHEME_NAME = "olt";
     private static final DefaultAnnotations DEVICE_ANNOTATIONS = DefaultAnnotations.builder()
             .set(AnnotationKeys.PROTOCOL, SCHEME_NAME.toUpperCase()).build();
@@ -66,7 +53,6 @@ public class OltTest {
         olt.deviceService = new MockDeviceService();
         olt.sadisService = new MockSadisService();
         olt.subsService = olt.sadisService.getSubscriberInfoService();
-
     }
 
     /**
@@ -92,8 +78,6 @@ public class OltTest {
         SubscriberAndDeviceInformation s =  olt.getSubscriber(cp);
 
         assertEquals(s.circuitId(), CLIENT_CIRCUIT_ID);
-        assertEquals(s.cTag(), CLIENT_C_TAG);
-        assertEquals(s.sTag(), CLIENT_S_TAG);
         assertEquals(s.nasPortId(), CLIENT_NAS_PORT_ID);
     }
 
@@ -103,7 +87,7 @@ public class OltTest {
                           String manufacturer, String hwVersion, String swVersion,
                           String serialNumber, ChassisId chassisId, Annotations... annotations) {
             super(providerId, id, type, manufacturer, hwVersion, swVersion, serialNumber,
-                  chassisId, annotations);
+                    chassisId, annotations);
         }
     }
 
@@ -111,8 +95,8 @@ public class OltTest {
 
         private ProviderId providerId = new ProviderId("of", "foo");
         private final Device device1 = new MockDevice(providerId, DEVICE_ID_1, Device.Type.SWITCH,
-                                                      "foo.inc", "0", "0", OLT_DEV_ID, new ChassisId(),
-                                                      DEVICE_ANNOTATIONS);
+                "foo.inc", "0", "0", OLT_DEV_ID, new ChassisId(),
+                DEVICE_ANNOTATIONS);
 
         @Override
         public Device getDevice(DeviceId devId) {
@@ -170,53 +154,8 @@ public class OltTest {
         }
     }
 
-    private class MockSadisService implements SadisService {
 
 
-        @Override
-        public BaseInformationService<SubscriberAndDeviceInformation> getSubscriberInfoService() {
-            return new MockSubService();
-        }
 
-        @Override
-        public BaseInformationService<BandwidthProfileInformation> getBandwidthProfileService() {
-            return null;
-        }
-    }
-
-    private class MockSubService implements BaseInformationService<SubscriberAndDeviceInformation> {
-        MockSubscriberAndDeviceInformation sub =
-                new MockSubscriberAndDeviceInformation(CLIENT_NAS_PORT_ID, CLIENT_C_TAG,
-                                                       CLIENT_S_TAG, CLIENT_NAS_PORT_ID, CLIENT_CIRCUIT_ID, null, null);
-        @Override
-        public SubscriberAndDeviceInformation get(String id) {
-            return  sub;
-        }
-
-        @Override
-        public void invalidateAll() {}
-        @Override
-        public void invalidateId(String id) {}
-        @Override
-        public SubscriberAndDeviceInformation getfromCache(String id) {
-            return null;
-        }
-    }
-
-    private class MockSubscriberAndDeviceInformation extends SubscriberAndDeviceInformation {
-
-        MockSubscriberAndDeviceInformation(String id, VlanId ctag,
-                                           VlanId stag, String nasPortId,
-                                           String circuitId, MacAddress hardId,
-                                           Ip4Address ipAddress) {
-            this.setCTag(ctag);
-            this.setHardwareIdentifier(hardId);
-            this.setId(id);
-            this.setIPAddress(ipAddress);
-            this.setSTag(stag);
-            this.setNasPortId(nasPortId);
-            this.setCircuitId(circuitId);
-        }
-    }
 
 }
