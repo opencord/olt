@@ -24,6 +24,7 @@ import org.opencord.olt.AccessDeviceService;
 import org.opencord.olt.AccessSubscriberId;
 
 import java.util.Optional;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -32,7 +33,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 /**
  * OLT REST APIs.
@@ -46,19 +47,23 @@ public class OltWebResource extends AbstractWebResource {
      *
      * @param device device id
      * @param port port number
-     * @return 200 OK
+     * @return 200 OK or 500 Internal Server Error
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{device}/{port}")
     public Response provisionSubscriber(
-            @PathParam("device")String device,
-            @PathParam("port")long port) {
+            @PathParam("device") String device,
+            @PathParam("port") long port) {
         AccessDeviceService service = get(AccessDeviceService.class);
         DeviceId deviceId = DeviceId.deviceId(device);
         PortNumber portNumber = PortNumber.portNumber(port);
         ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
-        service.provisionSubscriber(connectPoint);
+        try {
+            service.provisionSubscriber(connectPoint);
+        } catch (Exception e) {
+            return Response.status(INTERNAL_SERVER_ERROR).build();
+        }
         return ok("").build();
     }
 
@@ -86,90 +91,102 @@ public class OltWebResource extends AbstractWebResource {
      * Provision service for a subscriber.
      *
      * @param portName Name of the port on which the subscriber is connected
-     * @return 200 OK or 404 NOT_FOUND
+     * @return 200 OK or 204 NO CONTENT
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("services/{portName}")
     public Response provisionServices(
-            @PathParam("portName")String portName) {
+            @PathParam("portName") String portName) {
         AccessDeviceService service = get(AccessDeviceService.class);
 
         Optional<VlanId> emptyVlan = Optional.empty();
-        if (service.provisionSubscriber(new AccessSubscriberId(portName), emptyVlan, emptyVlan)) {
+        Optional<Integer> emptyTpId = Optional.empty();
+        if (service.provisionSubscriber(new AccessSubscriberId(portName), emptyVlan, emptyVlan, emptyTpId)) {
             return ok("").build();
         }
-        return Response.status(NOT_FOUND).build();
+        return Response.noContent().build();
     }
 
     /**
      * Provision service with particular tags for a subscriber.
      *
      * @param portName Name of the port on which the subscriber is connected
-     * @param sTagVal additional outer tag on this port
-     * @param cTagVal additional innter tag on this port
-     * @return 200 OK or 404 NOT_FOUND
+     * @param sTagVal  additional outer tag on this port
+     * @param cTagVal  additional innter tag on this port
+     * @param tpIdVal  technology profile id
+     * @return 200 OK or 204 NO CONTENT
      */
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("services/{portName}/{sTag}/{cTag}")
+    @Path("services/{portName}/{sTag}/{cTag}/{tpId}")
     public Response provisionAdditionalVlans(
-            @PathParam("portName")String portName,
-            @PathParam("sTag")String sTagVal,
-            @PathParam("cTag")String cTagVal) {
+            @PathParam("portName") String portName,
+            @PathParam("sTag") String sTagVal,
+            @PathParam("cTag") String cTagVal,
+            @PathParam("tpId") String tpIdVal) {
         AccessDeviceService service = get(AccessDeviceService.class);
         VlanId cTag = VlanId.vlanId(cTagVal);
         VlanId sTag = VlanId.vlanId(sTagVal);
+        Integer tpId = Integer.valueOf(tpIdVal);
 
-        if (service.provisionSubscriber(new AccessSubscriberId(portName), Optional.of(sTag), Optional.of(cTag))) {
+        if (service.provisionSubscriber(new AccessSubscriberId(portName), Optional.of(sTag),
+                Optional.of(cTag), Optional.of(tpId))) {
             return ok("").build();
         }
-        return Response.status(NOT_FOUND).build();
+        return Response.noContent().build();
     }
 
     /**
      * Removes services for a subscriber.
      *
      * @param portName Name of the port on which the subscriber is connected
-     * @return 200 OK or 404 NOT_FOUND
+     * @return 200 OK or 204 NO CONTENT
      */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("services/{portName}")
     public Response deleteServices(
-            @PathParam("portName")String portName) {
+            @PathParam("portName") String portName) {
         AccessDeviceService service = get(AccessDeviceService.class);
 
         Optional<VlanId> emptyVlan = Optional.empty();
-        if (service.removeSubscriber(new AccessSubscriberId(portName), emptyVlan, emptyVlan)) {
+        Optional<Integer> emptyTpId = Optional.empty();
+        if (service.removeSubscriber(new AccessSubscriberId(portName), emptyVlan, emptyVlan, emptyTpId)) {
             return ok("").build();
         }
-        return Response.status(NOT_FOUND).build();
+        return Response.noContent().build();
     }
 
     /**
      * Removes additional vlans of a particular subscriber.
      *
      * @param portName Name of the port on which the subscriber is connected
-     * @param sTagVal additional outer tag on this port which needs to be removed
-     * @param cTagVal additional inner tag on this port which needs to be removed
-     * @return 200 OK or 404 NOT_FOUND
+     * @param sTagVal  additional outer tag on this port which needs to be removed
+     * @param cTagVal  additional inner tag on this port which needs to be removed
+     * @param tpIdVal  additional technology profile id
+     * @return 200 OK or 204 NO CONTENT
      */
     @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("services/{portName}/{sTag}/{cTag}")
+    @Path("services/{portName}/{sTag}/{cTag}/{tpId}")
     public Response removeAdditionalVlans(
-            @PathParam("portName")String portName,
-            @PathParam("sTag")String sTagVal,
-            @PathParam("cTag")String cTagVal) {
+            @PathParam("portName") String portName,
+            @PathParam("sTag") String sTagVal,
+            @PathParam("cTag") String cTagVal,
+            @PathParam("tpId") String tpIdVal) {
         AccessDeviceService service = get(AccessDeviceService.class);
         VlanId cTag = VlanId.vlanId(cTagVal);
         VlanId sTag = VlanId.vlanId(sTagVal);
+        Integer tpId = Integer.valueOf(tpIdVal);
 
-        if (service.removeSubscriber(new AccessSubscriberId(portName), Optional.of(sTag), Optional.of(cTag))) {
+        if (service.removeSubscriber(new AccessSubscriberId(portName), Optional.of(sTag),
+                Optional.of(cTag), Optional.of(tpId))) {
             return ok("").build();
         }
-        return Response.status(NOT_FOUND).build();
+        return Response.noContent().build();
     }
 
 }
