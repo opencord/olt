@@ -18,14 +18,12 @@ package org.opencord.olt.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import org.onlab.packet.ChassisId;
 import org.onlab.packet.Ip4Address;
 import org.onlab.packet.MacAddress;
-import org.onlab.packet.VlanId;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.Annotations;
 import org.onosproject.net.ConnectPoint;
@@ -49,8 +47,6 @@ public class OltTest {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private Olt olt;
 
-    private static final VlanId CLIENT_C_TAG = VlanId.vlanId((short) 999);
-    private static final VlanId CLIENT_S_TAG = VlanId.vlanId((short) 111);
     private static final String CLIENT_NAS_PORT_ID = "PON 1/1";
     private static final String CLIENT_CIRCUIT_ID = "CIR-PON 1/1";
 
@@ -66,7 +62,6 @@ public class OltTest {
         olt.deviceService = new MockDeviceService();
         olt.sadisService = new MockSadisService();
         olt.subsService = olt.sadisService.getSubscriberInfoService();
-
     }
 
     /**
@@ -92,8 +87,6 @@ public class OltTest {
         SubscriberAndDeviceInformation s =  olt.getSubscriber(cp);
 
         assertEquals(s.circuitId(), CLIENT_CIRCUIT_ID);
-        assertEquals(s.cTag(), CLIENT_C_TAG);
-        assertEquals(s.sTag(), CLIENT_S_TAG);
         assertEquals(s.nasPortId(), CLIENT_NAS_PORT_ID);
     }
 
@@ -103,7 +96,7 @@ public class OltTest {
                           String manufacturer, String hwVersion, String swVersion,
                           String serialNumber, ChassisId chassisId, Annotations... annotations) {
             super(providerId, id, type, manufacturer, hwVersion, swVersion, serialNumber,
-                  chassisId, annotations);
+                    chassisId, annotations);
         }
     }
 
@@ -111,8 +104,8 @@ public class OltTest {
 
         private ProviderId providerId = new ProviderId("of", "foo");
         private final Device device1 = new MockDevice(providerId, DEVICE_ID_1, Device.Type.SWITCH,
-                                                      "foo.inc", "0", "0", OLT_DEV_ID, new ChassisId(),
-                                                      DEVICE_ANNOTATIONS);
+                "foo.inc", "0", "0", OLT_DEV_ID, new ChassisId(),
+                DEVICE_ANNOTATIONS);
 
         @Override
         public Device getDevice(DeviceId devId) {
@@ -186,8 +179,8 @@ public class OltTest {
 
     private class MockSubService implements BaseInformationService<SubscriberAndDeviceInformation> {
         MockSubscriberAndDeviceInformation sub =
-                new MockSubscriberAndDeviceInformation(CLIENT_NAS_PORT_ID, CLIENT_C_TAG,
-                                                       CLIENT_S_TAG, CLIENT_NAS_PORT_ID, CLIENT_CIRCUIT_ID, null, null);
+                new MockSubscriberAndDeviceInformation(CLIENT_NAS_PORT_ID,
+                        CLIENT_NAS_PORT_ID, CLIENT_CIRCUIT_ID, null, null);
         @Override
         public SubscriberAndDeviceInformation get(String id) {
             return  sub;
@@ -205,15 +198,12 @@ public class OltTest {
 
     private class MockSubscriberAndDeviceInformation extends SubscriberAndDeviceInformation {
 
-        MockSubscriberAndDeviceInformation(String id, VlanId ctag,
-                                           VlanId stag, String nasPortId,
+        MockSubscriberAndDeviceInformation(String id, String nasPortId,
                                            String circuitId, MacAddress hardId,
                                            Ip4Address ipAddress) {
-            this.setCTag(ctag);
             this.setHardwareIdentifier(hardId);
             this.setId(id);
             this.setIPAddress(ipAddress);
-            this.setSTag(stag);
             this.setNasPortId(nasPortId);
             this.setCircuitId(circuitId);
         }
