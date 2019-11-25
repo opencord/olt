@@ -30,8 +30,6 @@ public class ShowOltCommand extends AbstractShellCommand {
     @Override
     protected void execute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        service.fetchOlts().forEach(did -> {
-            print("OLT %s", did);
-        });
+        service.fetchOlts().forEach(did -> print("OLT %s", did));
     }
 }
