@@ -11,12 +11,17 @@
         },
         "entries" : [ {
           "id" : "s1-eth1",
-          "cTag" : 2,
-          "sTag" : 4,
           "nasPortId" : "s1-eth1",
-          "technologyProfileId" : 10,
-          "upstreamBandwidthProfile" : "High-Speed-Internet",
-          "downstreamBandwidthProfile" : "User1-Specific"
+          "uniTagList": [
+            {
+              "uniTagMatch": 35,
+              "ponCTag":33,
+              "ponSTag":7,
+              "technologyProfileId": 2,
+              "upstreamBandwidthProfile":"High-Speed-Internet",
+              "downstreamBandwidthProfile":"Service1"
+            }
+          ]
         }, {
           "id" : "1",
           "hardwareIdentifier" : "00:00:00:00:00:01",
@@ -35,26 +40,55 @@
         "entries":[
           {
             "id":"High-Speed-Internet",
-            "cir":200000000,
-            "cbs":348000,
-            "eir":10000000,
-            "ebs":348000,
-            "air":10000000
+            "cir": 500000,
+            "cbs": 10000,
+            "eir": 500000,
+            "ebs": 10000,
+            "air": 100000
           },
           {
-            "id":"User1-Specific",
-            "cir":300000000,
-            "cbs":348000,
-            "eir":20000000,
-            "ebs":348000
+            "id":"VOIP",
+            "cir": 500000,
+            "cbs": 10000,
+            "eir": 500000,
+            "ebs": 10000,
+            "air": 100000
+          },
+          {
+            "id":"Service1",
+            "cir": 600000,
+            "cbs": 10000,
+            "eir": 400000,
+            "ebs": 10000
+          },
+          {
+            "id":"Service2",
+            "cir": 600000,
+            "cbs": 10000,
+            "eir": 400000,
+            "ebs": 10000
+          },
+          {
+            "id":"VOD",
+            "cir": 600000,
+            "cbs": 10000,
+            "eir": 400000,
+            "ebs": 10000
+          },
+          {
+            "id":"Service3",
+            "cir": 600000,
+            "cbs": 10000,
+            "eir": 400000,
+            "ebs": 10000
           },
           {
             "id":"Default",
-            "cir":0,
-            "cbs":0,
-            "eir":512,
-            "ebs":30,
-            "air":0
+            "cir": 0,
+            "cbs": 0,
+            "eir": 512,
+            "ebs": 30,
+            "air": 0
           }
         ]
       }
