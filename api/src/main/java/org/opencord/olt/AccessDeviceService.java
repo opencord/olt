@@ -16,20 +16,17 @@
 
 package org.opencord.olt;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import org.onlab.packet.VlanId;
 import org.onosproject.event.ListenerService;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
-import org.onosproject.net.meter.MeterKey;
-import org.opencord.sadis.SubscriberAndDeviceInformation;
 
 import com.google.common.collect.ImmutableMap;
+import org.opencord.sadis.UniTagInformation;
 
 /**
  * Service for interacting with an access device (OLT).
@@ -39,6 +36,7 @@ public interface AccessDeviceService
 
     /**
      * Provisions connectivity for a subscriber on an access device.
+     * Installs flows for all uni tag information
      *
      * @param port subscriber's connection point
      * @return true if successful false otherwise
@@ -47,6 +45,7 @@ public interface AccessDeviceService
 
     /**
      * Removes provisioned connectivity for a subscriber from an access device.
+     * Removes flows for all uni tag information
      *
      * @param port subscriber's connection point
      * @return true if successful false otherwise
@@ -54,31 +53,32 @@ public interface AccessDeviceService
     boolean removeSubscriber(ConnectPoint port);
 
     /**
-     * Provisions flows for the specific subscriber.
+     * Provisions a uni tag information for the specific subscriber.
+     * It finds the related uni tag information from the subscriber uni tag list
+     * and installs it
      *
      * @param subscriberId Identification of the subscriber
-     * @param sTag additional outer tag on this port
-     * @param cTag additional inner tag on this port
+     * @param sTag         additional outer tag on this port
+     * @param cTag         additional inner tag on this port
+     * @param tpId         additional technology profile id
      * @return true if successful false otherwise
      */
-    boolean provisionSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag);
+    boolean provisionSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag,
+                                Optional<VlanId> cTag, Optional<Integer> tpId);
 
     /**
-     * Removes flows for the specific subscriber.
+     * Removes a uni tag information for the specific subscriber.
+     * It finds the related uni tag information from the subscriber uni tag list
+     * and remove it
      *
      * @param subscriberId Identification of the subscriber
-     * @param sTag additional outer tag on this port
-     * @param cTag additional inner tag on this port
+     * @param sTag         additional outer tag on this port
+     * @param cTag         additional inner tag on this port
+     * @param tpId         additional technology profile id
      * @return true if successful false otherwise
      */
-    boolean removeSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag, Optional<VlanId> cTag);
-
-    /**
-     * Returns information about the provisioned subscribers.
-     *
-     * @return subscribers
-     */
-    Collection<Map.Entry<ConnectPoint, Map.Entry<VlanId, VlanId>>> getSubscribers();
+    boolean removeSubscriber(AccessSubscriberId subscriberId, Optional<VlanId> sTag,
+                             Optional<VlanId> cTag, Optional<Integer> tpId);
 
     /**
      * Returns the list of active OLTs.
@@ -89,26 +89,11 @@ public interface AccessDeviceService
 
     /**
      * Returns information about subscribers that have been programmed in the
-     * data-plane.
+     * data-plane. It shows all uni tag information list of the subscribers even if
+     * these have not been programmed.
      *
      * @return an immutable map of locations and subscriber information
      */
-    ImmutableMap<ConnectPoint, SubscriberAndDeviceInformation> getProgSubs();
-
-    /**
-     * Returns information about device-meter mappings that have been programmed in the
-     * data-plane.
-     *
-     * @return an immutable set of device-meter mappings
-     */
-    ImmutableSet<MeterKey> getProgMeters();
-
-    /**
-     * Returns information about bandwidthProfile-meterKey (device / meter) mappings
-     * that have been programmed in the data-plane.
-     *
-     * @return an immutable map of bandwidthProfile-meterKey (device / meter) mappings
-     */
-    ImmutableMap<String, List<MeterKey>> getBpMeterMappings();
+    ImmutableMap<ConnectPoint, Set<UniTagInformation>> getProgSubs();
 
 }
