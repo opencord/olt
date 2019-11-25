@@ -21,9 +21,10 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.ConnectPoint;
 import org.opencord.olt.AccessDeviceService;
-import org.opencord.sadis.SubscriberAndDeviceInformation;
+import org.opencord.sadis.UniTagInformation;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Shows subscriber information for those subscriber which have been programmed
@@ -37,11 +38,12 @@ public class ShowProgrammedSubscribersCommand extends AbstractShellCommand {
     @Override
     protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        Map<ConnectPoint, SubscriberAndDeviceInformation> info = service.getProgSubs();
+        Map<ConnectPoint, Set<UniTagInformation>> info = service.getProgSubs();
         info.forEach(this::display);
     }
 
-    private void display(ConnectPoint cp, SubscriberAndDeviceInformation sub) {
-        print("location=%s subscriber=%s", cp, sub);
+    private void display(ConnectPoint cp, Set<UniTagInformation> uniTagInformation) {
+        uniTagInformation.forEach(uniTag ->
+                                          print("location=%s tagInformation=%s", cp, uniTag));
     }
 }

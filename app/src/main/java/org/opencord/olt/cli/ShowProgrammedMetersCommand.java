@@ -20,7 +20,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.meter.MeterKey;
-import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.internalapi.AccessDeviceMeterService;
 
 import java.util.Set;
 
@@ -35,7 +35,7 @@ public class ShowProgrammedMetersCommand extends AbstractShellCommand {
 
     @Override
     protected void doExecute() {
-        AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
+        AccessDeviceMeterService service = AbstractShellCommand.get(AccessDeviceMeterService.class);
         Set<MeterKey> programmedMeters = service.getProgMeters();
         programmedMeters.forEach(this::display);
     }
