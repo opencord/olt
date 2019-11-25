@@ -19,9 +19,10 @@ package org.opencord.olt.cli;
 import org.apache.karaf.shell.commands.Command;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.meter.MeterKey;
-import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.internalapi.AccessDeviceMeterService;
 
-import java.util.Set;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Shows information about device-meter mappings that have been programmed in the
@@ -33,12 +34,14 @@ public class ShowProgrammedMetersCommand extends AbstractShellCommand {
 
     @Override
     protected void execute() {
-        AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        Set<MeterKey> programmedMeters = service.getProgMeters();
-        programmedMeters.forEach(this::display);
+        AccessDeviceMeterService service = AbstractShellCommand.get(AccessDeviceMeterService.class);
+        Map<MeterKey, AtomicInteger> programmedMeters = service.getProgMeters();
+        programmedMeters.entrySet().forEach(this::display);
     }
 
-    private void display(MeterKey meterKey) {
-        print("device=%s meter=%s", meterKey.deviceId(), meterKey.meterId());
+    private void display(Map.Entry<MeterKey, AtomicInteger> mapEntry) {
+        MeterKey meterKey = mapEntry.getKey();
+        AtomicInteger count = mapEntry.getValue();
+        print("device=%s meter=%s count=%s", meterKey.deviceId(), meterKey.meterId(), count);
     }
 }
