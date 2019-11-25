@@ -45,6 +45,19 @@
         <command>
             <action class="org.opencord.olt.cli.ShowBpMeterMappingsCommand"/>
         </command>
+        <command>
+            <action class="org.opencord.olt.cli.UniTagAddCommand"/>
+        </command>
+        <command>
+            <action class="org.opencord.olt.cli.UniTagRemoveCommand"/>
+        </command>
+        <command>
+            <action class="org.opencord.olt.cli.ShowAdditionalVlansCommand"/>
+            <completers>
+                <ref component-id="deviceIdCompleter"/>
+                <null/>
+            </completers>
+        </command>
     </command-bundle>
 
     <bean id="deviceIdCompleter" class="org.onosproject.cli.net.DeviceIdCompleter"/>
