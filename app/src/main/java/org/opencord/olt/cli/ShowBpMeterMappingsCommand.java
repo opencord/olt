@@ -19,10 +19,10 @@ package org.opencord.olt.cli;
 import org.apache.karaf.shell.commands.Command;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.meter.MeterKey;
-import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.internalapi.AccessDeviceMeterService;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Command(scope = "onos", name = "volt-bpmeter-mappings",
         description = "Shows information about bandwidthProfile-meterKey (device / meter) mappings")
@@ -30,12 +30,12 @@ public class ShowBpMeterMappingsCommand extends AbstractShellCommand {
 
     @Override
     protected void execute() {
-        AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        Map<String, List<MeterKey>> bpMeterMappings = service.getBpMeterMappings();
+        AccessDeviceMeterService service = AbstractShellCommand.get(AccessDeviceMeterService.class);
+        Map<String, Set<MeterKey>> bpMeterMappings = service.getBpMeterMappings();
         bpMeterMappings.forEach(this::display);
     }
 
-    private void display(String bpInfo, List<MeterKey> meterKeyList) {
+    private void display(String bpInfo, Set<MeterKey> meterKeyList) {
         meterKeyList.forEach(meterKey ->
                 print("bpInfo=%s deviceId=%s meterId=%s",
                         bpInfo, meterKey.deviceId(), meterKey.meterId()));
