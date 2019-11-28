@@ -1,0 +1,373 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9cb5e41d_3a745c9c",
+        "filename": "api/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this be 3.1.1-SNAPSHOT?",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4d751f09_de9a1f51",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceEvent.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "With these new events, the old events for \nSUBSCRIBER_REGISTERED and\nSUBSCRIBER_UNREGISTERED are no longer required - correct?",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba051fa6_46cd2b1f",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "I have a problem with enableTransparentFlows -- if this is true then all flows installed will be transparent but that is not correct.\nOnly some flows should be transparent and others should be regular flows-- we need to talk about this separately between you, me and Amit",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2c29e5af_b1d6dc0f",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "looks odd - then what is the difference with getSubscribers?\nI think we should preserve the intent of this api, and instead of returning all SubscriverAndDeviceInformation (some of which may not have been programmed), we should return something else which is only for those that have been programmed",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6abfddb1_e3fdec06",
+        "filename": "app/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "3.1.1-SNAPSHOT",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa66c34e_5e520744",
+        "filename": "app/src/main/java/org/opencord/olt/cli/ShowAdditionalVlansCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "I need to get back to you on this naming. Not sure I understand or like the \"additional vlans\"  name",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7c546d85_2dbfe02d",
+        "filename": "app/src/main/java/org/opencord/olt/cli/ShowAdditionalVlansCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "Uni port number.\nA uni port may correspond to a single subscriber or it may correspond to multiple subscribers (DT FTTB use case). Better to say UNI port number",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1b7645bc_8641eaee",
+        "filename": "app/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "Adds a subscriber uni tag",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "52e8c58b_a4486a7b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "Do you need this to be multi-threaded right now?\nThe original job of the eventExecutor was to get off the event notification thread in the InternalDeviceListener.\nWith this change, multiple events will be processed in parallel which may be ok if we are careful about events related to the same device.\nI would only do this when we have a need it, say for scale",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1baa6d86_1864800c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "programmedSubs needs  to reflect the uniTag for that uni connectpoint",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0e01adb1_4d484d3b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "My fundamental problem is here. Note that this method used to be only for creating \"TransparentFlows\". After going through the DT workflow, it appears to me that the only use case for transparent flows is in the DT FTTB use case, and only for the DPU single-tag management traffic. Which means that every other DT flow is going to be \"non-transparent\" ie it will require some modification rules, some push and set or set-vlan traffic at the OLT.\n\nYou have now modified this api for two purposes\n1) to be able to select a specific item in the uniTagList -- by providing the stag/ctag/techprofileid to find that item from the list -- which is good -- we need this api\n\nbut\n2) you are also still using the same api to do transparent flow by using the \"enableTransparentFlows\" flag - this is not good because when this flag is set, then all flows will become transparent flows and we don\u0027t want that. Only a specific flow is supposed to be transparent -- we should remove this flag, and find a way to express the need for the transparent flow via the sadis uniTaglist item.",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "44826714_f5fb0ac8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 540,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "getIsIgmpRequired()",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0bfae222_fb9c4bb8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 544,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "getIsDhcpRequired()",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bef4c4e3_0a068c1d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 694,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "new CompletableFuture\u003c\u003e()",
+      "range": {
+        "startLine": 693,
+        "startChar": 8,
+        "endLine": 694,
+        "endChar": 79
+      },
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b1d17505_b8489f4a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 790,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "getIsDhcpRequired()",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ed5e1eab_13c206b7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 795,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "getIsIgmpRequired()",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1b4064be_2e63e892",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "Need to get back to you on this",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f091191e_17806227",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 593,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "should be with the tag push, right after the set vlan id.\nSo \npush (inner) vlan\nset vlanid\nset pcp\npush (outer) vlan\nset vlanid\nset pcp\nset output\nset meta\nset meter",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aed1f35_57003670",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 623,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "getConfiguredMacAddress",
+      "range": {
+        "startLine": 622,
+        "startChar": 53,
+        "endLine": 623,
+        "endChar": 89
+      },
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3d11b1ee_4fd21629",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "here too",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a96a07f3_8380a5ae",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-11-28T01:54:31Z",
+      "side": 1,
+      "message": "this will likely become 1.13.10-rc1\nFor now leave it at 1.13.9, and when the ONOS code merges we can change",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
