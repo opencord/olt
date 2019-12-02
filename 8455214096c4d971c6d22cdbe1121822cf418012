@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ddee704_c524cafa",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T14:19:17Z",
+      "side": 1,
+      "message": ".9 to fix the build issue. We have not released 1.13.10 (AFAIK)",
+      "range": {
+        "startLine": 25,
+        "startChar": 22,
+        "endLine": 25,
+        "endChar": 24
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "61fd2f75_d2d903f7",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T14:19:17Z",
+      "side": 1,
+      "message": "same here",
+      "range": {
+        "startLine": 36,
+        "startChar": 22,
+        "endLine": 36,
+        "endChar": 38
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
