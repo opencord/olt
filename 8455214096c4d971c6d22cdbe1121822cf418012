@@ -2,6 +2,374 @@
   "comments": [
     {
       "key": {
+        "uuid": "061629c8_e5c13008",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceEvent.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "I do believe here you are not maintaining backward compatibility.\nAlso, if something is no more needed let\u0027s start deprecating",
+      "range": {
+        "startLine": 28,
+        "startChar": 13,
+        "endLine": 28,
+        "endChar": 30
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f06ea108_98adbc39",
+        "filename": "api/src/main/java/org/opencord/olt/AdditionalVlanInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "better naming ?",
+      "range": {
+        "startLine": 20,
+        "startChar": 13,
+        "endLine": 20,
+        "endChar": 31
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "49d38912_db5c28f6",
+        "filename": "app/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "do you want to provide direct message to the users ? In this way, users have direct feedback",
+      "range": {
+        "startLine": 63,
+        "startChar": 0,
+        "endLine": 63,
+        "endChar": 65
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ca783089_7ee1c25d",
+        "filename": "app/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "which types of exceptions are we talking about ? We usually don\u0027t catch the exceptions here at this level",
+      "range": {
+        "startLine": 65,
+        "startChar": 17,
+        "endLine": 65,
+        "endChar": 26
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b11be298_e6639517",
+        "filename": "app/src/main/java/org/opencord/olt/cli/UniTagRemoveCommand.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "Same comments of UniTagAddCommand",
+      "range": {
+        "startLine": 34,
+        "startChar": 13,
+        "endLine": 34,
+        "endChar": 32
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "13bde160_c20a71e1",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "the target device",
+      "range": {
+        "startLine": 36,
+        "startChar": 30,
+        "endLine": 36,
+        "endChar": 51
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "40da06ca_fef59702",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "uni port ?",
+      "range": {
+        "startLine": 37,
+        "startChar": 30,
+        "endLine": 37,
+        "endChar": 77
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "18fb8ab6_53e65046",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "provision*Punt/TrapRules ? I believe \"process\" is a bit misleading. Also the java docs are a bit misleading.",
+      "range": {
+        "startLine": 46,
+        "startChar": 9,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2e26cb45_212efb0c",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "which particular traffic ?",
+      "range": {
+        "startLine": 92,
+        "startChar": 0,
+        "endLine": 93,
+        "endChar": 16
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2e0d8415_fc87e82c",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "Is this a kind of X-Connect ? if yes, wondering if it is better to change the naming",
+      "range": {
+        "startLine": 113,
+        "startChar": 38,
+        "endLine": 113,
+        "endChar": 49
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21a9cbbf_1bf48eb1",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "Not clear why a flow service has to provide a flow builder - Cannot push directly the flow objectives ?",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 147,
+        "endChar": 84
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1018d2ac_233673be",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceMeterService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "not clear to me these apis",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 79,
+        "endChar": 89
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "34ac2f43_2ffd104d",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/package-info.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "Not clear to me the role of this package",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 3
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "690d4d6a_06c693e1",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "is this necessary ?",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 9
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "87b6694b_2e201da3",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "update",
+      "range": {
+        "startLine": 94,
+        "startChar": 25,
+        "endLine": 94,
+        "endChar": 38
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "244716df_852239f8",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-12-02T16:05:46Z",
+      "side": 1,
+      "message": "same here",
+      "range": {
+        "startLine": 118,
+        "startChar": 25,
+        "endLine": 118,
+        "endChar": 38
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9ddee704_c524cafa",
         "filename": "pom.xml",
         "patchSetId": 3
