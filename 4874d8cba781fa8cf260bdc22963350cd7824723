@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7e7d2f8f_c5172f8a",
+        "filename": "api/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-12-02T14:14:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9cb5e41d_3a745c9c",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4d751f09_de9a1f51",
         "filename": "api/src/main/java/org/opencord/olt/AccessDeviceEvent.java",
         "patchSetId": 2
@@ -117,6 +135,24 @@
       "writtenOn": "2019-11-28T01:54:31Z",
       "side": 1,
       "message": "3.1.1-SNAPSHOT",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "499534b9_15735766",
+        "filename": "app/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-12-02T14:14:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6abfddb1_e3fdec06",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -368,6 +404,24 @@
     },
     {
       "key": {
+        "uuid": "2001ca3b_2ed7e237",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 540,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-12-02T14:14:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44826714_f5fb0ac8",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0bfae222_fb9c4bb8",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
@@ -396,6 +450,24 @@
       "writtenOn": "2019-12-02T08:19:48Z",
       "side": 1,
       "message": "I will fix.",
+      "parentUuid": "0bfae222_fb9c4bb8",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a319860_df0c930f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 544,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-12-02T14:14:59Z",
+      "side": 1,
+      "message": "Done",
       "parentUuid": "0bfae222_fb9c4bb8",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
@@ -467,6 +539,24 @@
     },
     {
       "key": {
+        "uuid": "e82dabf9_15fe92ec",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 790,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-12-02T14:14:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1d17505_b8489f4a",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ed5e1eab_13c206b7",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
@@ -478,6 +568,24 @@
       "writtenOn": "2019-11-28T01:54:31Z",
       "side": 1,
       "message": "getIsIgmpRequired()",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "45057194_01460b7d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 795,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-12-02T14:14:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ed5e1eab_13c206b7",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -565,6 +673,30 @@
       "writtenOn": "2019-11-28T01:54:31Z",
       "side": 1,
       "message": "getConfiguredMacAddress",
+      "range": {
+        "startLine": 622,
+        "startChar": 53,
+        "endLine": 623,
+        "endChar": 89
+      },
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cec0f9a3_c818b7f8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 623,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-12-02T14:14:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3aed1f35_57003670",
       "range": {
         "startLine": 622,
         "startChar": 53,
