@@ -522,6 +522,30 @@
     },
     {
       "key": {
+        "uuid": "5cb78243_3164e195",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 694,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2019-12-03T07:53:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "20f380cc_30b667ac",
+      "range": {
+        "startLine": 693,
+        "startChar": 8,
+        "endLine": 694,
+        "endChar": 79
+      },
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b1d17505_b8489f4a",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
