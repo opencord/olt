@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f24e078a_546cb007",
+        "filename": "pom.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-04T19:01:49Z",
+      "side": 1,
+      "message": "Gamze, please change this to 1.13.9 for now so the build can pass.\nOnce we release ONOS 1.13.10-rc1, we will come back to change this",
+      "revId": "5525445eb89d0aa2fa7b0141a5e7e3648f78a869",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
