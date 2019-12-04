@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "2fddf7cd_787e1419",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceEvent.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-04T19:01:49Z",
+      "side": 1,
+      "message": "Yes I would recommend removing. XOS will need to change anyway to deal with other workflows, so it is ok to not be backward compatible",
+      "parentUuid": "2eaef6a1_f0dc3917",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba051fa6_46cd2b1f",
         "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
         "patchSetId": 2
@@ -194,6 +212,24 @@
     },
     {
       "key": {
+        "uuid": "76f6b2d7_26185dac",
+        "filename": "app/src/main/java/org/opencord/olt/cli/ShowAdditionalVlansCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-04T19:01:49Z",
+      "side": 1,
+      "message": "I haven\u0027t gotten to this yet -- more later",
+      "parentUuid": "15317266_31789ecc",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c546d85_2dbfe02d",
         "filename": "app/src/main/java/org/opencord/olt/cli/ShowAdditionalVlansCommand.java",
         "patchSetId": 2
@@ -299,6 +335,24 @@
     },
     {
       "key": {
+        "uuid": "4559ebc1_c8f76cb0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-04T19:01:49Z",
+      "side": 1,
+      "message": "Really - that sounds odd - why would a single thread miss events? What events were not handled and at what scale were you testing?",
+      "parentUuid": "99854fb6_d865a56f",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1baa6d86_1864800c",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
@@ -334,6 +388,24 @@
     },
     {
       "key": {
+        "uuid": "35c24a39_76b2bcac",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-04T19:01:49Z",
+      "side": 1,
+      "message": "If you do programmedSubs.get(connectPoint) it will give you all the uniTagInfo for that connectPoint -- some of them may have been programmed, and some of them not programmed. What I am saying is that we should ONLY show those uniTagInfo for the subs programmed on this connectPoint. Which means that we need to change the programmedSubs map to be something like\nMap\u003cConnectPoint, List\u003cUniTagInformation\u003e\u003e",
+      "parentUuid": "4f26c29c_5b77978b",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0e01adb1_4d484d3b",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
@@ -363,6 +435,24 @@
       "side": 1,
       "message": "For DT use-case, provisionSubscriber(connectPoint) API can be used to install regular flows. Or does the use-case need to use provisionSubsriber(cTag, sTag, tpId) specifically?",
       "parentUuid": "0e01adb1_4d484d3b",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "add442a6_9c6bbd13",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-04T19:01:49Z",
+      "side": 1,
+      "message": "I think there should only be two apis\n1) provisionSubscriber(connectPoint) \nwhich will program all the UniTagInformation in the UniTagList for that connectpoint\n2) provisionSubscriber(portname, cTag, sTag, tpid)\nwhich will program only a particular uniTagInformation in the uniTagList for the portname/connectpoint.\nIf the stag/ctag/tpid is not provided then this api becomes like the first api, except portname is provided and not the connectpoint.\n\nAll 3 operators should be able to use either of these APIs - one for bulk programming, one for specific item programming. We should not use or need special flag and like \"enableTransparentFlows\" \n\nI am still working with Amit on what the flows should look like for DT use cases -- let me send an email to you both describing the issue later today, but regardless, I strongly believe there should not be any special flag usage",
+      "parentUuid": "81597011_50094211",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -645,6 +735,24 @@
       "side": 1,
       "message": "Could you explain what do you mean?",
       "parentUuid": "1b4064be_2e63e892",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "28543466_3345cd40",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-04T19:01:49Z",
+      "side": 1,
+      "message": "I haven\u0027t gotten to this yet - more later",
+      "parentUuid": "4d22f357_3a023f23",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
