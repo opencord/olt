@@ -1292,8 +1292,8 @@ public class Olt
 
                 flowObjectiveService.filter(devId, eapol);
             } else {
-                log.warn("Meter installation error while sending eapol trap flow. " +
-                        "Result {} and MeterId {}", result, mId);
+                log.error("Meter installation error for {} on {} while sending eapol trap flow. " +
+                        "Result {} and MeterId {}", devId, portNumber, result, mId);
             }
         });
     }
