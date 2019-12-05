@@ -735,8 +735,8 @@ public class Olt
                     }
                 }));
             } else {
-                log.warn("Meter installation error while sending upstream flows. " +
-                        "Result {} and MeterId {}", result, upstreamMeterId);
+                log.error("Meter installation error for {} on {} while sending upstream flows. " +
+                        "Result {} and MeterId {}", deviceId, subscriberPort, result, upstreamMeterId);
             }
         });
 
@@ -761,8 +761,8 @@ public class Olt
                     }
                 }));
             } else {
-                log.warn("Meter installation error while sending downstream flows. " +
-                        "Result {} and MeterId {}", result, downstreamMeterId);
+                log.error("Meter installation error for {} on {} while sending downstream flows. " +
+                        "Result {} and MeterId {}", deviceId, subscriberPort, result, downstreamMeterId);
             }
         });
 
@@ -981,8 +981,8 @@ public class Olt
                 }));
 
             } else {
-                log.warn("Meter installation error while sending upstream flows. " +
-                        "Result {} and MeterId {}", result, upstreamMeterId);
+                log.error("Meter installation error for {} on {} while sending upstream flows. " +
+                        "Result {} and MeterId {}", deviceId, subscriberPort, result, upstreamMeterId);
             }
         });
 
@@ -1006,8 +1006,8 @@ public class Olt
                     }
                 }));
             } else {
-                log.warn("Meter installation error while sending upstream flows. " +
-                        "Result {} and MeterId {}", result, downstreamMeterId);
+                log.error("Meter installation error for {} on {} while sending downstream flows. " +
+                        "Result {} and MeterId {}", deviceId, subscriberPort, result, downstreamMeterId);
             }
         });
 
@@ -1292,8 +1292,8 @@ public class Olt
 
                 flowObjectiveService.filter(devId, eapol);
             } else {
-                log.warn("Meter installation error while sending eapol trap flow. " +
-                        "Result {} and MeterId {}", result, mId);
+                log.error("Meter installation error for {} on {} while sending eapol trap flow. " +
+                        "Result {} and MeterId {}", devId, portNumber, result, mId);
             }
         });
     }
