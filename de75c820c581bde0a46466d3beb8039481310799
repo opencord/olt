@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ebe1abbd_f55938ff",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1296,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-05T23:13:56Z",
+      "side": 1,
+      "message": "devId and portnumber should come before result and meterid",
+      "revId": "de75c820c581bde0a46466d3beb8039481310799",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
