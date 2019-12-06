@@ -759,6 +759,24 @@
     },
     {
       "key": {
+        "uuid": "dabfce26_bbcbe50e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-06T02:35:59Z",
+      "side": 1,
+      "message": "I am trying to understand why you need this pendingAddEapol set and this check, and I still cannot figure it out. Who is trying to create multiple eapol flows for the same portnumber? Does it have something to do with the fact that you have  increased the number of threads processing device events, and now multiple device events are happening almost simultaneously and being processed in parallel leading to multiple calls to add eapol flows for the same port?",
+      "parentUuid": "28543466_3345cd40",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f091191e_17806227",
         "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 2
