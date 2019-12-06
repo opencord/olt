@@ -2,6 +2,91 @@
   "comments": [
     {
       "key": {
+        "uuid": "16b40325_9fb2b80a",
+        "filename": "api/src/main/java/org/opencord/olt/AdditionalVlanInfo.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-06T02:35:59Z",
+      "side": 1,
+      "message": "Gamze, there is no need for this class. Please see my comments in the ShowSubscribers cli command",
+      "revId": "5525445eb89d0aa2fa7b0141a5e7e3648f78a869",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d8373438_62d1aaa9",
+        "filename": "app/src/main/java/org/opencord/olt/cli/ShowAdditionalVlansCommand.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-06T02:35:59Z",
+      "side": 1,
+      "message": "There is no need for this cli command. Please see my comments in the ShowSubscribers cli command",
+      "revId": "5525445eb89d0aa2fa7b0141a5e7e3648f78a869",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f5e96828_41106ed3",
+        "filename": "app/src/main/java/org/opencord/olt/cli/ShowSubscribersCommand.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-06T02:35:59Z",
+      "side": 1,
+      "message": "This comment does not seem right -- you are showing AdditionalVlanInfo, which is only shown for programmed flows.\n\nAnyway, I have a problem with the AdditionalVlanInfo class - there does not seem to be a need for it, especially since you already have the UniTagInformation class.\n\nBasically, there are only two CLI commands needed.\n\n1) ShowSubscribersCommand (volt-subscribers) - this should show all configured information from sadis\n\nIt should have optional parameters \u003cdeviceId\u003e and \u003cportNumber\u003e\nIt should call the getSubscribers api call\nCollection\u003cMap.Entry\u003cConnectPoint, Set\u003cUniTagInformation\u003e\u003e\u003e getSubscribers();\nIf both device and portnumber are given then it should should show the uniTagInformation only for that connectPoint\nIf only device is given, the it should show uniTagInformation for all connectPoints on that device\nIf neither device or port is given, then it should show all connectPoints over all devices\n\n\n2) ShowProgrammedSubscribersCommand (volt-programmed-subscribers) - this should show only those that have actually been programmed in the dataplane -- which is what you are trying to achieve with AdditionalVlanInfo\n\nIt should call the getProgSubs api call\nCollection\u003cMap.Entry\u003cConnectPoint, Set\u003cUniTagInformation\u003e\u003e\u003e getProgSubs();\nThe difference between this call and the getSubscribers call is that only those UniTagInformation that have actually been programmed will show up in this list. \n\nPlease note that there is no need to maintain two separate maps - the programmedSubs map and the additionaVlans map - in Olt.java. \n\nJust use the programmedSubs map and change it to be\n\nprivate ConsistentMap\u003cConnectPoint, Set\u003cUniTagInformation\u003e\u003e programmedSubs\n\ninstead of \n\nMap\u003cConnectPoint, SubscriberAndDeviceInformation\u003e",
+      "revId": "5525445eb89d0aa2fa7b0141a5e7e3648f78a869",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "43023137_fe5fbe65",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-06T02:35:59Z",
+      "side": 1,
+      "message": "Gamze, as you saw from Amit\u0027s email, we do not need transparent vlan support",
+      "revId": "5525445eb89d0aa2fa7b0141a5e7e3648f78a869",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a9f3c1e_aeba7230",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-06T02:35:59Z",
+      "side": 1,
+      "message": "It is ok to leave this api (and its implementation) for now - we may reuse in the future or remove it",
+      "revId": "5525445eb89d0aa2fa7b0141a5e7e3648f78a869",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f24e078a_546cb007",
         "filename": "pom.xml",
         "patchSetId": 6
