@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d7b4b031_1afa17c0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 739,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-10T07:25:36Z",
+      "side": 1,
+      "message": "I had to check what is port.port()\nmaybe better to use subscriberPort",
+      "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c8c9bd00_8127022a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 985,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-10T07:25:36Z",
+      "side": 1,
+      "message": "use subscriberPort instead of uplinkPort",
+      "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a736e17_f8951d64",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1009,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-10T07:25:36Z",
+      "side": 1,
+      "message": "downstream flows",
+      "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "117cf999_578d1e69",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1010,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2019-12-10T07:25:36Z",
+      "side": 1,
+      "message": "use subscriberPort instead of uplinkPort",
+      "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
