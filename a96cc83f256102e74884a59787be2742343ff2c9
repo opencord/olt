@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "51a9ff82_84d91344",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 739,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2019-12-16T20:15:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7b4b031_1afa17c0",
+      "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c8c9bd00_8127022a",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2019-12-10T07:25:36Z",
       "side": 1,
       "message": "use subscriberPort instead of uplinkPort",
+      "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a6f4ec44_41e9146a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 985,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2019-12-16T20:15:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c8c9bd00_8127022a",
       "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "80dd7f13_1f8d2a0f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1009,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2019-12-16T20:15:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a736e17_f8951d64",
+      "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "117cf999_578d1e69",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 3
@@ -64,6 +118,24 @@
       "writtenOn": "2019-12-10T07:25:36Z",
       "side": 1,
       "message": "use subscriberPort instead of uplinkPort",
+      "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "72392c5e_24508917",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1010,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2019-12-16T20:15:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "117cf999_578d1e69",
       "revId": "a96cc83f256102e74884a59787be2742343ff2c9",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
