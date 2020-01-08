@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "09ea5b08_6303bf8a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-08T01:56:19Z",
+      "side": 1,
+      "message": "I really recommend returning to a single thread until there is a need to do multiple threads -- I still did not understand your reasoning for using multiple threads. \n\nI feel the pendngAddEapol in OltFlowService is a result of using multiple threads, and that is not good. Multiple threads should be handled carefully so that only one thread acts on an event for an ONU, and there is only one eapol add flow for an ONU port, instead of multiple calls to do the same thing protected by pendingAddEapol. So for now can you please return to 1 thread and remove the pendingAddEapol?",
+      "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fd2b7cc7_9283cf25",
+        "filename": "app/src/main/resources/OSGI-INF/blueprint/shell-config.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-08T01:56:19Z",
+      "side": 1,
+      "message": "Gamze I didn\u0027t ask to remove the showSubscribersCommand nor the getSubscribers() api -- please see my previous comment on Dec 5th. I only asked to change what it shows - do you not want to show this?",
+      "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
