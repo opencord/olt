@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "ec2c3c1f_6243356b",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceEvent.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2fddf7cd_787e1419",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba051fa6_46cd2b1f",
         "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
         "patchSetId": 2
@@ -125,6 +143,24 @@
     },
     {
       "key": {
+        "uuid": "5acd8b98_27642667",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "941a131f_f1b9ec93",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2c29e5af_b1d6dc0f",
         "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
         "patchSetId": 2
@@ -136,6 +172,24 @@
       "writtenOn": "2019-11-28T01:54:31Z",
       "side": 1,
       "message": "looks odd - then what is the difference with getSubscribers?\nI think we should preserve the intent of this api, and instead of returning all SubscriverAndDeviceInformation (some of which may not have been programmed), we should return something else which is only for those that have been programmed",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c6e37efe_f20c63ef",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c29e5af_b1d6dc0f",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -230,6 +284,24 @@
     },
     {
       "key": {
+        "uuid": "70192914_2190cca1",
+        "filename": "app/src/main/java/org/opencord/olt/cli/ShowAdditionalVlansCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Removed",
+      "parentUuid": "76f6b2d7_26185dac",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c546d85_2dbfe02d",
         "filename": "app/src/main/java/org/opencord/olt/cli/ShowAdditionalVlansCommand.java",
         "patchSetId": 2
@@ -265,6 +337,24 @@
     },
     {
       "key": {
+        "uuid": "de8cd99a_fd4790c3",
+        "filename": "app/src/main/java/org/opencord/olt/cli/ShowAdditionalVlansCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Removed - this class doesn\u0027t exist anymore",
+      "parentUuid": "5199a072_84757135",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b7645bc_8641eaee",
         "filename": "app/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
         "patchSetId": 2
@@ -294,6 +384,24 @@
       "side": 1,
       "message": "I will update.",
       "parentUuid": "1b7645bc_8641eaee",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d57b8c24_0ce7ec55",
+        "filename": "app/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1413c5b3_f613c78f",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -353,6 +461,24 @@
     },
     {
       "key": {
+        "uuid": "ac096d69_c85706b6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Updated.",
+      "parentUuid": "4559ebc1_c8f76cb0",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1baa6d86_1864800c",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
@@ -406,6 +532,42 @@
     },
     {
       "key": {
+        "uuid": "bdc1382b_5ff42af1",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1baa6d86_1864800c",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "19af3804_3c88e9fe",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "35c24a39_76b2bcac",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0e01adb1_4d484d3b",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
@@ -453,6 +615,42 @@
       "side": 1,
       "message": "I think there should only be two apis\n1) provisionSubscriber(connectPoint) \nwhich will program all the UniTagInformation in the UniTagList for that connectpoint\n2) provisionSubscriber(portname, cTag, sTag, tpid)\nwhich will program only a particular uniTagInformation in the uniTagList for the portname/connectpoint.\nIf the stag/ctag/tpid is not provided then this api becomes like the first api, except portname is provided and not the connectpoint.\n\nAll 3 operators should be able to use either of these APIs - one for bulk programming, one for specific item programming. We should not use or need special flag and like \"enableTransparentFlows\" \n\nI am still working with Amit on what the flows should look like for DT use cases -- let me send an email to you both describing the issue later today, but regardless, I strongly believe there should not be any special flag usage",
       "parentUuid": "81597011_50094211",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c274258e_4209616f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "The logic is updated to include only two APIs that are mentioned above",
+      "parentUuid": "add442a6_9c6bbd13",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0e36b352_30236964",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Transparent flows are not used anymore",
+      "parentUuid": "0e01adb1_4d484d3b",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -777,6 +975,24 @@
     },
     {
       "key": {
+        "uuid": "0a902e4f_56e2fc22",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "If device_added and port_added \u0026 updated events are received in a row, this method tries to install EAPOL twice and it increments the related meter count twice. I need this counter to free the meter_id. So, if you still want to remove this, we need to find a solution to protect the meter counters.",
+      "parentUuid": "dabfce26_bbcbe50e",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f091191e_17806227",
         "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 2
@@ -806,6 +1022,24 @@
       "side": 1,
       "message": "okay, I will update",
       "parentUuid": "f091191e_17806227",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "418ecf4f_b3a9c9a4",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 593,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2e34d9bb_f2b6e4d1",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -876,6 +1110,24 @@
     },
     {
       "key": {
+        "uuid": "a9b43b45_e7aaf20e",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d11b1ee_4fd21629",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a96a07f3_8380a5ae",
         "filename": "pom.xml",
         "patchSetId": 2
@@ -887,6 +1139,24 @@
       "writtenOn": "2019-11-28T01:54:31Z",
       "side": 1,
       "message": "this will likely become 1.13.10-rc1\nFor now leave it at 1.13.9, and when the ONOS code merges we can change",
+      "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "defa739f_b2601877",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a96a07f3_8380a5ae",
       "revId": "4874d8cba781fa8cf260bdc22963350cd7824723",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
