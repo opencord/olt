@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5fd9a9a9_84498032",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09ea5b08_6303bf8a",
+      "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fd2b7cc7_9283cf25",
         "filename": "app/src/main/resources/OSGI-INF/blueprint/shell-config.xml",
         "patchSetId": 7
@@ -30,6 +48,24 @@
       "writtenOn": "2020-01-08T01:56:19Z",
       "side": 1,
       "message": "Gamze I didn\u0027t ask to remove the showSubscribersCommand nor the getSubscribers() api -- please see my previous comment on Dec 5th. I only asked to change what it shows - do you not want to show this?",
+      "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dff23fdc_d89b8181",
+        "filename": "app/src/main/resources/OSGI-INF/blueprint/shell-config.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "I removed ShowSubscribersCommand - now we use ShowProgrammedSubscribersCommand as before and it gives you what you recommended.",
+      "parentUuid": "fd2b7cc7_9283cf25",
       "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
