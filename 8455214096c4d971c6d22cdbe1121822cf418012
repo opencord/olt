@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "208b950f_adead62c",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceEvent.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "061629c8_e5c13008",
+      "range": {
+        "startLine": 28,
+        "startChar": 13,
+        "endLine": 28,
+        "endChar": 30
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f06ea108_98adbc39",
         "filename": "api/src/main/java/org/opencord/olt/AdditionalVlanInfo.java",
         "patchSetId": 3
@@ -60,6 +84,30 @@
       "side": 1,
       "message": "Any suggestions?",
       "parentUuid": "f06ea108_98adbc39",
+      "range": {
+        "startLine": 20,
+        "startChar": 13,
+        "endLine": 20,
+        "endChar": 31
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ff95de89_a4261a80",
+        "filename": "api/src/main/java/org/opencord/olt/AdditionalVlanInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "The class doesn\u0027t exist anymore",
+      "parentUuid": "e32956a7_59e5671b",
       "range": {
         "startLine": 20,
         "startChar": 13,
@@ -119,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "4cb135d5_e041c5b7",
+        "filename": "app/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Removed",
+      "parentUuid": "f9ba6e4b_989fdeb7",
+      "range": {
+        "startLine": 63,
+        "startChar": 0,
+        "endLine": 63,
+        "endChar": 65
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca783089_7ee1c25d",
         "filename": "app/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
         "patchSetId": 3
@@ -166,6 +238,30 @@
     },
     {
       "key": {
+        "uuid": "8f189bc4_9b8b24f6",
+        "filename": "app/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Removed",
+      "parentUuid": "f1013b76_10f84bd1",
+      "range": {
+        "startLine": 65,
+        "startChar": 17,
+        "endLine": 65,
+        "endChar": 26
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b11be298_e6639517",
         "filename": "app/src/main/java/org/opencord/olt/cli/UniTagRemoveCommand.java",
         "patchSetId": 3
@@ -177,6 +273,30 @@
       "writtenOn": "2019-12-02T16:05:46Z",
       "side": 1,
       "message": "Same comments of UniTagAddCommand",
+      "range": {
+        "startLine": 34,
+        "startChar": 13,
+        "endLine": 34,
+        "endChar": 32
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0b953a4c_e70eafd4",
+        "filename": "app/src/main/java/org/opencord/olt/cli/UniTagRemoveCommand.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "The related code pieces are removed",
+      "parentUuid": "b11be298_e6639517",
       "range": {
         "startLine": 34,
         "startChar": 13,
@@ -330,6 +450,30 @@
     },
     {
       "key": {
+        "uuid": "b16aa94f_bfe2efe5",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ce944432_3c546ba0",
+      "range": {
+        "startLine": 46,
+        "startChar": 9,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2e26cb45_212efb0c",
         "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
         "patchSetId": 3
@@ -400,6 +544,30 @@
     },
     {
       "key": {
+        "uuid": "fc0d7916_22af8b98",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Yes, it is. Do you have any suggestions? By the way, this method is not used right now. Saurav wanted me to keep this for possible usages.",
+      "parentUuid": "2e0d8415_fc87e82c",
+      "range": {
+        "startLine": 113,
+        "startChar": 38,
+        "endLine": 113,
+        "endChar": 49
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "21a9cbbf_1bf48eb1",
         "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
         "patchSetId": 3
@@ -423,6 +591,30 @@
     },
     {
       "key": {
+        "uuid": "b348cbc0_4f29bcf5",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Many scenarios require the creation of a flow builder - if I remove the services (up and down) that creates the flow builder, it will be duplicate codes.",
+      "parentUuid": "21a9cbbf_1bf48eb1",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 147,
+        "endChar": 84
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1018d2ac_233673be",
         "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceMeterService.java",
         "patchSetId": 3
@@ -434,6 +626,30 @@
       "writtenOn": "2019-12-02T16:05:46Z",
       "side": 1,
       "message": "not clear to me these apis",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 79,
+        "endChar": 89
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2486d683_5a0d3235",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceMeterService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1018d2ac_233673be",
       "range": {
         "startLine": 60,
         "startChar": 0,
@@ -528,6 +744,30 @@
       "side": 1,
       "message": "We think that it can be good to send 500 when an exception occurs.",
       "parentUuid": "690d4d6a_06c693e1",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 9
+      },
+      "revId": "8455214096c4d971c6d22cdbe1121822cf418012",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7f523b93_ce4667b0",
+        "filename": "app/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-10T15:26:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1fb3526_9dbae50e",
       "range": {
         "startLine": 64,
         "startChar": 0,
