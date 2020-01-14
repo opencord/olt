@@ -69,6 +69,24 @@
       "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a73d9087_9c63e2a1",
+        "filename": "app/src/main/resources/OSGI-INF/blueprint/shell-config.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-14T00:01:22Z",
+      "side": 1,
+      "message": "Yes indeed, showProgrammedSubscribersCommand will show what I asked for, when user does \u0027volt-programmed-subscribers\"\n\nBut what I meant was that showSubscribersCommand is also useful. When user does \u0027volt-subscribers\u0027 -- it will show all uniTag information configured in SADIS. Of course this information is also available using sadis cli, ie. \u0027sadis \u003cportname\u003e\u0027\n\nSo if you don\u0027t wish to add \u0027volt-subscribers\u0027 it\u0027s ok",
+      "parentUuid": "dff23fdc_d89b8181",
+      "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
