@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1d3188cb_213f2660",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-14T00:01:22Z",
+      "side": 1,
+      "message": "unprovisionVlans could fail -- right?\nSo in that case we should not remove from programmedSubs - what do you think?\n\nIn creation cases you are updating in handleSubscriberFlows, so why not do the same for deletion case in unprovisionVlans?",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "920d70e1_c9f03c25",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 509,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-14T00:01:22Z",
+      "side": 1,
+      "message": "maybe this post and the update to the programmedSubs should be inside the if condition that checks for upStatus \u003d\u003d null and downStatus \u003d\u003d null?",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a221beaf_a8ee2718",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceMeterService.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-14T00:01:22Z",
+      "side": 1,
+      "message": "Are you saying that VOLTHA\u0027s meter reference counting is incorrect?",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f1a6b4be_5095d568",
+        "filename": "app/src/test/java/org/opencord/olt/impl/OltFlowTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-14T00:01:22Z",
+      "side": 1,
+      "message": "testNniFiltering",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "01397f38_e80f424c",
+        "filename": "app/src/test/java/org/opencord/olt/impl/OltTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-14T00:01:22Z",
+      "side": 1,
+      "message": "How come you don\u0027t need to mock Sadis Service anymore?",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
