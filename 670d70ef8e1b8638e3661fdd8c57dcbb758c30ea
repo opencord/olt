@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a4188cb9_1f96bcc6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-15T10:23:14Z",
+      "side": 1,
+      "message": "the word \"failed\" is not actually correct. It actually means that the parameters are invalid. i.e: just cTag is provided or just sTag is provided (not both) - I will change it to \"Removing subscriber it not possible - please check the provided information for the subscriber\"",
+      "parentUuid": "1d3188cb_213f2660",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "920d70e1_c9f03c25",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 8
@@ -30,6 +48,24 @@
       "writtenOn": "2020-01-14T00:01:22Z",
       "side": 1,
       "message": "maybe this post and the update to the programmedSubs should be inside the if condition that checks for upStatus \u003d\u003d null and downStatus \u003d\u003d null?",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "32afe729_539529d1",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 509,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-15T10:23:14Z",
+      "side": 1,
+      "message": "No. I want to send an event to indicate the registration status. If US or DS flow is failed, I will send the \"UNI_TAG_UNREGISTERED_FAILED\" event. If both of them are ok, I will send the \"UNI_TAG_UNREGISTERED\" event.",
+      "parentUuid": "920d70e1_c9f03c25",
       "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "f9197830_1e853bc1",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceMeterService.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-15T10:23:14Z",
+      "side": 1,
+      "message": "For the first time, it is like a race-condition.I send a flow-mod after sending a meter-mod. At this time, ONOS can receive zero flow-count from the meter stats until Voltha finishes the flow creation and updates this info. In such a case, if the OLT app gets the ZERO_COUNT event, it tries to delete the meter and we have flows that referred to missing meters.",
+      "parentUuid": "a221beaf_a8ee2718",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f1a6b4be_5095d568",
         "filename": "app/src/test/java/org/opencord/olt/impl/OltFlowTest.java",
         "patchSetId": 8
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "1fa7ea36_0ebfe4e1",
+        "filename": "app/src/test/java/org/opencord/olt/impl/OltFlowTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-15T10:23:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1a6b4be_5095d568",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "01397f38_e80f424c",
         "filename": "app/src/test/java/org/opencord/olt/impl/OltTest.java",
         "patchSetId": 8
@@ -81,6 +153,24 @@
       "writtenOn": "2020-01-14T00:01:22Z",
       "side": 1,
       "message": "How come you don\u0027t need to mock Sadis Service anymore?",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "edb4f16e_af34a2ed",
+        "filename": "app/src/test/java/org/opencord/olt/impl/OltTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-15T10:23:14Z",
+      "side": 1,
+      "message": "I moved the mock services to the TestBase class and this class extends it. So I don\u0027t need it here anymore. :)",
+      "parentUuid": "01397f38_e80f424c",
       "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
