@@ -87,6 +87,24 @@
       "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "be612e39_384e8fee",
+        "filename": "app/src/main/resources/OSGI-INF/blueprint/shell-config.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2020-01-15T10:23:14Z",
+      "side": 1,
+      "message": "As you say, sadis gives that information, so we think that we don\u0027t need this command anymore.",
+      "parentUuid": "a73d9087_9c63e2a1",
+      "revId": "9c037c91776204501b2cdae74f1c2ad2fee3ce1a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
