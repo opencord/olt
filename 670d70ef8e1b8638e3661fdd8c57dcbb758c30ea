@@ -125,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "f9f55f85_7d3efde0",
+        "filename": "app/src/main/java/org/opencord/olt/internalapi/AccessDeviceMeterService.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-17T22:27:38Z",
+      "side": 1,
+      "message": "Another way to do this may have been to wait 3 cycles of ZERO_COUNT before we move to delete the meter -- in other words doing garbage collection of unreferenced meters more gently. \nIt is a more elegant option than doing the reference counting ourselves",
+      "parentUuid": "f9197830_1e853bc1",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f1a6b4be_5095d568",
         "filename": "app/src/test/java/org/opencord/olt/impl/OltFlowTest.java",
         "patchSetId": 8
