@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "439087f0_e4d05bac",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-01-17T22:23:11Z",
+      "side": 1,
+      "message": "You are talking about the else case below in line 366 where the parameters are invalid.\nI am talking about the unprovisionVlans call on line 363 -- that one could fail for some reason, but you will still end up removing the programmed subscriber on line 364",
+      "parentUuid": "a4188cb9_1f96bcc6",
+      "revId": "670d70ef8e1b8638e3661fdd8c57dcbb758c30ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "920d70e1_c9f03c25",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 8
