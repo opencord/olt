@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9284719f_7773d06a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 925,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2020-01-29T14:20:18Z",
+      "side": 1,
+      "message": "should we use the VlanId.ANY instead of 4096 for easier reading of the code",
+      "revId": "3c09d5382452db7cf2c9d80447a0e4f82f981951",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "208aa428_265375f7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 954,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2020-01-29T14:20:18Z",
+      "side": 1,
+      "message": "should we change the name of this variable to something more meaningful from \"dVlan\"? a more descriptive name could help in understanding the code.",
+      "range": {
+        "startLine": 954,
+        "startChar": 17,
+        "endLine": 954,
+        "endChar": 18
+      },
+      "revId": "3c09d5382452db7cf2c9d80447a0e4f82f981951",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
