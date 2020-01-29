@@ -909,6 +909,8 @@ public class Olt
                                                     Optional<VlanId> defaultVlan,
                                                     MeterId meterId,
                                                     int techProfId) {
+
+        //subscriberVlan can be any valid Vlan here including ANY to make sure the packet is tagged
         TrafficSelector downstream = DefaultTrafficSelector.builder()
                 .matchVlanId(deviceVlan)
                 .matchInPort(uplinkPort)
@@ -917,8 +919,13 @@ public class Olt
 
         TrafficTreatment.Builder downstreamTreatmentBuilder = DefaultTrafficTreatment.builder()
                 .popVlan()
-                .setVlanId(defaultVlan.orElse(VlanId.vlanId((short) this.defaultVlan)))
                 .setOutput(subscriberPort);
+
+        //If the susbsciber Vlan (cTag) is different than ANY we shoudl set it
+        if (subscriberVlan.toShort() != 4096) {
+            downstreamTreatmentBuilder.setVlanId(defaultVlan.orElse(VlanId.vlanId((short) this.defaultVlan)));
+        }
+
 
         if (meterId != null) {
             downstreamTreatmentBuilder.meter(meterId);
@@ -946,6 +953,7 @@ public class Olt
 
         VlanId dVlan = defaultVlan.orElse(VlanId.vlanId((short) this.defaultVlan));
 
+        // if subscriberVlan (cTag) is ANY use it for selector
         if (subscriberVlan.toShort() == 4096) {
             dVlan = subscriberVlan;
         }
@@ -955,11 +963,14 @@ public class Olt
                 .matchInPort(subscriberPort)
                 .build();
 
+        TrafficTreatment.Builder upstreamTreatmentBuilder = DefaultTrafficTreatment.builder();
 
-        TrafficTreatment.Builder upstreamTreatmentBuilder = DefaultTrafficTreatment.builder()
-                .pushVlan()
-                .setVlanId(subscriberVlan)
-                .pushVlan()
+        //if the subscriberVlan (cTag) is different than ANY it needs to set.
+        if (subscriberVlan.toShort() != 4096) {
+            upstreamTreatmentBuilder.pushVlan()
+                    .setVlanId(subscriberVlan);
+        }
+        upstreamTreatmentBuilder.pushVlan()
                 .setVlanId(deviceVlan)
                 .setOutput(uplinkPort);
 
