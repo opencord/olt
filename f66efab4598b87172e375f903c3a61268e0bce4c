@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b39abfef_f1c007d4",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2020-01-29T22:19:58Z",
+      "side": 1,
+      "message": "You\u0027ll need to add the properties for configuring this service here.",
+      "revId": "f66efab4598b87172e375f903c3a61268e0bce4c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
