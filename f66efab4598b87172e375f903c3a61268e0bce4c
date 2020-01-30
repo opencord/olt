@@ -16,6 +16,52 @@
       "revId": "f66efab4598b87172e375f903c3a61268e0bce4c",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "90c1644b_ac6ca94d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-01-30T08:41:38Z",
+      "side": 1,
+      "message": "this should be Multimap",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 55
+      },
+      "revId": "f66efab4598b87172e375f903c3a61268e0bce4c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8b2bc7af_893ff2e7",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-01-30T08:41:38Z",
+      "side": 1,
+      "message": "here we should use the bpinfo and not the meterKey",
+      "range": {
+        "startLine": 201,
+        "startChar": 24,
+        "endLine": 201,
+        "endChar": 98
+      },
+      "revId": "f66efab4598b87172e375f903c3a61268e0bce4c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
