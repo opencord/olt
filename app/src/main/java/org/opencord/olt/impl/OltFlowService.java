@@ -571,9 +571,12 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .matchVlanId(uniTagInformation.getUniTagMatch())
                 .build();
 
-        TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder()
-                .pushVlan()
-                .setVlanId(uniTagInformation.getPonCTag());
+        TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+        //if the subscriberVlan (cTag) is different than ANY it needs to set.
+        if (uniTagInformation.getPonCTag().toShort() != VlanId.ANY_VALUE) {
+            treatmentBuilder.pushVlan()
+                    .setVlanId(uniTagInformation.getPonCTag());
+        }
 
         if (uniTagInformation.getUsPonCTagPriority() != NO_PCP) {
             treatmentBuilder.setVlanPcp((byte) uniTagInformation.getUsPonCTagPriority());
@@ -602,6 +605,8 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                          PortNumber subscriberPort,
                                                          MeterId downstreamMeterId,
                                                          UniTagInformation tagInformation) {
+
+        //subscriberVlan can be any valid Vlan here including ANY to make sure the packet is tagged
         TrafficSelector.Builder selectorBuilder = DefaultTrafficSelector.builder()
                 .matchVlanId(tagInformation.getPonSTag())
                 .matchInPort(uplinkPort)
@@ -619,9 +624,15 @@ public class OltFlowService implements AccessDeviceFlowService {
 
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder()
                 .popVlan()
-                .setOutput(subscriberPort)
-                .writeMetadata(createMetadata(tagInformation.getPonCTag(), tagInformation.getTechnologyProfileId(),
-                        subscriberPort), 0);
+                .setOutput(subscriberPort);
+
+        //If the subscriber Vlan (cTag) is different than ANY we should set it
+        if (tagInformation.getPonCTag().toShort() != VlanId.ANY_VALUE) {
+            treatmentBuilder.setVlanId(tagInformation.getPonCTag());
+        }
+        treatmentBuilder.writeMetadata(createMetadata(tagInformation.getPonCTag(),
+                                                      tagInformation.getTechnologyProfileId(),
+                                                      subscriberPort), 0);
 
         // to remark inner vlan header
         if (tagInformation.getUsPonCTagPriority() != NO_PCP) {
