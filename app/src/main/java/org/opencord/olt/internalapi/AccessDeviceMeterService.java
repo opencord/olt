@@ -22,7 +22,7 @@ import org.onosproject.net.meter.MeterId;
 import org.onosproject.net.meter.MeterKey;
 import org.opencord.sadis.BandwidthProfileInformation;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -36,7 +36,7 @@ public interface AccessDeviceMeterService {
      *
      * @return an immutable map of bandwidthProfile-meterKey (device / meter) mappings
      */
-    ImmutableMap<String, Set<MeterKey>> getBpMeterMappings();
+    ImmutableMap<String, Collection<MeterKey>> getBpMeterMappings();
 
     /**
      * Adds a bandwidthProfile-meterKey (device / meter) mapping that have been programmed

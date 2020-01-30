@@ -183,7 +183,7 @@ public class OltFlowTest extends TestBase {
 
     private class MockOltMeterService implements org.opencord.olt.internalapi.AccessDeviceMeterService {
         @Override
-        public ImmutableMap<String, Set<MeterKey>> getBpMeterMappings() {
+        public ImmutableMap<String, Collection<MeterKey>> getBpMeterMappings() {
             return null;
         }
 
