@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4499dfc7_b6d980e9",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-01-30T09:34:30Z",
+      "side": 1,
+      "message": "missing a return statement",
+      "range": {
+        "startLine": 243,
+        "startChar": 0,
+        "endLine": 244,
+        "endChar": 71
+      },
+      "revId": "c8c829571a9d44fda64b249b0e8a919fb4ba8e0b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
