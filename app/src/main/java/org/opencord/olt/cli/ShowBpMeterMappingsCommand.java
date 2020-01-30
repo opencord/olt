@@ -22,7 +22,9 @@ import org.onosproject.net.meter.MeterKey;
 import org.opencord.olt.internalapi.AccessDeviceMeterService;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
+
+
 
 @Command(scope = "onos", name = "volt-bpmeter-mappings",
         description = "Shows information about bandwidthProfile-meterKey (device / meter) mappings")
@@ -31,11 +33,11 @@ public class ShowBpMeterMappingsCommand extends AbstractShellCommand {
     @Override
     protected void execute() {
         AccessDeviceMeterService service = AbstractShellCommand.get(AccessDeviceMeterService.class);
-        Map<String, Set<MeterKey>> bpMeterMappings = service.getBpMeterMappings();
+        Map<String, Collection<MeterKey>> bpMeterMappings = service.getBpMeterMappings();
         bpMeterMappings.forEach(this::display);
     }
 
-    private void display(String bpInfo, Set<MeterKey> meterKeyList) {
+    private void display(String bpInfo, Collection<MeterKey> meterKeyList) {
         meterKeyList.forEach(meterKey ->
                 print("bpInfo=%s deviceId=%s meterId=%s",
                         bpInfo, meterKey.deviceId(), meterKey.meterId()));

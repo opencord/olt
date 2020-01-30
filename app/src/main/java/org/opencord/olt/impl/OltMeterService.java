@@ -15,9 +15,12 @@
  */
 package org.opencord.olt.impl;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -51,7 +54,7 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.List;
@@ -68,6 +71,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.onlab.util.Tools.groupedThreads;
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * Provisions Meters on access devices.
+ */
 @Service
 @Component(immediate = true)
 public class OltMeterService implements AccessDeviceMeterService {
@@ -85,7 +91,8 @@ public class OltMeterService implements AccessDeviceMeterService {
             label = "Deleting Meters based on flow count statistics")
     protected boolean deleteMeters = true;
 
-    protected Map<String, Set<MeterKey>> bpInfoToMeter;
+    protected SetMultimap<String, MeterKey> bpInfoToMeter =
+            Multimaps.synchronizedSetMultimap(HashMultimap.create());
     protected Set<MeterKey> programmedMeters;
     private ApplicationId appId;
     private static final String APP_NAME = "org.opencord.olt";
@@ -101,7 +108,6 @@ public class OltMeterService implements AccessDeviceMeterService {
         eventExecutor = Executors.newFixedThreadPool(5, groupedThreads("onos/olt",
                 "events-%d", log));
         appId = coreService.registerApplication(APP_NAME);
-        bpInfoToMeter = Maps.newConcurrentMap();
         programmedMeters = Sets.newConcurrentHashSet();
         meterService.addListener(meterListener);
         componentConfigService.registerProperties(getClass());
@@ -125,20 +131,13 @@ public class OltMeterService implements AccessDeviceMeterService {
     }
 
     @Override
-    public ImmutableMap<String, Set<MeterKey>> getBpMeterMappings() {
-        return ImmutableMap.copyOf(bpInfoToMeter);
+    public ImmutableMap<String, Collection<MeterKey>> getBpMeterMappings() {
+        return ImmutableMap.copyOf(bpInfoToMeter.asMap());
     }
 
     @Override
     public void addMeterIdToBpMapping(DeviceId deviceId, MeterId meterId, String bandwidthProfile) {
-        bpInfoToMeter.compute(bandwidthProfile, (k, v) -> {
-            if (v == null) {
-                return Sets.newHashSet(MeterKey.key(deviceId, meterId));
-            } else {
-                v.add(MeterKey.key(deviceId, meterId));
-                return v;
-            }
-        });
+        bpInfoToMeter.put(bandwidthProfile, MeterKey.key(deviceId, meterId));
     }
 
     @Override
@@ -199,7 +198,8 @@ public class OltMeterService implements AccessDeviceMeterService {
 
                     @Override
                     public void onError(MeterRequest op, MeterFailReason reason) {
-                        bpInfoToMeter.remove(MeterKey.key(deviceId, meterIdRef.get()));
+                        bpInfoToMeter.remove(bpInfo.id(),
+                                             MeterKey.key(deviceId, meterIdRef.get()));
                         meterFuture.complete(reason);
                     }
                 })
@@ -242,12 +242,16 @@ public class OltMeterService implements AccessDeviceMeterService {
         public void event(MeterEvent meterEvent) {
             eventExecutor.execute(() -> {
                 Meter meter = meterEvent.subject();
+                if (meter == null) {
+                    log.error("Meter in event {} is null", meterEvent);
+                    return;
+                }
                 MeterKey key = MeterKey.key(meter.deviceId(), meter.id());
                 if (deleteMeters && MeterEvent.Type.METER_REFERENCE_COUNT_ZERO.equals(meterEvent.type())) {
                     log.info("Zero Count Meter Event is received. Meter is {}", meter.id());
                     incrementMeterCount(key);
 
-                    if (meter != null && appId.equals(meter.appId()) && pendingRemoveMeters.get(key).get() == 3) {
+                    if (appId.equals(meter.appId()) && pendingRemoveMeters.get(key).get() == 3) {
                         log.info("Deleting unreferenced, no longer programmed Meter {}", meter.id());
                         deleteMeter(meter.deviceId(), meter.id());
                     }
@@ -256,7 +260,7 @@ public class OltMeterService implements AccessDeviceMeterService {
                     log.info("Meter Removed Event is received for {}", meter.id());
                     programmedMeters.remove(key);
                     pendingRemoveMeters.remove(key);
-                    removeMeterFromBpMapping(meter);
+                    removeMeterFromBpMapping(key);
                 }
             });
         }
@@ -290,12 +294,11 @@ public class OltMeterService implements AccessDeviceMeterService {
             }
         }
 
-        private void removeMeterFromBpMapping(Meter meter) {
-            MeterKey meterKey = MeterKey.key(meter.deviceId(), meter.id());
-            Iterator<Map.Entry<String, Set<MeterKey>>> iterator = bpInfoToMeter.entrySet().iterator();
+        private void removeMeterFromBpMapping(MeterKey meterKey) {
+            Iterator<Map.Entry<String, MeterKey>> iterator = bpInfoToMeter.entries().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<String, Set<MeterKey>> entry = iterator.next();
-                if (entry.getValue().contains(meterKey)) {
+                Map.Entry<String, MeterKey> entry = iterator.next();
+                if (entry.getValue().equals(meterKey)) {
                     iterator.remove();
                     log.info("Deleted meter for MeterKey {} - Last prog meters {}", meterKey, programmedMeters);
                     break;

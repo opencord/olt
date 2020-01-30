@@ -15,8 +15,9 @@
  */
 package org.opencord.olt.impl;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,6 @@ import org.onosproject.net.meter.MeterRequest;
 import org.opencord.sadis.BandwidthProfileInformation;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class OltMeterTest extends TestBase {
@@ -41,7 +41,7 @@ public class OltMeterTest extends TestBase {
     @Before
     public void setUp() {
         oltMeterService = new OltMeterService();
-        oltMeterService.bpInfoToMeter = Maps.newConcurrentMap();
+        oltMeterService.bpInfoToMeter = Multimaps.synchronizedSetMultimap(HashMultimap.create());
         oltMeterService.programmedMeters = Sets.newConcurrentHashSet();
         oltMeterService.meterService = new MockMeterService();
     }
@@ -56,7 +56,7 @@ public class OltMeterTest extends TestBase {
         MeterId dsMeterId = oltMeterService.getMeterIdFromBpMapping(DEVICE_ID_1, dsBpId);
         assert  dsMeterId.equals(this.dsMeterId);
 
-        ImmutableMap<String, Set<MeterKey>> meterMappings = oltMeterService.getBpMeterMappings();
+        ImmutableMap<String, Collection<MeterKey>> meterMappings = oltMeterService.getBpMeterMappings();
         assert  meterMappings.size() == 2;
     }
 
