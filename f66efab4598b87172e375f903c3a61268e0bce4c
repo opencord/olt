@@ -62,6 +62,30 @@
       "revId": "f66efab4598b87172e375f903c3a61268e0bce4c",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "61b7a93e_9321cc18",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-01-30T08:47:54Z",
+      "side": 1,
+      "message": "Or better since this is a multi map you have to provide key and value",
+      "parentUuid": "8b2bc7af_893ff2e7",
+      "range": {
+        "startLine": 201,
+        "startChar": 24,
+        "endLine": 201,
+        "endChar": 98
+      },
+      "revId": "f66efab4598b87172e375f903c3a61268e0bce4c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
