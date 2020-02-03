@@ -623,12 +623,13 @@ public class OltFlowService implements AccessDeviceFlowService {
         }
 
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder()
-                .popVlan()
                 .setOutput(subscriberPort);
 
-        //If the subscriber Vlan (cTag) is different than ANY we should set it
+        //If the subscriber Vlan (cTag) is different than ANY we should pop and set it
+        //the pop for the sTag will be added for the VLAN ANY case in the OLT pipeliner.
         if (tagInformation.getPonCTag().toShort() != VlanId.ANY_VALUE) {
-            treatmentBuilder.setVlanId(tagInformation.getPonCTag());
+            treatmentBuilder.popVlan()
+                    .setVlanId(tagInformation.getPonCTag());
         }
         treatmentBuilder.writeMetadata(createMetadata(tagInformation.getPonCTag(),
                                                       tagInformation.getTechnologyProfileId(),
