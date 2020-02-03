@@ -15,18 +15,33 @@
  */
 package org.opencord.olt.impl;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multiset;
 import org.onlab.packet.Ip4Address;
 import org.onlab.packet.MacAddress;
 import org.onosproject.core.DefaultApplicationId;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.meter.MeterId;
+import org.onosproject.store.service.AsyncConsistentMultimap;
+import org.onosproject.store.service.ConsistentMultimap;
+import org.onosproject.store.service.ConsistentMultimapBuilder;
+import org.onosproject.store.service.MultimapEventListener;
+import org.onosproject.store.service.TestConsistentMultimap;
+import org.onosproject.store.service.Versioned;
 import org.opencord.sadis.BandwidthProfileInformation;
 import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SadisService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class TestBase {
 
@@ -122,6 +137,189 @@ public class TestBase {
             this.setIPAddress(ipAddress);
             this.setNasPortId(nasPortId);
             this.setCircuitId(circuitId);
+        }
+    }
+
+    class MockConsistentMultimap<K, V> implements ConsistentMultimap<K, V> {
+        private HashMultimap<K, Versioned<V>> innermap;
+        private AtomicLong counter = new AtomicLong();
+
+        public MockConsistentMultimap() {
+            this.innermap = HashMultimap.create();
+        }
+
+        private Versioned<V> version(V v) {
+            return new Versioned<>(v, counter.incrementAndGet(), System.currentTimeMillis());
+        }
+
+        private Versioned<Collection<? extends V>> versionCollection(Collection<? extends V> collection) {
+            return new Versioned<>(collection, counter.incrementAndGet(), System.currentTimeMillis());
+        }
+
+        @Override
+        public int size() {
+            return innermap.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return innermap.isEmpty();
+        }
+
+        @Override
+        public boolean containsKey(K key) {
+            return innermap.containsKey(key);
+        }
+
+        @Override
+        public boolean containsValue(V value) {
+            return innermap.containsValue(value);
+        }
+
+        @Override
+        public boolean containsEntry(K key, V value) {
+            return innermap.containsEntry(key, value);
+        }
+
+        @Override
+        public boolean put(K key, V value) {
+            return innermap.put(key, version(value));
+        }
+
+        @Override
+        public Versioned<Collection<? extends V>> putAndGet(K key, V value) {
+            innermap.put(key, version(value));
+            return (Versioned<Collection<? extends V>>) innermap.get(key);
+        }
+
+        @Override
+        public boolean remove(K key, V value) {
+            return innermap.remove(key, value);
+        }
+
+        @Override
+        public Versioned<Collection<? extends V>> removeAndGet(K key, V value) {
+            innermap.remove(key, value);
+            return (Versioned<Collection<? extends V>>) innermap.get(key);
+        }
+
+        @Override
+        public boolean removeAll(K key, Collection<? extends V> values) {
+            return false;
+        }
+
+        @Override
+        public Versioned<Collection<? extends V>> removeAll(K key) {
+            return null;
+        }
+
+        @Override
+        public boolean putAll(K key, Collection<? extends V> values) {
+            return false;
+        }
+
+        @Override
+        public Versioned<Collection<? extends V>> replaceValues(K key, Collection<V> values) {
+            return null;
+        }
+
+        @Override
+        public void clear() {
+            innermap.clear();
+        }
+
+        @Override
+        public Versioned<Collection<? extends V>> get(K key) {
+            Collection<? extends V> values = innermap.get(key).stream()
+                    .map(v -> v.value())
+                    .collect(Collectors.toList());
+            return versionCollection(values);
+        }
+
+        @Override
+        public Set<K> keySet() {
+            return innermap.keySet();
+        }
+
+        @Override
+        public Multiset<K> keys() {
+            return innermap.keys();
+        }
+
+        @Override
+        public Multiset<V> values() {
+            return null;
+        }
+
+        @Override
+        public Collection<Map.Entry<K, V>> entries() {
+            return null;
+        }
+
+        @Override
+        public Iterator<Map.Entry<K, V>> iterator() {
+            return new ConsistentMultimapIterator(innermap.entries().iterator());
+        }
+
+        @Override
+        public Map<K, Collection<V>> asMap() {
+            return null;
+        }
+
+        @Override
+        public void addListener(MultimapEventListener<K, V> listener, Executor executor) {
+        }
+
+        @Override
+        public void removeListener(MultimapEventListener<K, V> listener) {
+        }
+
+        @Override
+        public String name() {
+            return "mock multimap";
+        }
+
+        @Override
+        public Type primitiveType() {
+            return null;
+        }
+
+        private class ConsistentMultimapIterator implements Iterator<Map.Entry<K, V>> {
+
+            private final Iterator<Map.Entry<K, Versioned<V>>> it;
+
+            public ConsistentMultimapIterator(Iterator<Map.Entry<K, Versioned<V>>> it) {
+                this.it = it;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public Map.Entry<K, V> next() {
+                Map.Entry<K, Versioned<V>> e = it.next();
+                return new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().value());
+            }
+        }
+
+    }
+
+    public static TestConsistentMultimap.Builder builder() {
+        return new TestConsistentMultimap.Builder();
+    }
+
+    public static class Builder<K, V> extends ConsistentMultimapBuilder<K, V> {
+
+        @Override
+        public AsyncConsistentMultimap<K, V> buildMultimap() {
+            return null;
+        }
+
+        @Override
+        public ConsistentMultimap<K, V> build() {
+            return new TestConsistentMultimap<K, V>();
         }
     }
 }

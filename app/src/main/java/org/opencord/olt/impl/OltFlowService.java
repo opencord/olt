@@ -380,13 +380,13 @@ public class OltFlowService implements AccessDeviceFlowService {
             return;
         }
 
-        if (!mastershipService.isLocalMaster(devId)) {
-            log.warn("The master of the device {} is another instance", devId);
-            if (filterFuture != null) {
-                filterFuture.complete(ObjectiveError.DEVICEMISSING);
-            }
-            return;
-        }
+//        if (!mastershipService.isLocalMaster(devId)) {
+//            log.warn("The master of the device {} is another instance", devId);
+//            if (filterFuture != null) {
+//                filterFuture.complete(ObjectiveError.DEVICEMISSING);
+//            }
+//            return;
+//        }
 
         BandwidthProfileInformation bpInfo = getBandwidthProfileInformation(bpId);
         if (bpInfo == null) {
