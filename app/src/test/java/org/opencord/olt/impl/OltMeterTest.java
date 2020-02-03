@@ -15,12 +15,11 @@
  */
 package org.opencord.olt.impl;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
+import org.onosproject.cfg.ComponentConfigAdapter;
+import org.onosproject.core.CoreServiceAdapter;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.meter.DefaultMeter;
 import org.onosproject.net.meter.Meter;
@@ -28,6 +27,7 @@ import org.onosproject.net.meter.MeterId;
 import org.onosproject.net.meter.MeterKey;
 import org.onosproject.net.meter.MeterListener;
 import org.onosproject.net.meter.MeterRequest;
+import org.onosproject.store.service.TestStorageService;
 import org.opencord.sadis.BandwidthProfileInformation;
 
 import java.util.Collection;
@@ -41,9 +41,12 @@ public class OltMeterTest extends TestBase {
     @Before
     public void setUp() {
         oltMeterService = new OltMeterService();
-        oltMeterService.bpInfoToMeter = Multimaps.synchronizedSetMultimap(HashMultimap.create());
-        oltMeterService.programmedMeters = Sets.newConcurrentHashSet();
+        oltMeterService.storageService = new TestStorageService();
         oltMeterService.meterService = new MockMeterService();
+        oltMeterService.coreService = new CoreServiceAdapter();
+        oltMeterService.componentConfigService = new ComponentConfigAdapter();
+        oltMeterService.activate(null);
+        oltMeterService.bpInfoToMeter = new MockConsistentMultimap<>();
     }
 
     @Test

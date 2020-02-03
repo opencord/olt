@@ -188,11 +188,6 @@ public class OltFlowTest extends TestBase {
         }
 
         @Override
-        public void addMeterIdToBpMapping(DeviceId deviceId, MeterId meterId, String bandwidthProfile) {
-
-        }
-
-        @Override
         public MeterId getMeterIdFromBpMapping(DeviceId deviceId, String bandwidthProfile) {
             return null;
         }
@@ -207,6 +202,10 @@ public class OltFlowTest extends TestBase {
         public MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
                                    CompletableFuture<Object> meterFuture) {
             return usMeterId;
+        }
+
+        @Override
+        public void clearMeters(DeviceId deviceId) {
         }
     }
 
