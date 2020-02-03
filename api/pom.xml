@@ -38,6 +38,7 @@
             <groupId>org.opencord</groupId>
             <artifactId>sadis-api</artifactId>
             <version>${sadis.api.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

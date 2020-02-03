@@ -39,16 +39,6 @@ public interface AccessDeviceMeterService {
     ImmutableMap<String, Collection<MeterKey>> getBpMeterMappings();
 
     /**
-     * Adds a bandwidthProfile-meterKey (device / meter) mapping that have been programmed
-     * in the data plane.
-     *
-     * @param deviceId         the access device id
-     * @param meterId          the meter id that is mapped to the bandwidth profile
-     * @param bandwidthProfile the bandwidth profile id
-     */
-    void addMeterIdToBpMapping(DeviceId deviceId, MeterId meterId, String bandwidthProfile);
-
-    /**
      * Returns the meter id for a given bandwidth profile.
      *
      * @param deviceId         the access device id
@@ -77,5 +67,10 @@ public interface AccessDeviceMeterService {
     MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
                         CompletableFuture<Object> meterFuture);
 
-
+    /**
+     * Clears out bandwidth profile to meter mappings for the given device.
+     *
+     * @param deviceId device ID
+     */
+    void clearMeters(DeviceId deviceId);
 }
