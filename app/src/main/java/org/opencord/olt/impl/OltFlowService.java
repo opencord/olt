@@ -626,10 +626,6 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .popVlan()
                 .setOutput(subscriberPort);
 
-        //If the subscriber Vlan (cTag) is different than ANY we should set it
-        if (tagInformation.getPonCTag().toShort() != VlanId.ANY_VALUE) {
-            treatmentBuilder.setVlanId(tagInformation.getPonCTag());
-        }
         treatmentBuilder.writeMetadata(createMetadata(tagInformation.getPonCTag(),
                                                       tagInformation.getTechnologyProfileId(),
                                                       subscriberPort), 0);
@@ -639,7 +635,8 @@ public class OltFlowService implements AccessDeviceFlowService {
             treatmentBuilder.setVlanPcp((byte) tagInformation.getUsPonCTagPriority());
         }
 
-        if (!VlanId.NONE.equals(tagInformation.getUniTagMatch())) {
+        if (!VlanId.NONE.equals(tagInformation.getUniTagMatch()) &&
+                tagInformation.getPonCTag().toShort() != VlanId.ANY_VALUE) {
             treatmentBuilder.setVlanId(tagInformation.getUniTagMatch());
         }
 
