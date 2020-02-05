@@ -27,9 +27,6 @@ public final class OsgiPropertyConstants {
     public static final String DEFAULT_MCAST_SERVICE_NAME = "multicastServiceName";
     public static final String DEFAULT_MCAST_SERVICE_NAME_DEFAULT = "MC";
 
-    public static final String DEFAULT_VLAN = "defaultVlan";
-    public static final short DEFAULT_VLAN_DEFAULT = 0;
-
     public static final String ENABLE_DHCP_ON_PROVISIONING = "enableDhcpOnProvisioning";
     public static final boolean ENABLE_DHCP_ON_PROVISIONING_DEFAULT = false;
 

@@ -610,8 +610,12 @@ public class OltFlowService implements AccessDeviceFlowService {
         TrafficSelector.Builder selectorBuilder = DefaultTrafficSelector.builder()
                 .matchVlanId(tagInformation.getPonSTag())
                 .matchInPort(uplinkPort)
-                .matchInnerVlanId(tagInformation.getPonCTag())
-                .matchMetadata(tagInformation.getPonCTag().toShort());
+                .matchInnerVlanId(tagInformation.getPonCTag());
+
+
+        if (tagInformation.getPonCTag().toShort() != VlanId.ANY_VALUE) {
+            selectorBuilder.matchMetadata(tagInformation.getPonCTag().toShort());
+        }
 
         if (tagInformation.getDsPonSTagPriority() != NO_PCP) {
             selectorBuilder.matchVlanPcp((byte) tagInformation.getDsPonSTagPriority());
