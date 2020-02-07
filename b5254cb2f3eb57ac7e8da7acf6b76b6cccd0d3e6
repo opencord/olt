@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "10276b25_432aa765",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 912,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-02-07T08:24:15Z",
+      "side": 1,
+      "message": "I think MastershipService is meant for this job with the method isLocalMaster. Is there a reason for which you used this different implementation to assert mastership ?",
+      "range": {
+        "startLine": 899,
+        "startChar": 0,
+        "endLine": 912,
+        "endChar": 5
+      },
+      "revId": "b5254cb2f3eb57ac7e8da7acf6b76b6cccd0d3e6",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f9296099_832f7257",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1077,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-02-07T08:24:15Z",
+      "side": 1,
+      "message": "I think you can avoid this by using mastership service.",
+      "range": {
+        "startLine": 1066,
+        "startChar": 0,
+        "endLine": 1077,
+        "endChar": 5
+      },
+      "revId": "b5254cb2f3eb57ac7e8da7acf6b76b6cccd0d3e6",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b113e146_204be71c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-02-07T08:24:15Z",
+      "side": 1,
+      "message": "I think we need to remove the meters from the meter service too if they are not reference by any device.",
+      "range": {
+        "startLine": 239,
+        "startChar": 0,
+        "endLine": 246,
+        "endChar": 5
+      },
+      "revId": "b5254cb2f3eb57ac7e8da7acf6b76b6cccd0d3e6",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
