@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cad78c00_53c889e0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 618,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-02-08T04:18:28Z",
+      "side": 1,
+      "message": "Have you tried this code? Does it actually work?\nI would be surprised if it did, because what I see in the OltPipeliner is that the selector is rebuilt to have the metadata again, completely ignoring the metadata in the selector passed in",
+      "range": {
+        "startLine": 616,
+        "startChar": 2,
+        "endLine": 618,
+        "endChar": 9
+      },
+      "revId": "090e4a083fde0fb174c8265b228abd955e5d3de2",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
