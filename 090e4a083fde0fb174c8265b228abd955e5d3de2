@@ -22,6 +22,30 @@
       "revId": "090e4a083fde0fb174c8265b228abd955e5d3de2",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e1dcf948_115a19b4",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 618,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-02-10T09:17:46Z",
+      "side": 1,
+      "message": "you are correct, this by itself does not work and was intended to be only half part of the patch, the other is in the OLTPipeliner update I pushed. \nTo me it does not make much sense to split the logic and then re-do the work, as they currently are these two classes conflict with each other. \nWe should evaluate removing flow objectives completely and going directly with flow rules from this OLTFlowService. Should I open a refactoring Jira for this ?",
+      "parentUuid": "cad78c00_53c889e0",
+      "range": {
+        "startLine": 616,
+        "startChar": 2,
+        "endLine": 618,
+        "endChar": 9
+      },
+      "revId": "090e4a083fde0fb174c8265b228abd955e5d3de2",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
