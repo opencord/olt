@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "604eea1f_faa23918",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 912,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2020-02-10T18:28:03Z",
+      "side": 1,
+      "message": "There is no master in the case where the device is not connected or has just been removed, but in these cases we still have to react to disconnection/remove events and clean up state related to the device. I used this approach so that the same instance is responsible for modifying the state from each device even if the device is not currently connected or available.",
+      "parentUuid": "10276b25_432aa765",
+      "range": {
+        "startLine": 899,
+        "startChar": 0,
+        "endLine": 912,
+        "endChar": 5
+      },
+      "revId": "b5254cb2f3eb57ac7e8da7acf6b76b6cccd0d3e6",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f9296099_832f7257",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 3
@@ -59,6 +83,30 @@
       "writtenOn": "2020-02-07T08:24:15Z",
       "side": 1,
       "message": "I think we need to remove the meters from the meter service too if they are not reference by any device.",
+      "range": {
+        "startLine": 239,
+        "startChar": 0,
+        "endLine": 246,
+        "endChar": 5
+      },
+      "revId": "b5254cb2f3eb57ac7e8da7acf6b76b6cccd0d3e6",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d394eb78_97c332c9",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1000005
+      },
+      "writtenOn": "2020-02-10T18:28:03Z",
+      "side": 1,
+      "message": "This is handling the case where the device disconnects and reconnects. We have the flag set to clear meters when the device disconnects so when it reconnects the meter service clears out meters by itself, and we just have to update our state in the app to match the meter service.",
+      "parentUuid": "b113e146_204be71c",
       "range": {
         "startLine": 239,
         "startChar": 0,
