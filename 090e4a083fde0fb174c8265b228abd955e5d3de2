@@ -46,6 +46,30 @@
       "revId": "090e4a083fde0fb174c8265b228abd955e5d3de2",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "76408b69_2c01a842",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 618,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-02-11T00:24:02Z",
+      "side": 1,
+      "message": "No please - lets not create new refactoring tasks. FlowObjectives have proven useful elsewhere (Trellis) but I realize it is cumbersome to use FlowObjectives here -- let\u0027s live with it for now -- there are bigger fish to fry.",
+      "parentUuid": "e1dcf948_115a19b4",
+      "range": {
+        "startLine": 616,
+        "startChar": 2,
+        "endLine": 618,
+        "endChar": 9
+      },
+      "revId": "090e4a083fde0fb174c8265b228abd955e5d3de2",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
