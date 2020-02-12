@@ -932,7 +932,7 @@ public class Olt
                         if (uniTagInformationSet == null || uniTagInformationSet.isEmpty()) {
                             if (port.isEnabled() && !port.number().equals(PortNumber.LOCAL)) {
                                 log.info("eapol will be processed for port updated {}", port);
-                                oltFlowService.processEapolFilteringObjectives(devId, port.number(), DEFAULT_BP_ID,
+                                oltFlowService.processEapolFilteringObjectives(devId, port.number(), defaultBpId,
                                                                                null,
                                                                                VlanId.vlanId(EAPOL_DEFAULT_VLAN),
                                                                                port.isEnabled());
