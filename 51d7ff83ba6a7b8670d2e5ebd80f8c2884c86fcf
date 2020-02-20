@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a34f64e7_bc004c47",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 850,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-02-20T14:35:50Z",
+      "side": 1,
+      "message": "this will throw an NPE if the annotations do not have the PORT_NAME. you shoudl have a check p.annotations().value(AnnotationKeys.PORT_NAME) !\u003d null \u0026\u0026 p.annotations().value(AnnotationKeys.PORT_NAME).startsWith(\"nni\")",
+      "range": {
+        "startLine": 850,
+        "startChar": 12,
+        "endLine": 850,
+        "endChar": 77
+      },
+      "revId": "51d7ff83ba6a7b8670d2e5ebd80f8c2884c86fcf",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5797592f_f1371fc9",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 850,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-02-20T14:35:50Z",
+      "side": 1,
+      "message": "please extract as constant and add the - at the end",
+      "range": {
+        "startLine": 850,
+        "startChar": 72,
+        "endLine": 850,
+        "endChar": 75
+      },
+      "revId": "51d7ff83ba6a7b8670d2e5ebd80f8c2884c86fcf",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "300483c8_356cfa5a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 850,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-02-20T14:35:50Z",
+      "side": 1,
+      "message": "pleas add some comments explaining the logic of the code for further people to understand",
+      "revId": "51d7ff83ba6a7b8670d2e5ebd80f8c2884c86fcf",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
