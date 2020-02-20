@@ -97,6 +97,8 @@ public class Olt
 
     private final Logger log = getLogger(getClass());
 
+    private static final String NNI = "nni-";
+
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected FlowObjectiveService flowObjectiveService;
 
@@ -847,7 +849,14 @@ public class Olt
         if (ulPort != null) {
             return (ulPort.number().toLong() != p.number().toLong());
         }
-        return false;
+        //handles a special case where NNI port is misconfigured in SADIS and getUplinkPort(d) returns null
+        //checks whether the port name starts with nni- which is the signature of an NNI Port
+        if (p.annotations().value(AnnotationKeys.PORT_NAME) != null &&
+                p.annotations().value(AnnotationKeys.PORT_NAME).startsWith(NNI)) {
+            log.error("NNI port number {} is not matching with configured value", p.number().toLong());
+            return false;
+        }
+        return true;
     }
 
     /**
