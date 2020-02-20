@@ -847,7 +847,11 @@ public class Olt
         if (ulPort != null) {
             return (ulPort.number().toLong() != p.number().toLong());
         }
-        return false;
+        if (p.annotations().value(AnnotationKeys.PORT_NAME).startsWith("nni")) {
+            log.error("NNI port number {} is not matching with configured value", p.number().toLong());
+            return false;
+        }
+        return true;
     }
 
     /**
