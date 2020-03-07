@@ -648,6 +648,10 @@ public class Olt
                 log.warn("Meter installation error while sending upstream flows. " +
                                  "Result {} and MeterId {}", result, upstreamMeterId);
             }
+        }).exceptionally(ex -> {
+            log.error("Upstream flow failed: " + ex.getMessage());
+            upFuture.complete(ObjectiveError.UNKNOWN);
+            return null;
         });
 
         downsteamMeterFuture.thenAcceptAsync(result -> {
@@ -681,6 +685,10 @@ public class Olt
                 log.warn("Meter installation error while sending upstream flows. " +
                                  "Result {} and MeterId {}", result, downstreamMeterId);
             }
+        }).exceptionally(ex -> {
+            log.error("Downstream flow failed: " + ex.getMessage());
+            upFuture.complete(ObjectiveError.UNKNOWN);
+            return null;
         });
 
         upFuture.thenAcceptBothAsync(downFuture, (upStatus, downStatus) -> {
