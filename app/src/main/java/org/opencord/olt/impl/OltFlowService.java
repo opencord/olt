@@ -97,7 +97,6 @@ public class OltFlowService implements AccessDeviceFlowService {
     private static final String REMOVAL = "removal";
     private static final String V4 = "V4";
     private static final String V6 = "V6";
-    private static final String NO_MAC = "A4:23:05:00:00:00";
 
     private final Logger log = getLogger(getClass());
 
@@ -614,7 +613,8 @@ public class OltFlowService implements AccessDeviceFlowService {
         }
 
         if (tagInformation.getConfiguredMacAddress() != null &&
-                !NO_MAC.equals(tagInformation.getConfiguredMacAddress())) {
+                !tagInformation.getConfiguredMacAddress().equals("") &&
+                !MacAddress.NONE.equals(MacAddress.valueOf(tagInformation.getConfiguredMacAddress()))) {
             selectorBuilder.matchEthDst(MacAddress.valueOf(tagInformation.getConfiguredMacAddress()));
         }
 
