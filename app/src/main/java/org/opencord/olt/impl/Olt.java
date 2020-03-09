@@ -1001,15 +1001,19 @@ public class Olt
                         ConnectPoint cp = new ConnectPoint(devId, port.number());
                         Collection<? extends UniTagInformation> uniTagInformationSet = programmedSubs.get(cp).value();
                         if (uniTagInformationSet == null || uniTagInformationSet.isEmpty()) {
-                            if (port.isEnabled() && !port.number().equals(PortNumber.LOCAL)) {
-                                log.info("eapol will be processed for port updated {}", port);
+                            if (!port.number().equals(PortNumber.LOCAL)) {
+                                log.info("eapol will be {} for dev/port updated {}/{}",
+                                         (port.isEnabled()) ? "added" : "removed",
+                                         devId, port.number());
                                 oltFlowService.processEapolFilteringObjectives(devId, port.number(), defaultBpId,
                                                                                null,
                                                                                VlanId.vlanId(EAPOL_DEFAULT_VLAN),
                                                                                port.isEnabled());
                             }
                         } else {
-                            log.info("eapol will be processed for port updated {}", port);
+                            log.info("eapol will be {} for dev/port updated {}/{}",
+                                     (port.isEnabled()) ? "added" : "removed",
+                                     devId, port.number());
                             uniTagInformationSet.forEach(uniTag ->
                                 oltFlowService.processEapolFilteringObjectives(devId, port.number(),
                                     uniTag.getUpstreamBandwidthProfile(), null,
