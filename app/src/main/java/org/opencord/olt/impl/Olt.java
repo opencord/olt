@@ -19,7 +19,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import org.onlab.packet.VlanId;
 import org.onlab.util.KryoNamespace;
-import org.onosproject.cfg.ComponentConfigService;
 import org.onosproject.cluster.ClusterEvent;
 import org.onosproject.cluster.ClusterEventListener;
 import org.onosproject.cluster.ClusterService;
@@ -37,6 +36,7 @@ import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceEvent;
 import org.onosproject.net.device.DeviceListener;
 import org.onosproject.net.device.DeviceService;
+import org.onosproject.net.flow.FlowRuleService;
 import org.onosproject.net.flowobjective.FlowObjectiveService;
 import org.onosproject.net.flowobjective.ForwardingObjective;
 import org.onosproject.net.flowobjective.Objective;
@@ -126,9 +126,6 @@ public class Olt
     protected CoreService coreService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
-    protected ComponentConfigService componentConfigService;
-
-    @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected SadisService sadisService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
@@ -142,6 +139,9 @@ public class Olt
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected ClusterService clusterService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    protected FlowRuleService flowRuleService;
 
     /**
      * Default bandwidth profile id that is used for authentication trap flows.
@@ -175,17 +175,6 @@ public class Olt
                                                                         "events-%d", log));
         modified(context);
         ApplicationId appId = coreService.registerApplication(APP_NAME);
-
-        // ensure that flow rules are purged from flow-store upon olt-disconnection
-        // when olt reconnects, the port-numbers may change for the ONUs
-        // making flows pushed earlier invalid
-        componentConfigService
-                .preSetProperty("org.onosproject.net.flow.impl.FlowRuleManager",
-                                "purgeOnDisconnection", "true");
-        componentConfigService
-                .preSetProperty("org.onosproject.net.meter.impl.MeterManager",
-                                "purgeOnDisconnection", "true");
-        componentConfigService.registerProperties(getClass());
 
         KryoNamespace serializer = KryoNamespace.newBuilder()
                 .register(KryoNamespaces.API)
@@ -225,7 +214,6 @@ public class Olt
 
     @Deactivate
     public void deactivate() {
-        componentConfigService.unregisterProperties(getClass(), false);
         clusterService.removeListener(clusterListener);
         deviceService.removeListener(deviceListener);
         eventDispatcher.removeSink(AccessDeviceEvent.class);
@@ -1035,7 +1023,9 @@ public class Olt
                         if (deviceService.isAvailable(devId)) {
                             handleDeviceConnection(dev, false);
                         } else {
-                            handleDeviceDisconnection(dev, false);
+                            if (deviceService.getPorts(devId).isEmpty()) {
+                                handleDeviceDisconnection(dev, false);
+                            }
                         }
                         break;
                     default:
@@ -1054,6 +1044,7 @@ public class Olt
         private void handleDeviceDisconnection(Device device, boolean sendUniEvent) {
             programmedDevices.remove(device.id());
             removeAllSubscribers(device.id());
+            flowRuleService.purgeFlowRules(device.id());
             oltMeterService.clearMeters(device.id());
             post(new AccessDeviceEvent(
                     AccessDeviceEvent.Type.DEVICE_DISCONNECTED, device.id(),
