@@ -34,9 +34,12 @@ import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceService;
 import org.onosproject.net.flow.DefaultTrafficSelector;
 import org.onosproject.net.flow.DefaultTrafficTreatment;
+import org.onosproject.net.flow.FlowRuleService;
 import org.onosproject.net.flow.TrafficSelector;
 import org.onosproject.net.flow.TrafficTreatment;
 import org.onosproject.net.flow.criteria.Criteria;
+import org.onosproject.net.flow.instructions.Instruction;
+import org.onosproject.net.flow.instructions.Instructions;
 import org.onosproject.net.flowobjective.DefaultFilteringObjective;
 import org.onosproject.net.flowobjective.DefaultForwardingObjective;
 import org.onosproject.net.flowobjective.FilteringObjective;
@@ -66,6 +69,7 @@ import java.util.Dictionary;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.StreamSupport;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.onlab.util.Tools.get;
@@ -120,6 +124,9 @@ public class OltFlowService implements AccessDeviceFlowService {
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected ComponentConfigService componentConfigService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    protected FlowRuleService flowRuleService;
 
     /**
      * Create the DHCP Flow rules when a subscriber is provisioned.
@@ -379,6 +386,11 @@ public class OltFlowService implements AccessDeviceFlowService {
             return;
         }
 
+        if (isEapolProvisioned(devId, portNumber)) {
+            log.debug("Eapol for UNI port {} on device {} is already provisioned, skipping", portNumber, devId);
+            return;
+        }
+
         BandwidthProfileInformation bpInfo = getBandwidthProfileInformation(bpId);
         if (bpInfo == null) {
             log.warn("Bandwidth profile {} is not found. Authentication flow"
@@ -473,6 +485,27 @@ public class OltFlowService implements AccessDeviceFlowService {
                         "Result {} and MeterId {}", result, mId);
             }
         });
+    }
+
+    private boolean isEapolProvisioned(DeviceId devId, PortNumber portNumber) {
+        return flowRuleService.getFlowEntries(devId) != null &&
+                flowRuleService.getFlowEntries(devId).iterator().hasNext() &&
+                StreamSupport.stream(flowRuleService.getFlowEntries(devId).spliterator(), false)
+                        .anyMatch(flowEntry -> {
+                            //check that the flow for eapol on that UNI
+                            boolean match = flowEntry.selector().criteria()
+                                    .contains(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
+                                    && flowEntry.selector().criteria()
+                                    .contains(Criteria.matchInPort(portNumber));
+                            //check that the output is to controller.
+                            boolean outputToController = flowEntry.treatment().allInstructions().stream()
+                                    .filter(t -> t.type().equals(Instruction.Type.OUTPUT))
+                                    .anyMatch(instr -> {
+                                        Instructions.OutputInstruction output = (Instructions.OutputInstruction) instr;
+                                        return output.port().equals(PortNumber.CONTROLLER);
+                                    });
+                            return match && outputToController;
+                        });
     }
 
     /**

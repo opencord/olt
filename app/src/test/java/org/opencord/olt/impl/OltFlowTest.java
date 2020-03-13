@@ -30,6 +30,7 @@ import org.onosproject.mastership.MastershipListener;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.MastershipRole;
 import org.onosproject.net.PortNumber;
+import org.onosproject.net.flow.FlowRuleServiceAdapter;
 import org.onosproject.net.flow.TrafficSelector;
 import org.onosproject.net.flow.TrafficTreatment;
 import org.onosproject.net.flow.criteria.Criterion;
@@ -82,6 +83,7 @@ public class OltFlowTest extends TestBase {
         oltFlowService.flowObjectiveService = new MockOltFlowObjectiveService();
         oltFlowService.mastershipService = new MockMastershipService();
         oltFlowService.sadisService = new MockSadisService();
+        oltFlowService.flowRuleService = new FlowRuleServiceAdapter();
         oltFlowService.bpService = oltFlowService.sadisService.getBandwidthProfileService();
         oltFlowService.appId = appId;
     }
