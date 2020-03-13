@@ -306,7 +306,7 @@ public class Olt
 
             unprovisionVlans(deviceId, uplinkPort.number(), subscriberPortNo, uniTag);
 
-            // re-install eapol with default bandwidth profile
+            // remove eapol with default bandwidth profile
             oltFlowService.processEapolFilteringObjectives(deviceId, subscriberPortNo,
                                                            uniTag.getUpstreamBandwidthProfile(),
                                                            null, uniTag.getPonCTag(), false);
@@ -813,9 +813,14 @@ public class Olt
                     continue;
                 }
                 if (isUniPort(dev, p)) {
-                    log.info("Creating Eapol for the uni {}", p);
-                    oltFlowService.processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, null,
-                                                                   VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
+                    if (!programmedSubs.containsKey(new ConnectPoint(dev.id(), p.number()))) {
+                        log.info("Creating Eapol for the uni {}", p);
+                        oltFlowService.processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, null,
+                                                                       VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
+                    } else {
+                        log.debug("Subscriber Eapol for UNI port {} on device {} is already " +
+                                          "provisioned, not installing default", p.number(), dev.id());
+                    }
                 } else {
                     oltFlowService.processNniFilteringObjectives(dev.id(), p.number(), true);
                 }
