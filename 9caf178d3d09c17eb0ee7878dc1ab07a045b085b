@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "d6190f51_9bc307c5",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 995,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-03-24T22:13:38Z",
+      "side": 1,
+      "message": "Yes we do not remove flows for NNI port disable, and in general we do not remove flows for uni port disable either (except for eapol). If the NNI flows were previously programmed then programming again should be harmless and likely get absorbed by ONOS",
+      "parentUuid": "4ba3a028_d1e4ac32",
+      "range": {
+        "startLine": 995,
+        "startChar": 59,
+        "endLine": 995,
+        "endChar": 70
+      },
+      "revId": "9caf178d3d09c17eb0ee7878dc1ab07a045b085b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bfbdf9c1_41b497b8",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 1
@@ -120,6 +144,30 @@
     },
     {
       "key": {
+        "uuid": "24ead5ee_d56ccef0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 996,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-03-24T22:13:38Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "4dcec307_bcd47f04",
+      "range": {
+        "startLine": 996,
+        "startChar": 32,
+        "endLine": 996,
+        "endChar": 46
+      },
+      "revId": "9caf178d3d09c17eb0ee7878dc1ab07a045b085b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "61545070_bf4b3011",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 1
@@ -131,6 +179,30 @@
       "writtenOn": "2020-03-24T09:57:59Z",
       "side": 1,
       "message": "can you please use return here ? It is a bit misleading",
+      "range": {
+        "startLine": 999,
+        "startChar": 28,
+        "endLine": 999,
+        "endChar": 33
+      },
+      "revId": "9caf178d3d09c17eb0ee7878dc1ab07a045b085b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f89f590f_ce6bfd6b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 999,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-03-24T22:13:38Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "61545070_bf4b3011",
       "range": {
         "startLine": 999,
         "startChar": 28,
