@@ -15,8 +15,33 @@
  */
 package org.opencord.olt.impl;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.onlab.util.Tools.get;
+import static org.onlab.util.Tools.groupedThreads;
+import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID;
+import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID_DEFAULT;
+import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_NAME;
+import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_NAME_DEFAULT;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.onlab.packet.VlanId;
 import org.onlab.util.KryoNamespace;
 import org.onosproject.cluster.ClusterEvent;
@@ -67,32 +92,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-import static org.onlab.util.Tools.get;
-import static org.onlab.util.Tools.groupedThreads;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_NAME;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_NAME_DEFAULT;
-import static org.slf4j.LoggerFactory.getLogger;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 
 /**
  * Provisions rules on access devices.
@@ -306,13 +307,14 @@ public class Olt
 
             unprovisionVlans(deviceId, uplinkPort.number(), subscriberPortNo, uniTag);
 
-            // remove eapol with default bandwidth profile
+            // remove eapol with subscriber bandwidth profile
             oltFlowService.processEapolFilteringObjectives(deviceId, subscriberPortNo,
                                                            uniTag.getUpstreamBandwidthProfile(),
                                                            null, uniTag.getPonCTag(), false);
 
             Port port = deviceService.getPort(deviceId, subscriberPortNo);
             if (port != null && port.isEnabled()) {
+                // reinstall eapol with default bandwidth profile
                 oltFlowService.processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId,
                                                                null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
             } else {
@@ -989,7 +991,14 @@ public class Olt
                         break;
                     case PORT_UPDATED:
                         if (!isUniPort(dev, port)) {
-                            break;
+                            SubscriberAndDeviceInformation deviceInfo = getOltInfo(dev);
+                            if (deviceInfo != null && port.isEnabled()) {
+                                log.debug("NNI dev/port {}/{} enabled", dev.id(),
+                                          port.number());
+                                oltFlowService.processNniFilteringObjectives(dev.id(),
+                                                                             port.number(), true);
+                            }
+                            return;
                         }
                         ConnectPoint cp = new ConnectPoint(devId, port.number());
                         Collection<? extends UniTagInformation> uniTagInformationSet = programmedSubs.get(cp).value();
