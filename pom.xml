@@ -27,7 +27,7 @@
 
     <groupId>org.opencord</groupId>
     <artifactId>olt</artifactId>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.0.2</version>
     <packaging>pom</packaging>
 
     <properties>
