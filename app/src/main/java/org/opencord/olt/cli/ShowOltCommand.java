@@ -16,10 +16,17 @@
 
 package org.opencord.olt.cli;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
+import org.onosproject.net.DeviceId;
 import org.opencord.olt.AccessDeviceService;
+
+import java.util.List;
 
 /**
  * Shows configured OLTs.
@@ -32,6 +39,27 @@ public class ShowOltCommand extends AbstractShellCommand {
     @Override
     protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        service.fetchOlts().forEach(did -> print("OLT %s", did));
+        if (outputJson()) {
+            print("%s", json(service.fetchOlts()));
+        } else {
+            service.fetchOlts().forEach(did -> print("OLT %s", did));
+        }
+
+    }
+
+    /**
+     * Returns JSON node representing the specified olts.
+     *
+     * @param olts collection of olts
+     * @return JSON node
+     */
+    private JsonNode json(List<DeviceId> olts) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode result = node.putArray("olts");
+        for (DeviceId olt : olts) {
+            result.add(olt.toString());
+        }
+        return node;
     }
 }
