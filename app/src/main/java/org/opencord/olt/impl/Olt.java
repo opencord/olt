@@ -1035,10 +1035,17 @@ public class Olt
                         break;
                     case DEVICE_AVAILABILITY_CHANGED:
                         if (deviceService.isAvailable(devId)) {
+                            log.info("Handling available device: {}", dev.id());
                             handleDeviceConnection(dev, false);
                         } else {
                             if (deviceService.getPorts(devId).isEmpty()) {
+                                log.info("Handling controlled device disconnection .. "
+                                        + "flushing all state for dev:{}", devId);
                                 handleDeviceDisconnection(dev, false);
+                            } else {
+                                log.info("Disconnected device has available ports .. "
+                                        + "assuming temporary disconnection, "
+                                        + "retaining state for device {}", devId);
                             }
                         }
                         break;
