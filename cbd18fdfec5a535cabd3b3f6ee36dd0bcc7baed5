@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a309a88_1ab24f0d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1007,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-04-01T19:21:16Z",
+      "side": 1,
+      "message": "eapol will be {} for dev/port {}/{} updated with default vlan {} and add the DEFAULT_VLAN parameter",
+      "range": {
+        "startLine": 1007,
+        "startChar": 42,
+        "endLine": 1007,
+        "endChar": 103
+      },
+      "revId": "cbd18fdfec5a535cabd3b3f6ee36dd0bcc7baed5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8d98a711_fdec9c1f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-04-01T19:21:16Z",
+      "side": 1,
+      "message": "you can move this at line 393 not building the object untile you know you are going forward with the method.",
+      "range": {
+        "startLine": 375,
+        "startChar": 8,
+        "endLine": 375,
+        "endChar": 62
+      },
+      "revId": "cbd18fdfec5a535cabd3b3f6ee36dd0bcc7baed5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
