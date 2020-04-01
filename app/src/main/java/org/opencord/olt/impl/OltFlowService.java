@@ -28,6 +28,7 @@ import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.mastership.MastershipService;
 import org.onosproject.net.AnnotationKeys;
+import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
@@ -154,7 +155,7 @@ public class OltFlowService implements AccessDeviceFlowService {
     protected ApplicationId appId;
     protected BaseInformationService<BandwidthProfileInformation> bpService;
     protected BaseInformationService<SubscriberAndDeviceInformation> subsService;
-    private Set<PortNumber> pendingAddEapol = Sets.newConcurrentHashSet();
+    private Set<ConnectPoint> pendingAddEapol = Sets.newConcurrentHashSet();
 
     @Activate
     public void activate(ComponentContext context) {
@@ -389,8 +390,9 @@ public class OltFlowService implements AccessDeviceFlowService {
             return;
         }
 
+        ConnectPoint cp = new ConnectPoint(devId, portNumber);
         if (install) {
-            boolean added = pendingAddEapol.add(portNumber);
+            boolean added = pendingAddEapol.add(cp);
             if (!added) {
                 if (filterFuture != null) {
                     log.warn("The eapol flow is processing for the port {}. Ignoring this request", portNumber);
@@ -398,7 +400,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                 }
                 return;
             }
-            log.info("portNumber added to pendingAddEapol map {}", portNumber);
+            log.info("connectPoint added to pendingAddEapol map {}", cp.toString());
         }
 
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
@@ -452,7 +454,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                                 if (filterFuture != null) {
                                     filterFuture.complete(null);
                                 }
-                                pendingAddEapol.remove(portNumber);
+                                pendingAddEapol.remove(cp);
                             }
 
                             @Override
@@ -463,7 +465,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                                 if (filterFuture != null) {
                                     filterFuture.complete(error);
                                 }
-                                pendingAddEapol.remove(portNumber);
+                                pendingAddEapol.remove(cp);
                             }
                         });
 
