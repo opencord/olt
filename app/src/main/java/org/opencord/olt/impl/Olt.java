@@ -1004,7 +1004,7 @@ public class Olt
                         Collection<? extends UniTagInformation> uniTagInformationSet = programmedSubs.get(cp).value();
                         if (uniTagInformationSet == null || uniTagInformationSet.isEmpty()) {
                             if (!port.number().equals(PortNumber.LOCAL)) {
-                                log.info("eapol will be {} for dev/port updated {}/{}",
+                                log.info("eapol will be {} for dev/port updated with default vlan {}/{}",
                                          (port.isEnabled()) ? "added" : "removed",
                                          devId, port.number());
                                 oltFlowService.processEapolFilteringObjectives(devId, port.number(), defaultBpId,
