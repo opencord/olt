@@ -849,12 +849,12 @@ public class Olt
                              + " info", dev.id());
             return null;
         }
-        // Return the port that has been configured as the uplink port of this OLT in Sadis
-        for (Port p : deviceService.getPorts(dev.id())) {
-            if (p.number().toLong() == deviceInfo.uplinkPort()) {
-                log.trace("getUplinkPort: Found port {}", p);
-                return p;
-            }
+        // Return the NNI port from device service which contains 'NNI-' string in portName
+        Optional<Port> optionalPort = deviceService.getPorts(dev.id()).stream()
+            .filter(this::isNniPort).findFirst();
+        if (optionalPort.isPresent()) {
+            log.trace("getUplinkPort: Found port {}", optionalPort.get());
+            return optionalPort.get();
         }
 
         log.warn("getUplinkPort: " + NO_UPLINK_PORT, dev.id());
@@ -921,6 +921,13 @@ public class Olt
             log.debug("Node that will handle {} is {}", id, nodeId);
         }
         return nodeId.equals(clusterService.getLocalNode().id());
+    }
+
+    private boolean isNniPort(Port port) {
+        if (port.annotations().keys().contains(AnnotationKeys.PORT_NAME)) {
+            return port.annotations().value(AnnotationKeys.PORT_NAME).contains(NNI);
+        }
+        return false;
     }
 
     private class InternalDeviceListener implements DeviceListener {
