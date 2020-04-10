@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad804092_4f750bab",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 858,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-04-10T10:51:14Z",
+      "side": 1,
+      "message": "you shoudl add this logic to the existing one, not remove the previous one, if you add this logic to the the one that gets it from the deviceInfo you have more chances. a small change sis needed in the is Nni port method",
+      "range": {
+        "startLine": 852,
+        "startChar": 8,
+        "endLine": 858,
+        "endChar": 9
+      },
+      "revId": "2b3698684e867b34698b93bd1fe46be4f4629787",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "332ed2c5_6dd507aa",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 929,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-04-10T10:51:14Z",
+      "side": 1,
+      "message": "I think this condition handles everything you want and allows for both option. \n\nreturn p.number().toLong() \u003d\u003d deviceInfo.uplinkPort() || ( port.annotations().keys().contains(AnnotationKeys.PORT_NAME \u0026\u0026 port.annotations().value(AnnotationKeys.PORT_NAME).contains(NNI));\n\nyou can swap the order if you prefer to give precedent to the NNI- string condition",
+      "range": {
+        "startLine": 927,
+        "startChar": 0,
+        "endLine": 929,
+        "endChar": 9
+      },
+      "revId": "2b3698684e867b34698b93bd1fe46be4f4629787",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
