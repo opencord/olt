@@ -22,6 +22,7 @@ import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.net.DeviceIdCompleter;
+import org.onosproject.cli.net.PortNumberCompleter;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
@@ -42,6 +43,7 @@ public class SubscriberRemoveCommand extends AbstractShellCommand {
 
     @Argument(index = 1, name = "port", description = "Subscriber port number",
             required = true, multiValued = false)
+    @Completion(PortNumberCompleter.class)
     private String strPort = null;
 
     @Override
