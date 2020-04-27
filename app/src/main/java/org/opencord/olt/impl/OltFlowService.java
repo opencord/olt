@@ -219,10 +219,6 @@ public class OltFlowService implements AccessDeviceFlowService {
             return;
         }
 
-        if (!mastershipService.isLocalMaster(devId)) {
-            return;
-        }
-
         int techProfileId = tagInformation != null ? tagInformation.getTechnologyProfileId() : NONE_TP_ID;
         VlanId cTag = tagInformation != null ? tagInformation.getPonCTag() : VlanId.NONE;
         VlanId unitagMatch = tagInformation != null ? tagInformation.getUniTagMatch() : VlanId.ANY;
@@ -309,10 +305,6 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                boolean upstream) {
         if (!enableIgmpOnProvisioning && !upstream) {
             log.debug("Igmp provisioning is disabled.");
-            return;
-        }
-
-        if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
 
@@ -496,9 +488,6 @@ public class OltFlowService implements AccessDeviceFlowService {
 
     @Override
     public void processLldpFilteringObjective(DeviceId devId, PortNumber port, boolean install) {
-        if (!mastershipService.isLocalMaster(devId)) {
-            return;
-        }
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
 
         FilteringObjective lldp = (install ? builder.permit() : builder.deny())
