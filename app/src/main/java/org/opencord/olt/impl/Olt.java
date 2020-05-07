@@ -44,6 +44,7 @@ import java.util.concurrent.Executors;
 
 import org.onlab.packet.VlanId;
 import org.onlab.util.KryoNamespace;
+import org.onosproject.cfg.ComponentConfigService;
 import org.onosproject.cluster.ClusterEvent;
 import org.onosproject.cluster.ClusterEventListener;
 import org.onosproject.cluster.ClusterService;
@@ -144,6 +145,9 @@ public class Olt
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected FlowRuleService flowRuleService;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    protected ComponentConfigService componentConfigService;
+
     /**
      * Default bandwidth profile id that is used for authentication trap flows.
      **/
@@ -176,6 +180,7 @@ public class Olt
                                                                         "events-%d", log));
         modified(context);
         ApplicationId appId = coreService.registerApplication(APP_NAME);
+        componentConfigService.registerProperties(getClass());
 
         KryoNamespace serializer = KryoNamespace.newBuilder()
                 .register(KryoNamespaces.API)
@@ -215,6 +220,7 @@ public class Olt
 
     @Deactivate
     public void deactivate() {
+        componentConfigService.unregisterProperties(getClass(), false);
         clusterService.removeListener(clusterListener);
         deviceService.removeListener(deviceListener);
         eventDispatcher.removeSink(AccessDeviceEvent.class);
