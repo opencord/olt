@@ -16,6 +16,7 @@
 package org.opencord.olt.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
@@ -232,16 +233,18 @@ public class Olt
         Dictionary<?, ?> properties = context != null ? context.getProperties() : new Properties();
 
         try {
-            String bpId = get(properties, "defaultBpId");
-            defaultBpId = bpId;
+            String bpId = get(properties, DEFAULT_BP_ID);
+            defaultBpId = isNullOrEmpty(bpId) ? defaultBpId : bpId;
 
-            String mcastSN = get(properties, "multicastServiceName");
-            multicastServiceName = mcastSN;
+            String mcastSN = get(properties, DEFAULT_MCAST_SERVICE_NAME);
+            multicastServiceName = isNullOrEmpty(mcastSN) ? multicastServiceName : mcastSN;
 
             log.debug("OLT properties: DefaultBpId: {}, MulticastServiceName: {}", defaultBpId, multicastServiceName);
 
         } catch (Exception e) {
             log.error("Error while modifying the properties", e);
+            defaultBpId = DEFAULT_BP_ID_DEFAULT;
+            multicastServiceName = DEFAULT_MCAST_SERVICE_NAME_DEFAULT;
         }
     }
 
