@@ -157,7 +157,7 @@ public class Olt
     /**
      * Deleting Meters based on flow count statistics.
      **/
-    protected String multicastServiceName = DEFAULT_MCAST_SERVICE_NAME;
+    protected String multicastServiceName = DEFAULT_MCAST_SERVICE_NAME_DEFAULT;
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final ClusterEventListener clusterListener = new InternalClusterListener();
