@@ -155,9 +155,9 @@ public class Olt
     protected String defaultBpId = DEFAULT_BP_ID_DEFAULT;
 
     /**
-     * Deleting Meters based on flow count statistics.
+     * Default multicast service name.
      **/
-    protected String multicastServiceName = DEFAULT_MCAST_SERVICE_NAME;
+    protected String multicastServiceName = DEFAULT_MCAST_SERVICE_NAME_DEFAULT;
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final ClusterEventListener clusterListener = new InternalClusterListener();
