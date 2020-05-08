@@ -303,8 +303,17 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                UniTagInformation tagInformation,
                                                boolean install,
                                                boolean upstream) {
-        if (!enableIgmpOnProvisioning && !upstream) {
+        if (!enableIgmpOnProvisioning) {
             log.debug("Igmp provisioning is disabled.");
+            return;
+        }
+
+        if (!upstream) {
+            log.debug("Direction is not Upstream, ignoring Igmp request");
+            return;
+        }
+
+        if (!mastershipService.isLocalMaster(devId)) {
             return;
         }
 
