@@ -498,14 +498,10 @@ public class Olt
         ForwardingObjective.Builder downFwd =
                 oltFlowService.createDownBuilder(uplink, subscriberPort, downstreamMeterId, uniTag);
 
-        if (uniTag.getIsIgmpRequired()) {
-            oltFlowService.processIgmpFilteringObjectives(deviceId, subscriberPort,
-                                                          upstreamMeterId, uniTag, false, true);
-        }
-        if (uniTag.getIsDhcpRequired()) {
-            oltFlowService.processDhcpFilteringObjectives(deviceId, subscriberPort,
-                                                          upstreamMeterId, uniTag, false, true);
-        }
+        oltFlowService.processIgmpFilteringObjectives(deviceId, subscriberPort,
+                                                      upstreamMeterId, uniTag, false, true);
+        oltFlowService.processDhcpFilteringObjectives(deviceId, subscriberPort,
+                                                      upstreamMeterId, uniTag, false, true);
 
         flowObjectiveService.forward(deviceId, upFwd.remove(new ObjectiveContext() {
             @Override
@@ -745,15 +741,11 @@ public class Olt
                 oltFlowService.processEapolFilteringObjectives(deviceId, subscriberPort,
                                                                tagInfo.getUpstreamBandwidthProfile(),
                                                                null, tagInfo.getPonCTag(), true);
-                if (tagInfo.getIsDhcpRequired()) {
-                    oltFlowService.processDhcpFilteringObjectives(deviceId, subscriberPort,
-                                                                  upstreamMeterId, tagInfo, true, true);
-                }
+                oltFlowService.processDhcpFilteringObjectives(deviceId, subscriberPort,
+                                                              upstreamMeterId, tagInfo, true, true);
 
-                if (tagInfo.getIsIgmpRequired()) {
-                    oltFlowService.processIgmpFilteringObjectives(deviceId, subscriberPort, upstreamMeterId, tagInfo,
-                                                                  true, true);
-                }
+                oltFlowService.processIgmpFilteringObjectives(deviceId, subscriberPort, upstreamMeterId, tagInfo,
+                                                              true, true);
                 updateProgrammedSubscriber(cp, tagInfo, true);
                 post(new AccessDeviceEvent(type, deviceId, port, tagInfo.getPonSTag(), tagInfo.getPonCTag(),
                                            tagInfo.getTechnologyProfileId()));
