@@ -91,7 +91,6 @@ public class OltFlowService implements AccessDeviceFlowService {
     private static final int NO_PCP = -1;
     private static final Integer MAX_PRIORITY = 10000;
     private static final Integer MIN_PRIORITY = 1000;
-    private static final int DEFAULT_TP_ID = 64;
     private static final String INSTALLED = "installed";
     private static final String REMOVED = "removed";
     private static final String INSTALLATION = "installation";
@@ -178,33 +177,33 @@ public class OltFlowService implements AccessDeviceFlowService {
 
         Dictionary<?, ?> properties = context != null ? context.getProperties() : new Properties();
 
-        Boolean o = Tools.isPropertyEnabled(properties, "enableDhcpOnProvisioning");
+        Boolean o = Tools.isPropertyEnabled(properties, ENABLE_DHCP_ON_PROVISIONING);
         if (o != null) {
             enableDhcpOnProvisioning = o;
         }
 
-        Boolean v4 = Tools.isPropertyEnabled(properties, "enableDhcpV4");
+        Boolean v4 = Tools.isPropertyEnabled(properties, ENABLE_DHCP_V4);
         if (v4 != null) {
             enableDhcpV4 = v4;
         }
 
-        Boolean v6 = Tools.isPropertyEnabled(properties, "enableDhcpV6");
+        Boolean v6 = Tools.isPropertyEnabled(properties, ENABLE_DHCP_V6);
         if (v6 != null) {
             enableDhcpV6 = v6;
         }
 
-        Boolean p = Tools.isPropertyEnabled(properties, "enableIgmpOnProvisioning");
+        Boolean p = Tools.isPropertyEnabled(properties, ENABLE_IGMP_ON_PROVISIONING);
         if (p != null) {
             enableIgmpOnProvisioning = p;
         }
 
-        Boolean eap = Tools.isPropertyEnabled(properties, "enableEapol");
+        Boolean eap = Tools.isPropertyEnabled(properties, ENABLE_EAPOL);
         if (eap != null) {
             enableEapol = eap;
         }
 
-        String tpId = get(properties, "defaultTechProfileId");
-        defaultTechProfileId = isNullOrEmpty(tpId) ? DEFAULT_TP_ID : Integer.parseInt(tpId.trim());
+        String tpId = get(properties, DEFAULT_TP_ID);
+        defaultTechProfileId = isNullOrEmpty(tpId) ? DEFAULT_TP_ID_DEFAULT : Integer.parseInt(tpId.trim());
 
     }
 
@@ -214,8 +213,11 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                UniTagInformation tagInformation,
                                                boolean install,
                                                boolean upstream) {
-        if (!enableDhcpOnProvisioning && !upstream) {
-            log.debug("Dhcp provisioning is disabled.");
+        //tagInformation can be none in case of NNI port.
+        //in that case relying on global flag
+        if (!enableDhcpOnProvisioning || (tagInformation != null
+                && !tagInformation.getIsDhcpRequired())) {
+            log.debug("Dhcp provisioning is disabled for port {} on device {}", devId, port);
             return;
         }
 
@@ -230,7 +232,7 @@ public class OltFlowService implements AccessDeviceFlowService {
             EthType ethType = EthType.EtherType.IPV4.ethType();
             byte protocol = IPv4.PROTOCOL_UDP;
 
-            this.addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
+            addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
                     upstreamMeterId, techProfileId, protocol, cTag, unitagMatch, install);
         }
 
@@ -241,7 +243,7 @@ public class OltFlowService implements AccessDeviceFlowService {
             EthType ethType = EthType.EtherType.IPV6.ethType();
             byte protocol = IPv6.PROTOCOL_UDP;
 
-            this.addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
+            addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
                     upstreamMeterId, techProfileId, protocol, cTag, unitagMatch, install);
         }
     }
@@ -303,13 +305,17 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                UniTagInformation tagInformation,
                                                boolean install,
                                                boolean upstream) {
-        if (!enableIgmpOnProvisioning) {
-            log.debug("Igmp provisioning is disabled.");
+        //tagInformation can be none in case of NNI port.
+        //in that case relying on global flag
+        if (!enableIgmpOnProvisioning || (tagInformation != null
+                && !tagInformation.getIsIgmpRequired())) {
+            log.debug("Igmp provisioning is disabled for port {} on device {}", devId, port);
             return;
         }
 
         if (!upstream) {
-            log.debug("Direction is not Upstream, ignoring Igmp request");
+            log.debug("Direction on port {} for device {} " +
+                              "is not Upstream, ignoring Igmp request", port, devId);
             return;
         }
 
@@ -706,7 +712,7 @@ public class OltFlowService implements AccessDeviceFlowService {
      */
     private Long createMetadata(VlanId innerVlan, int techProfileId, PortNumber egressPort) {
         if (techProfileId == NONE_TP_ID) {
-            techProfileId = DEFAULT_TP_ID;
+            techProfileId = DEFAULT_TP_ID_DEFAULT;
         }
 
         return ((long) (innerVlan.id()) << 48 | (long) techProfileId << 32) | egressPort.toLong();
