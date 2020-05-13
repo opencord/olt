@@ -15,6 +15,7 @@
  */
 package org.opencord.olt.impl;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -243,6 +244,13 @@ public class OltMeterService implements AccessDeviceMeterService {
                 .collect(Collectors.toList());
 
         meters.forEach(e -> bpInfoToMeter.remove(e.getKey(), e.getValue()));
+        List<Meter> metersToRemove = ImmutableList.copyOf(meterService.getMeters(deviceId));
+        metersToRemove.forEach(meter -> {
+            MeterRequest mq = DefaultMeterRequest.builder().fromApp(appId)
+                    .forDevice(deviceId).withBands(meter.bands())
+                    .withUnit(meter.unit()).remove();
+            meterService.withdraw(mq, meter.id());
+        });
     }
 
     private List<Band> createMeterBands(BandwidthProfileInformation bpInfo) {
