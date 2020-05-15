@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "533ab46c_809100b0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-15T19:00:16Z",
+      "side": 1,
+      "message": "not related to this patch but would be helpful to mention the port number here",
+      "revId": "2a2b8489af68b020934c5b3ff657a782d174c8ad",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7f9eab50_3e965fe5",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-15T19:00:16Z",
+      "side": 1,
+      "message": "not related to this patch but would be helpful to mention the port number here",
+      "revId": "2a2b8489af68b020934c5b3ff657a782d174c8ad",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
