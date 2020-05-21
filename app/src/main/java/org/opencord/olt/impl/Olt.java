@@ -974,7 +974,7 @@ public class Olt
                     flowRuleService.purgeFlowRules(devId);
                     return;
                 } else if (!isLocalLeader) {
-                    log.info("not handling event because of not local leader for {}", devId);
+                    log.debug("Not handling event because instance is not leader for {}", devId);
                     return;
                 }
 
