@@ -157,6 +157,8 @@ public class OltMeterService implements AccessDeviceMeterService {
     }
 
     void addMeterIdToBpMapping(DeviceId deviceId, MeterId meterId, String bandwidthProfile) {
+        log.debug("adding bp {} to meter {} mapping for device {}",
+                 bandwidthProfile, meterId, deviceId);
         bpInfoToMeter.put(bandwidthProfile, MeterKey.key(deviceId, meterId));
     }
 
@@ -177,8 +179,8 @@ public class OltMeterService implements AccessDeviceMeterService {
                     meterKeyForDevice.get().meterId(), bandwidthProfile);
             return meterKeyForDevice.get().meterId();
         } else {
-            log.warn("Bandwidth profile '{}' is not currently mapped to a meter",
-                    bandwidthProfile);
+            log.warn("Bandwidth Profile '{}' is not currently mapped to a meter in {}",
+                     bandwidthProfile, bpInfoToMeter.get(bandwidthProfile).value());
             return null;
         }
     }
@@ -215,6 +217,9 @@ public class OltMeterService implements AccessDeviceMeterService {
                 .withContext(new MeterContext() {
                     @Override
                     public void onSuccess(MeterRequest op) {
+                        log.debug("Meter {} is installed on the device {}",
+                                 meterId, deviceId);
+                        addMeterIdToBpMapping(deviceId, meterIdRef.get(), bpInfo.id());
                         meterFuture.complete(null);
                     }
 
@@ -232,7 +237,6 @@ public class OltMeterService implements AccessDeviceMeterService {
 
         Meter meter = meterService.submit(meterRequest);
         meterIdRef.set(meter.id());
-        addMeterIdToBpMapping(deviceId, meterIdRef.get(), bpInfo.id());
         log.info("Meter is created. Meter Id {}", meter.id());
         return meter.id();
     }
