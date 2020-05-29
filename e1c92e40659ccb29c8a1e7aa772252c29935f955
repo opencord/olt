@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "166a19d4_42718270",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-29T22:08:43Z",
+      "side": 1,
+      "message": "some unnecessary spacing",
+      "revId": "e1c92e40659ccb29c8a1e7aa772252c29935f955",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5c035576_db592684",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-29T22:08:43Z",
+      "side": 1,
+      "message": "I prefer this remains \"Call to pr..\" as it is easy to grep in logs and represents a start to subscriber provisioning; we have too many places where it is just \"Provisioning ...\"",
+      "revId": "e1c92e40659ccb29c8a1e7aa772252c29935f955",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9d162684_52f828c4",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 695,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-29T22:08:43Z",
+      "side": 1,
+      "message": "Is this comment necessary?",
+      "revId": "e1c92e40659ccb29c8a1e7aa772252c29935f955",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bb4c19d8_919746a3",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 748,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-29T22:08:43Z",
+      "side": 1,
+      "message": "enhance log with subscriberFlowInfo",
+      "revId": "e1c92e40659ccb29c8a1e7aa772252c29935f955",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f93739dd_209311d8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 764,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-29T22:08:43Z",
+      "side": 1,
+      "message": "enhance log with subscriberFlowInfo",
+      "revId": "e1c92e40659ccb29c8a1e7aa772252c29935f955",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8e497467_41fa4de1",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 789,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-29T22:08:43Z",
+      "side": 1,
+      "message": "enhance log with subscriberFlowInfo",
+      "revId": "e1c92e40659ccb29c8a1e7aa772252c29935f955",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
