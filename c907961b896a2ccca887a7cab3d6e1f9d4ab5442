@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f0e8aa07_a48dbca6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/SubscriberFlowInfo.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-05-29T22:08:43Z",
+      "side": 1,
+      "message": "I wonder if we should leave the meter ids from the hash \u0026 equals since its value changes after the object is created",
+      "revId": "c907961b896a2ccca887a7cab3d6e1f9d4ab5442",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
