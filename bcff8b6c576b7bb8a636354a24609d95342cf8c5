@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "775adb9c_4f7c1cce",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-05-29T17:00:37Z",
+      "side": 1,
+      "message": "yes, will do",
+      "parentUuid": "d6218e64_585b1ae9",
+      "revId": "bcff8b6c576b7bb8a636354a24609d95342cf8c5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "db5da7ac_517ab36c",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2020-05-29T16:54:03Z",
       "side": 1,
       "message": "The only major comment I have is this -- right here you need to put in the meterIds into flowInfo that you pass to handleSubFlowsWithMeters,  because when fi was first created there may or may not have been a meterId depending on whether the meter was created or not at that time.",
+      "revId": "bcff8b6c576b7bb8a636354a24609d95342cf8c5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "60d9322c_2b68fa9a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1337,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-05-29T17:00:37Z",
+      "side": 1,
+      "message": "this does make sense, will do.",
+      "parentUuid": "db5da7ac_517ab36c",
       "revId": "bcff8b6c576b7bb8a636354a24609d95342cf8c5",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
