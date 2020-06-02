@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a1f8d246_5146333f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1239,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-02T02:09:59Z",
+      "side": 1,
+      "message": "Please remove commented out code.\n\nI agree that the queue does not really help here. There is no reason to queue up meter creation from multiple threads, once we have guaranteed that the meters are all unique. So this is simpler.\n\nWhat likely helped getting past the issues was the update to the bptometer map happening on ack, and not on send. This is because if we update on send, there is a good chance that the flow referencing the meter will also get sent almost simultaneously. And since we are not putting these messages in separate ONOS batches, then ONOS could reorder the messages such that the flow gets sent on the wire before the meter. This flow would fail and never recover. By updating the map on the ack, the flow gets held back. Nice catch",
+      "revId": "f210ca37c3a5dfcc760f030e6dd81cd2a33fab82",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7ad1ebd6_50a32d5c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-02T02:09:59Z",
+      "side": 1,
+      "message": "in empty?",
+      "revId": "f210ca37c3a5dfcc760f030e6dd81cd2a33fab82",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
