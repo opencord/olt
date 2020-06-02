@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "cee4f80e_fd727f54",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1239,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-06-02T07:28:27Z",
+      "side": 1,
+      "message": "removed.\n\nI agree that that was part of what made this succeed precisely to what you explained, avoiding collisions and race conditions in the stack for meter referencing.",
+      "parentUuid": "a1f8d246_5146333f",
+      "revId": "f210ca37c3a5dfcc760f030e6dd81cd2a33fab82",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7ad1ebd6_50a32d5c",
         "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
         "patchSetId": 6
@@ -30,6 +48,24 @@
       "writtenOn": "2020-06-02T02:09:59Z",
       "side": 1,
       "message": "in empty?",
+      "revId": "f210ca37c3a5dfcc760f030e6dd81cd2a33fab82",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "20a8f45e_d7e8d4a4",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-06-02T07:28:27Z",
+      "side": 1,
+      "message": "debugging leftover, removed",
+      "parentUuid": "7ad1ebd6_50a32d5c",
       "revId": "f210ca37c3a5dfcc760f030e6dd81cd2a33fab82",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
