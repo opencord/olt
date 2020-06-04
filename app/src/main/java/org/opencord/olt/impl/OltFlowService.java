@@ -162,14 +162,14 @@ public class OltFlowService implements AccessDeviceFlowService {
         subsService = sadisService.getSubscriberInfoService();
         componentConfigService.registerProperties(getClass());
         appId = coreService.getAppId(APP_NAME);
-        log.info("Olt Flow Service started");
+        log.info("started");
     }
 
 
     @Deactivate
     public void deactivate(ComponentContext context) {
         componentConfigService.unregisterProperties(getClass(), false);
-        log.info("Olt flow service stopped");
+        log.info("stopped");
     }
 
     @Modified
@@ -204,6 +204,12 @@ public class OltFlowService implements AccessDeviceFlowService {
 
         String tpId = get(properties, DEFAULT_TP_ID);
         defaultTechProfileId = isNullOrEmpty(tpId) ? DEFAULT_TP_ID_DEFAULT : Integer.parseInt(tpId.trim());
+
+        log.info("modified. Values = enableDhcpOnProvisioning: {}, enableDhcpV4: {}, " +
+                         "enableDhcpV6:{}, enableIgmpOnProvisioning:{}, " +
+                         "enableEapol{}, defaultTechProfileId: {}",
+                 enableDhcpOnProvisioning, enableDhcpV4, enableDhcpV6,
+                 enableIgmpOnProvisioning, enableEapol, defaultTechProfileId);
 
     }
 
@@ -319,10 +325,8 @@ public class OltFlowService implements AccessDeviceFlowService {
             return;
         }
 
-        if (!mastershipService.isLocalMaster(devId)) {
-            return;
-        }
-
+        log.debug("{} IGMP flows on {}:{}", (install) ?
+                "Installing" : "Removing", devId, port);
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
         if (upstream) {
