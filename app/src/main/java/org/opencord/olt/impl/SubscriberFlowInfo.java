@@ -160,15 +160,13 @@ class SubscriberFlowInfo {
                 nniPort.equals(flowInfo.nniPort) &&
                 uniPort.equals(flowInfo.uniPort) &&
                 tagInfo.equals(flowInfo.tagInfo) &&
-                downId.equals(flowInfo.downId) &&
-                upId.equals(flowInfo.upId) &&
                 downBpInfo.equals(flowInfo.downBpInfo) &&
                 upBpInfo.equals(flowInfo.upBpInfo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(devId, nniPort, uniPort, tagInfo, downId, upId, downBpInfo, upBpInfo);
+        return Objects.hash(devId, nniPort, uniPort, tagInfo, downBpInfo, upBpInfo);
     }
 
     @Override

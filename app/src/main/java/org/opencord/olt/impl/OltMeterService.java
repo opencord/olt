@@ -225,6 +225,8 @@ public class OltMeterService implements AccessDeviceMeterService {
 
                     @Override
                     public void onError(MeterRequest op, MeterFailReason reason) {
+                        log.error("Failed installing meter {} on {} for {}",
+                                  meterIdRef.get(), deviceId, bpInfo.id());
                         bpInfoToMeter.remove(bpInfo.id(),
                                              MeterKey.key(deviceId, meterIdRef.get()));
                         meterFuture.complete(reason);
@@ -247,12 +249,28 @@ public class OltMeterService implements AccessDeviceMeterService {
                 .filter(e -> e.getValue().deviceId().equals(deviceId))
                 .collect(Collectors.toList());
 
+        //TODO move to purgeMeters from ONOS 2.2.3-SNAPSHOT
         meters.forEach(e -> bpInfoToMeter.remove(e.getKey(), e.getValue()));
         List<Meter> metersToRemove = ImmutableList.copyOf(meterService.getMeters(deviceId));
         metersToRemove.forEach(meter -> {
             MeterRequest mq = DefaultMeterRequest.builder().fromApp(appId)
                     .forDevice(deviceId).withBands(meter.bands())
-                    .withUnit(meter.unit()).remove();
+                    .withUnit(meter.unit())
+                    .withContext(new MeterContext() {
+                        @Override
+                        public void onSuccess(MeterRequest op) {
+                            log.debug("Meter {} is removed from the device {}",
+                                      meter.meterCellId(), deviceId);
+                        }
+
+                        @Override
+                        public void onError(MeterRequest op, MeterFailReason reason) {
+                            log.error("Meter {} failed to be removed from the device {}",
+                                      meter.meterCellId(), deviceId);
+                        }
+                    })
+                    .burst()
+                    .remove();
             meterService.withdraw(mq, meter.id());
         });
     }
