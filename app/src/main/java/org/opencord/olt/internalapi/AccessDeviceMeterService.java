@@ -68,6 +68,30 @@ public interface AccessDeviceMeterService {
                         CompletableFuture<Object> meterFuture);
 
     /**
+     * Adds the DeviceBandwidthProfile to the pendingMeters.
+     *
+     * @param deviceBandwidthProfile the device to bandwidth profile mapping
+     */
+    void addToPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile);
+
+    /**
+     * Removes the DeviceBandwidthProfile from the pendingMeters.
+     *
+     * @param deviceBandwidthProfile the device to bandwidth profile mapping
+     *
+     */
+    void removeFromPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile);
+
+    /**
+     * Checks if DeviceBandwidthProfile is pending.
+     *
+     * @param deviceBandwidthProfile the device to bandwidth profile mapping
+     *
+     * @return true if pending.
+     */
+    boolean isMeterPending(DeviceBandwidthProfile deviceBandwidthProfile);
+
+    /**
      * Clears out bandwidth profile to meter mappings for the given device.
      *
      * @param deviceId device ID

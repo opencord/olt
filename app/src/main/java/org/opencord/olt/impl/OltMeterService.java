@@ -43,6 +43,7 @@ import org.onosproject.store.service.ConsistentMultimap;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
 import org.opencord.olt.internalapi.AccessDeviceMeterService;
+import org.opencord.olt.internalapi.DeviceBandwidthProfile;
 import org.opencord.sadis.BandwidthProfileInformation;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -60,7 +61,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -109,6 +112,8 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     protected ExecutorService eventExecutor;
 
+    private Set<DeviceBandwidthProfile> pendingMeters;
+
     @Activate
     public void activate(ComponentContext context) {
         eventExecutor = Executors.newFixedThreadPool(5, groupedThreads("onos/olt",
@@ -129,6 +134,7 @@ public class OltMeterService implements AccessDeviceMeterService {
 
         meterService.addListener(meterListener);
         componentConfigService.registerProperties(getClass());
+        pendingMeters = ConcurrentHashMap.newKeySet();
         log.info("Olt Meter service started");
     }
 
@@ -195,6 +201,7 @@ public class OltMeterService implements AccessDeviceMeterService {
     @Override
     public MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
                                CompletableFuture<Object> meterFuture) {
+        log.debug("Installing meter on {} for {}", deviceId, bpInfo);
         if (bpInfo == null) {
             log.warn("Requested bandwidth profile information is NULL");
             meterFuture.complete(ObjectiveError.BADPARAMS);
@@ -218,7 +225,7 @@ public class OltMeterService implements AccessDeviceMeterService {
                     @Override
                     public void onSuccess(MeterRequest op) {
                         log.debug("Meter {} is installed on the device {}",
-                                 meterId, deviceId);
+                                 meterIdRef.get(), deviceId);
                         addMeterIdToBpMapping(deviceId, meterIdRef.get(), bpInfo.id());
                         meterFuture.complete(null);
                     }
@@ -241,6 +248,21 @@ public class OltMeterService implements AccessDeviceMeterService {
         meterIdRef.set(meter.id());
         log.info("Meter is created. Meter Id {}", meter.id());
         return meter.id();
+    }
+
+    @Override
+    public void addToPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile) {
+        pendingMeters.add(deviceBandwidthProfile);
+    }
+
+    @Override
+    public void removeFromPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile) {
+        pendingMeters.remove(deviceBandwidthProfile);
+    }
+
+    @Override
+    public boolean isMeterPending(DeviceBandwidthProfile deviceBandwidthProfile) {
+        return pendingMeters.contains(deviceBandwidthProfile);
     }
 
     @Override
