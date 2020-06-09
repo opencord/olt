@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencord.olt.impl;
+package org.opencord.olt.internalapi;
 
 import org.onosproject.net.DeviceId;
 import org.opencord.sadis.BandwidthProfileInformation;
@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * Class containing a mapping of DeviceId to BandwidthProfileInformation.
  */
-class DeviceBandwidthProfile {
+public class DeviceBandwidthProfile {
     private final DeviceId devId;
     private BandwidthProfileInformation bwInfo;
 
@@ -33,7 +33,7 @@ class DeviceBandwidthProfile {
      * @param devId  the device id
      * @param bwInfo the bandwidth profile information
      */
-    DeviceBandwidthProfile(DeviceId devId, BandwidthProfileInformation bwInfo) {
+    public DeviceBandwidthProfile(DeviceId devId, BandwidthProfileInformation bwInfo) {
         this.devId = devId;
         this.bwInfo = bwInfo;
     }
@@ -43,7 +43,7 @@ class DeviceBandwidthProfile {
      *
      * @return device id.
      */
-    DeviceId getDevId() {
+    public DeviceId getDevId() {
         return devId;
     }
 
@@ -52,7 +52,7 @@ class DeviceBandwidthProfile {
      *
      * @return bandwidth profile information
      */
-    BandwidthProfileInformation getBwInfo() {
+    public BandwidthProfileInformation getBwInfo() {
         return bwInfo;
     }
 

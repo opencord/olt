@@ -48,6 +48,7 @@ import org.onosproject.net.flowobjective.NextObjective;
 import org.onosproject.net.flowobjective.Objective;
 import org.onosproject.net.meter.MeterId;
 import org.onosproject.net.meter.MeterKey;
+import org.opencord.olt.internalapi.DeviceBandwidthProfile;
 import org.opencord.sadis.BandwidthProfileInformation;
 import org.opencord.sadis.UniTagInformation;
 
@@ -202,6 +203,20 @@ public class OltFlowTest extends TestBase {
         public MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
                                    CompletableFuture<Object> meterFuture) {
             return usMeterId;
+        }
+
+        @Override
+        public void addToPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile) {
+
+        }
+
+        @Override
+        public void removeFromPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile) {
+        }
+
+        @Override
+        public boolean isMeterPending(DeviceBandwidthProfile deviceBandwidthProfile) {
+            return false;
         }
 
         @Override
