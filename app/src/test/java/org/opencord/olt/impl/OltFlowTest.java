@@ -349,7 +349,7 @@ public class OltFlowTest extends TestBase {
             } else {
                 assert meter.meterId().equals(usMeterId) || meter.meterId().equals(dsMeterId);
                 assert writeMetadata != null;
-                assert vlanIdCriterion.vlanId() == uniTagInfo.getPonCTag();
+                assert vlanIdCriterion == null || vlanIdCriterion.vlanId() == uniTagInfo.getUniTagMatch();
             }
 
         }
