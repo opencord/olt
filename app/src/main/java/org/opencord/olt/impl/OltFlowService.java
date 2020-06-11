@@ -252,6 +252,8 @@ public class OltFlowService implements AccessDeviceFlowService {
         int techProfileId = tagInformation != null ? tagInformation.getTechnologyProfileId() : NONE_TP_ID;
         VlanId cTag = tagInformation != null ? tagInformation.getPonCTag() : VlanId.NONE;
         VlanId unitagMatch = tagInformation != null ? tagInformation.getUniTagMatch() : VlanId.ANY;
+        Byte vlanPcp = tagInformation != null ? (byte) tagInformation.getUsPonCTagPriority() : null;
+
 
         if (enableDhcpV4) {
             int udpSrc = (upstream) ? 68 : 67;
@@ -261,7 +263,8 @@ public class OltFlowService implements AccessDeviceFlowService {
             byte protocol = IPv4.PROTOCOL_UDP;
 
             addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
-                    upstreamMeterId, techProfileId, protocol, cTag, unitagMatch, install);
+                    upstreamMeterId, techProfileId, protocol, cTag, unitagMatch,
+                                       vlanPcp, upstream, install);
         }
 
         if (enableDhcpV6) {
@@ -272,13 +275,16 @@ public class OltFlowService implements AccessDeviceFlowService {
             byte protocol = IPv6.PROTOCOL_UDP;
 
             addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
-                    upstreamMeterId, techProfileId, protocol, cTag, unitagMatch, install);
+                    upstreamMeterId, techProfileId, protocol, cTag, unitagMatch,
+                                       vlanPcp, upstream, install);
         }
     }
 
     private void addDhcpFilteringObjectives(DeviceId devId, PortNumber port, int udpSrc, int udpDst,
                                             EthType ethType, MeterId upstreamMeterId, int techProfileId, byte protocol,
-                                            VlanId cTag, VlanId unitagMatch, boolean install) {
+                                            VlanId cTag, VlanId unitagMatch,
+                                            Byte vlanPcp, boolean upstream,
+                                            boolean install) {
 
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
@@ -297,14 +303,23 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .addCondition(Criteria.matchIPProtocol(protocol))
                 .addCondition(Criteria.matchUdpSrc(TpPort.tpPort(udpSrc)))
                 .addCondition(Criteria.matchUdpDst(TpPort.tpPort(udpDst)))
-                .withMeta(treatmentBuilder
-                        .setOutput(PortNumber.CONTROLLER).build())
                 .fromApp(appId)
                 .withPriority(MAX_PRIORITY);
 
-        if (!VlanId.NONE.equals(cTag)) {
-            dhcpUpstreamBuilder.addCondition(Criteria.matchVlanId(cTag));
+        //VLAN changes and PCP matching need to happen only in the upstream directions
+        if (upstream) {
+            treatmentBuilder.setVlanId(cTag);
+            if (!VlanId.vlanId(VlanId.NO_VID).equals(unitagMatch)) {
+                dhcpUpstreamBuilder.addCondition(Criteria.matchVlanId(unitagMatch));
+            }
+            if (vlanPcp != null) {
+                treatmentBuilder.setVlanPcp(vlanPcp);
+            }
         }
+
+        dhcpUpstreamBuilder.withMeta(treatmentBuilder
+                                  .setOutput(PortNumber.CONTROLLER).build());
+
 
         FilteringObjective dhcpUpstream = dhcpUpstreamBuilder.add(new ObjectiveContext() {
             @Override
@@ -351,7 +366,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
         log.debug("{} IGMP flows on {}:{}", (install) ?
                 "Installing" : "Removing", devId, port);
-        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+        DefaultFilteringObjective.Builder filterBuilder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
         if (upstream) {
 
@@ -365,18 +380,22 @@ public class OltFlowService implements AccessDeviceFlowService {
                 treatmentBuilder.meter(upstreamMeterId);
             }
 
-            if (!VlanId.NONE.equals(tagInformation.getPonCTag())) {
-                builder.addCondition(Criteria.matchVlanId(tagInformation.getPonCTag()));
+            if (!VlanId.vlanId(VlanId.NO_VID).equals(tagInformation.getUniTagMatch())) {
+                filterBuilder.addCondition(Criteria.matchVlanId(tagInformation.getUniTagMatch()));
+            }
+
+            if (!VlanId.vlanId(VlanId.NO_VID).equals(tagInformation.getPonCTag())) {
+                treatmentBuilder.setVlanId(tagInformation.getPonCTag());
             }
 
             if (tagInformation.getUsPonCTagPriority() != NO_PCP) {
-                builder.addCondition(Criteria.matchVlanPcp((byte) tagInformation.getUsPonCTagPriority()));
+                treatmentBuilder.setVlanPcp((byte) tagInformation.getUsPonCTagPriority());
             }
         }
 
-        builder = install ? builder.permit() : builder.deny();
+        filterBuilder = install ? filterBuilder.permit() : filterBuilder.deny();
 
-        FilteringObjective igmp = builder
+        FilteringObjective igmp = filterBuilder
                 .withKey(Criteria.matchInPort(port))
                 .addCondition(Criteria.matchEthType(EthType.EtherType.IPV4.ethType()))
                 .addCondition(Criteria.matchIPProtocol(IPv4.PROTOCOL_IGMP))
@@ -438,7 +457,7 @@ public class OltFlowService implements AccessDeviceFlowService {
             log.info("connectPoint added to pendingAddEapol map {}", cp.toString());
         }
 
-        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+        DefaultFilteringObjective.Builder filterBuilder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
         CompletableFuture<Object> meterFuture = new CompletableFuture<>();
 
@@ -475,7 +494,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                                        .setPonCTag(vlanId).build(),
                                                                null, meterId,
                                                                null, bpInfo.id());
-                handleEapol(filterFuture, install, cp, builder, treatmentBuilder, fi, meterId);
+                handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, meterId);
             }
         } else {
             log.debug("Meter {} was previously created for bp {}", meterId, bpInfo.id());
@@ -484,7 +503,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                                    .setPonCTag(vlanId).build(),
                                                            null, meterId,
                                                            null, bpInfo.id());
-            handleEapol(filterFuture, install, cp, builder, treatmentBuilder, fi, meterId);
+            handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, meterId);
             //No need for the future, meter is present.
             return;
         }
@@ -497,7 +516,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                     MeterId mId = oltMeterService
                             .getMeterIdFromBpMapping(devId, fi.getUpBpInfo());
                     if (mId != null) {
-                        handleEapol(filterFuture, install, cp, builder, treatmentBuilder, fi, mId);
+                        handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, mId);
                         eapIterator.remove();
                     }
                 } else {
@@ -512,7 +531,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
     private void handleEapol(CompletableFuture<ObjectiveError> filterFuture,
                              boolean install, ConnectPoint cp,
-                             DefaultFilteringObjective.Builder builder,
+                             DefaultFilteringObjective.Builder filterBuilder,
                              TrafficTreatment.Builder treatmentBuilder,
                              SubscriberFlowInfo fi, MeterId mId) {
         log.info("Meter {} for {} on {}/{} exists. {} EAPOL trap flow",
@@ -524,15 +543,17 @@ public class OltFlowService implements AccessDeviceFlowService {
             treatmentBuilder.meter(mId);
         }
         //Authentication trap flow uses only tech profile id as write metadata value
-        FilteringObjective eapol = (install ? builder.permit() : builder.deny())
+        FilteringObjective eapol = (install ? filterBuilder.permit() : filterBuilder.deny())
                 .withKey(Criteria.matchInPort(fi.getUniPort()))
                 .addCondition(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
-                .addCondition(Criteria.matchVlanId(fi.getTagInfo().getPonCTag()))
                 .withMeta(treatmentBuilder
                                   .writeMetadata(createTechProfValueForWm(
                                           fi.getTagInfo().getPonCTag(),
                                           techProfileId), 0)
-                                  .setOutput(PortNumber.CONTROLLER).build())
+                                  .setOutput(PortNumber.CONTROLLER)
+                                  .pushVlan()
+                                  .setVlanId(fi.getTagInfo().getPonCTag())
+                                  .build())
                 .fromApp(appId)
                 .withPriority(MAX_PRIORITY)
                 .add(new ObjectiveContext() {
