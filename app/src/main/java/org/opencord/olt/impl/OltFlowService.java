@@ -315,7 +315,7 @@ public class OltFlowService implements AccessDeviceFlowService {
         //in that case relying on global flag
         if (!enableIgmpOnProvisioning || (tagInformation != null
                 && !tagInformation.getIsIgmpRequired())) {
-            log.debug("Igmp provisioning is disabled for port {} on device {}", devId, port);
+            log.debug("Igmp provisioning is disabled for port {} on device {}", port, devId);
             return;
         }
 
@@ -327,7 +327,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
         log.debug("{} IGMP flows on {}:{}", (install) ?
                 "Installing" : "Removing", devId, port);
-        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+        DefaultFilteringObjective.Builder filterBuilder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
         if (upstream) {
 
@@ -342,17 +342,19 @@ public class OltFlowService implements AccessDeviceFlowService {
             }
 
             if (!VlanId.NONE.equals(tagInformation.getPonCTag())) {
-                builder.addCondition(Criteria.matchVlanId(tagInformation.getPonCTag()));
+                filterBuilder.addCondition(Criteria.matchVlanId(tagInformation.getPonCTag()));
+                treatmentBuilder.setVlanId(tagInformation.getPonCTag());
             }
 
             if (tagInformation.getUsPonCTagPriority() != NO_PCP) {
-                builder.addCondition(Criteria.matchVlanPcp((byte) tagInformation.getUsPonCTagPriority()));
+                filterBuilder.addCondition(Criteria.matchVlanPcp((byte) tagInformation.getUsPonCTagPriority()));
+                treatmentBuilder.setVlanPcp((byte) tagInformation.getUsPonCTagPriority());
             }
         }
 
-        builder = install ? builder.permit() : builder.deny();
+        filterBuilder = install ? filterBuilder.permit() : filterBuilder.deny();
 
-        FilteringObjective igmp = builder
+        FilteringObjective igmp = filterBuilder
                 .withKey(Criteria.matchInPort(port))
                 .addCondition(Criteria.matchEthType(EthType.EtherType.IPV4.ethType()))
                 .addCondition(Criteria.matchIPProtocol(IPv4.PROTOCOL_IGMP))
