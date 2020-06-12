@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9dab759e_8ff76d4e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 463,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-12T00:35:29Z",
+      "side": 1,
+      "message": "Minor issue - the method \"installEapol\" could use a better name because it can be for install or removal.\n\nAnd the comment can be \"No need for future, meter is there\"",
+      "range": {
+        "startLine": 461,
+        "startChar": 0,
+        "endLine": 463,
+        "endChar": 2
+      },
+      "revId": "5453c99f0429c7f3c99f519e50eaf207d05fa708",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
