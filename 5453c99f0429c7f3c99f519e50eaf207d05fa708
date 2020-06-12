@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "c893cf9e_85906d3f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-12T02:20:16Z",
+      "side": 1,
+      "message": "Call to provision subscriber",
+      "revId": "5453c99f0429c7f3c99f519e50eaf207d05fa708",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f0c63381_9b9f507c",
         "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 2
@@ -36,6 +53,23 @@
         "endLine": 463,
         "endChar": 2
       },
+      "revId": "5453c99f0429c7f3c99f519e50eaf207d05fa708",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "77b62887_ce635683",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 524,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-12T02:20:16Z",
+      "side": 1,
+      "message": "this should be a log.error",
       "revId": "5453c99f0429c7f3c99f519e50eaf207d05fa708",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": false
