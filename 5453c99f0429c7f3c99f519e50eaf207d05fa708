@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "f0c63381_9b9f507c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 452,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-12T00:47:43Z",
+      "side": 1,
+      "message": "On second thoughts, I think we may have a problem here. In this particular case, we are trying to delete an eapol flow (for example the default vlan eapol flow) and if for some reason we don\u0027t get the meter id, we can still delete the flow because all we need is the match. \n\nIn the past, it was enough to complete the meterFuture here, because the meterFuture\u0027s thenAcceptAsync would handle both install and remove. In this patch however, thenAcceptAsync ONLY handles install, because it goes through the iterator of pendingEapolForMeters (which is only for install) --- so if the default-vlan-eapol is not deleted then filterFuture is never completed and subsequent subscriber flows will not get installed.",
+      "revId": "5453c99f0429c7f3c99f519e50eaf207d05fa708",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9dab759e_8ff76d4e",
         "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 2
