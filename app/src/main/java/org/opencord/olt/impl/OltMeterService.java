@@ -15,7 +15,6 @@
  */
 package org.opencord.olt.impl;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -267,34 +266,8 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     @Override
     public void clearMeters(DeviceId deviceId) {
-        List<Map.Entry<String, MeterKey>> meters = bpInfoToMeter.stream()
-                .filter(e -> e.getValue().deviceId().equals(deviceId))
-                .collect(Collectors.toList());
-
-        //TODO move to purgeMeters from ONOS 2.2.3-SNAPSHOT
-        meters.forEach(e -> bpInfoToMeter.remove(e.getKey(), e.getValue()));
-        List<Meter> metersToRemove = ImmutableList.copyOf(meterService.getMeters(deviceId));
-        metersToRemove.forEach(meter -> {
-            MeterRequest mq = DefaultMeterRequest.builder().fromApp(appId)
-                    .forDevice(deviceId).withBands(meter.bands())
-                    .withUnit(meter.unit())
-                    .withContext(new MeterContext() {
-                        @Override
-                        public void onSuccess(MeterRequest op) {
-                            log.debug("Meter {} is removed from the device {}",
-                                      meter.meterCellId(), deviceId);
-                        }
-
-                        @Override
-                        public void onError(MeterRequest op, MeterFailReason reason) {
-                            log.error("Meter {} failed to be removed from the device {}",
-                                      meter.meterCellId(), deviceId);
-                        }
-                    })
-                    .burst()
-                    .remove();
-            meterService.withdraw(mq, meter.id());
-        });
+        log.debug("Removing all meters for device {}", deviceId);
+        meterService.purgeMeters(deviceId);
     }
 
     private List<Band> createMeterBands(BandwidthProfileInformation bpInfo) {
