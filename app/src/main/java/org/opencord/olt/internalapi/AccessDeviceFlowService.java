@@ -145,4 +145,10 @@ public interface AccessDeviceFlowService {
                                                   PortNumber subscriberPort,
                                                   MeterId downstreamMeterId,
                                                   UniTagInformation tagInformation);
+
+    /**
+     * Clears pending mappings and state for device.
+     * @param deviceId the device id
+     */
+    void clearDeviceState(DeviceId deviceId);
 }
