@@ -42,7 +42,6 @@ import org.onosproject.store.service.ConsistentMultimap;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
 import org.opencord.olt.internalapi.AccessDeviceMeterService;
-import org.opencord.olt.internalapi.DeviceBandwidthProfile;
 import org.opencord.sadis.BandwidthProfileInformation;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -56,13 +55,14 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -100,8 +100,6 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     protected boolean deleteMeters = true;
 
-    ConsistentMultimap<String, MeterKey> bpInfoToMeter;
-
     private ApplicationId appId;
     private static final String APP_NAME = "org.opencord.olt";
 
@@ -111,7 +109,9 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     protected ExecutorService eventExecutor;
 
-    private Set<DeviceBandwidthProfile> pendingMeters;
+    private Map<DeviceId, Set<BandwidthProfileInformation>> pendingMeters;
+    private Map<DeviceId, Map<MeterKey, AtomicInteger>> pendingRemoveMeters;
+    ConsistentMultimap<String, MeterKey> bpInfoToMeter;
 
     @Activate
     public void activate(ComponentContext context) {
@@ -133,7 +133,8 @@ public class OltMeterService implements AccessDeviceMeterService {
 
         meterService.addListener(meterListener);
         componentConfigService.registerProperties(getClass());
-        pendingMeters = ConcurrentHashMap.newKeySet();
+        pendingMeters = Maps.newConcurrentMap();
+        pendingRemoveMeters = Maps.newConcurrentMap();
         log.info("Olt Meter service started");
     }
 
@@ -250,24 +251,52 @@ public class OltMeterService implements AccessDeviceMeterService {
     }
 
     @Override
-    public void addToPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile) {
-        pendingMeters.add(deviceBandwidthProfile);
+    public void addToPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        if (deviceId == null) {
+            return;
+        }
+        pendingMeters.compute(deviceId, (id, bwps) -> {
+            if (bwps == null) {
+                bwps = new HashSet<>();
+            }
+            bwps.add(bwpInfo);
+            return bwps;
+        });
     }
 
     @Override
-    public void removeFromPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile) {
-        pendingMeters.remove(deviceBandwidthProfile);
+    public void removeFromPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        if (deviceId == null) {
+            return;
+        }
+        pendingMeters.computeIfPresent(deviceId, (id, bwps) -> {
+            bwps.remove(bwpInfo);
+            return bwps;
+        });
     }
 
     @Override
-    public boolean isMeterPending(DeviceBandwidthProfile deviceBandwidthProfile) {
-        return pendingMeters.contains(deviceBandwidthProfile);
+    public boolean isMeterPending(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        if (!pendingMeters.containsKey(deviceId)) {
+            return false;
+        }
+        return pendingMeters.get(deviceId).contains(bwpInfo);
     }
 
     @Override
     public void clearMeters(DeviceId deviceId) {
         log.debug("Removing all meters for device {}", deviceId);
+        clearDeviceState(deviceId);
         meterService.purgeMeters(deviceId);
+    }
+
+    @Override
+    public void clearDeviceState(DeviceId deviceId) {
+        log.info("Clearing local device state for {}", deviceId);
+        pendingRemoveMeters.remove(deviceId);
+        removeMetersFromBpMapping(deviceId);
+        //Following call handles cornercase of OLT delete during meter provisioning
+        pendingMeters.remove(deviceId);
     }
 
     private List<Band> createMeterBands(BandwidthProfileInformation bpInfo) {
@@ -288,9 +317,23 @@ public class OltMeterService implements AccessDeviceMeterService {
                 .build();
     }
 
-    private class InternalMeterListener implements MeterListener {
+    private void removeMeterFromBpMapping(MeterKey meterKey) {
+        List<Map.Entry<String, MeterKey>> meters = bpInfoToMeter.stream()
+                .filter(e -> e.getValue().equals(meterKey))
+                .collect(Collectors.toList());
 
-        Map<MeterKey, AtomicInteger> pendingRemoveMeters = Maps.newConcurrentMap();
+        meters.forEach(e -> bpInfoToMeter.remove(e.getKey(), e.getValue()));
+    }
+
+    private void removeMetersFromBpMapping(DeviceId deviceId) {
+        List<Map.Entry<String, MeterKey>> meters = bpInfoToMeter.stream()
+                .filter(e -> e.getValue().deviceId().equals(deviceId))
+                .collect(Collectors.toList());
+
+        meters.forEach(e -> bpInfoToMeter.remove(e.getKey(), e.getValue()));
+    }
+
+    private class InternalMeterListener implements MeterListener {
 
         @Override
         public void event(MeterEvent meterEvent) {
@@ -302,33 +345,50 @@ public class OltMeterService implements AccessDeviceMeterService {
                 }
                 MeterKey key = MeterKey.key(meter.deviceId(), meter.id());
                 if (deleteMeters && MeterEvent.Type.METER_REFERENCE_COUNT_ZERO.equals(meterEvent.type())) {
-                    log.info("Zero Count Meter Event is received. Meter is {}", meter.id());
-                    incrementMeterCount(key);
+                    log.info("Zero Count Meter Event is received. Meter is {} on {}",
+                             meter.id(), meter.deviceId());
+                    incrementMeterCount(meter.deviceId(), key);
 
-                    if (appId.equals(meter.appId()) && pendingRemoveMeters.get(key).get() == 3) {
-                        log.info("Deleting unreferenced, no longer programmed Meter {}", meter.id());
+                    if (appId.equals(meter.appId()) && pendingRemoveMeters.get(meter.deviceId())
+                            .get(key).get() == 3) {
+                        log.info("Deleting unreferenced, no longer programmed Meter {} on {}",
+                                 meter.id(), meter.deviceId());
                         deleteMeter(meter.deviceId(), meter.id());
                     }
                 }
                 if (MeterEvent.Type.METER_REMOVED.equals(meterEvent.type())) {
-                    log.info("Meter Removed Event is received for {}", meter.id());
-                    pendingRemoveMeters.remove(key);
+                    log.info("Meter Removed Event is received for {} on {}",
+                             meter.id(), meter.deviceId());
+                    pendingRemoveMeters.computeIfPresent(meter.deviceId(),
+                                                (id, meters) -> {
+                                                    if (meters.get(key) == null) {
+                                                        log.info("Meters is not pending " +
+                                                                         "{} on {}", key, id);
+                                                        return meters;
+                                                    }
+                                                    meters.remove(key);
+                                                    return meters;
+                                                });
                     removeMeterFromBpMapping(key);
                 }
             });
         }
 
-        private void incrementMeterCount(MeterKey key) {
+        private void incrementMeterCount(DeviceId deviceId, MeterKey key) {
             if (key == null) {
                 return;
             }
-            pendingRemoveMeters.compute(key,
-                    (k, v) -> {
-                        if (v == null) {
-                            return new AtomicInteger(1);
+            pendingRemoveMeters.compute(deviceId,
+                    (id, meters) -> {
+                        if (meters == null) {
+                            meters = new HashMap<>();
+
                         }
-                        v.addAndGet(1);
-                        return v;
+                        if (meters.get(key) == null) {
+                            meters.put(key, new AtomicInteger(1));
+                        }
+                        meters.get(key).addAndGet(1);
+                        return meters;
                     });
         }
 
@@ -345,14 +405,6 @@ public class OltMeterService implements AccessDeviceMeterService {
 
                 meterService.withdraw(meterRequest, meterId);
             }
-        }
-
-        private void removeMeterFromBpMapping(MeterKey meterKey) {
-            List<Map.Entry<String, MeterKey>> meters = bpInfoToMeter.stream()
-                    .filter(e -> e.getValue().equals(meterKey))
-                    .collect(Collectors.toList());
-
-            meters.forEach(e -> bpInfoToMeter.remove(e.getKey(), e.getValue()));
         }
     }
 }

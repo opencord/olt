@@ -49,7 +49,6 @@ import org.onosproject.net.flowobjective.ObjectiveError;
 import org.onosproject.net.meter.MeterId;
 import org.opencord.olt.internalapi.AccessDeviceFlowService;
 import org.opencord.olt.internalapi.AccessDeviceMeterService;
-import org.opencord.olt.internalapi.DeviceBandwidthProfile;
 import org.opencord.sadis.BandwidthProfileInformation;
 import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SadisService;
@@ -423,7 +422,6 @@ public class OltFlowService implements AccessDeviceFlowService {
 
         // check if meter exists and create it only for an install
         final MeterId meterId = oltMeterService.getMeterIdFromBpMapping(devId, bpInfo.id());
-        DeviceBandwidthProfile dm = new DeviceBandwidthProfile(devId, bpInfo);
         if (meterId == null) {
             if (install) {
                 log.debug("Need to install meter for EAPOL with bwp {}", bpInfo.id());
@@ -434,11 +432,12 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                                null, bpInfo.id());
                 pendingEapolForMeters.add(fi);
 
-                if (oltMeterService.isMeterPending(dm)) {
-                    log.debug("Meter {} is already pending for EAPOL", dm);
+                if (oltMeterService.isMeterPending(devId, bpInfo)) {
+                    log.debug("Meter is already pending for EAPOL on {} with bp {}",
+                              devId, bpInfo);
                     return;
                 }
-                oltMeterService.addToPendingMeters(dm);
+                oltMeterService.addToPendingMeters(devId, bpInfo);
                 MeterId innerMeterId = oltMeterService.createMeter(devId, bpInfo,
                                                                    meterFuture);
                 fi.setUpMeterId(innerMeterId);
@@ -474,7 +473,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                 SubscriberFlowInfo fi = eapIterator.next();
                 if (result == null) {
                     MeterId mId = oltMeterService
-                            .getMeterIdFromBpMapping(dm.getDevId(), fi.getUpBpInfo());
+                            .getMeterIdFromBpMapping(devId, fi.getUpBpInfo());
                     if (mId != null) {
                         handleEapol(filterFuture, install, cp, builder, treatmentBuilder, fi, mId);
                         eapIterator.remove();
@@ -484,8 +483,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                                      "Result {} and MeterId {}", result, meterId);
                     eapIterator.remove();
                 }
-                oltMeterService.removeFromPendingMeters(new DeviceBandwidthProfile(
-                        dm.getDevId(), dm.getBwInfo()));
+                oltMeterService.removeFromPendingMeters(devId, bpInfo);
             }
         });
     }
@@ -518,8 +516,8 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("Eapol filter for {} on {} {} with meter {}.",
-                                 fi.getDevId(), fi.getUniPort(),
+                        log.info("Eapol filter {} for {} on {} {} with meter {}.",
+                                 objective.id(), fi.getDevId(), fi.getUniPort(),
                                  (install) ? INSTALLED : REMOVED, mId);
                         if (filterFuture != null) {
                             filterFuture.complete(null);
@@ -529,8 +527,8 @@ public class OltFlowService implements AccessDeviceFlowService {
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
-                        log.error("Eapol filter for {} on {} with meter {} " +
-                                         "failed {} because {}",
+                        log.error("Eapol filter {} for {} on {} with meter {} " +
+                                         "failed {} because {}", objective.id(),
                                  fi.getDevId(), fi.getUniPort(), mId,
                                  (install) ? INSTALLATION : REMOVAL,
                                  error);
@@ -706,6 +704,13 @@ public class OltFlowService implements AccessDeviceFlowService {
         }
 
         return createForwardingObjectiveBuilder(selectorBuilder.build(), treatmentBuilder.build(), MIN_PRIORITY);
+    }
+
+    @Override
+    public void clearDeviceState(DeviceId deviceId) {
+        pendingEapolForMeters.removeIf(fi -> fi.getDevId().equals(deviceId));
+        pendingAddEapol.removeIf(connectPoint -> connectPoint.deviceId().equals(deviceId));
+
     }
 
     private DefaultForwardingObjective.Builder createForwardingObjectiveBuilder(TrafficSelector selector,

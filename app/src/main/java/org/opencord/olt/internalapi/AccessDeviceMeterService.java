@@ -70,31 +70,41 @@ public interface AccessDeviceMeterService {
     /**
      * Adds the DeviceBandwidthProfile to the pendingMeters.
      *
-     * @param deviceBandwidthProfile the device to bandwidth profile mapping
+     * @param deviceId the device
+     * @param bwpInfo the bandwidth profile info
      */
-    void addToPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile);
+    void addToPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo);
 
     /**
      * Removes the DeviceBandwidthProfile from the pendingMeters.
      *
-     * @param deviceBandwidthProfile the device to bandwidth profile mapping
+     * @param deviceId the device
+     * @param bwpInfo the bandwidth profile info
      *
      */
-    void removeFromPendingMeters(DeviceBandwidthProfile deviceBandwidthProfile);
+    void removeFromPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo);
 
     /**
      * Checks if DeviceBandwidthProfile is pending.
      *
-     * @param deviceBandwidthProfile the device to bandwidth profile mapping
+     * @param deviceId the device
+     * @param bwpInfo the bandwidth profile info
      *
      * @return true if pending.
      */
-    boolean isMeterPending(DeviceBandwidthProfile deviceBandwidthProfile);
+    boolean isMeterPending(DeviceId deviceId, BandwidthProfileInformation bwpInfo);
 
     /**
-     * Clears out bandwidth profile to meter mappings for the given device.
+     * Clears out meters for the given device.
      *
      * @param deviceId device ID
      */
     void clearMeters(DeviceId deviceId);
+
+    /**
+     * Clears out local state for the given device.
+     *
+     * @param deviceId device ID
+     */
+    void clearDeviceState(DeviceId deviceId);
 }

@@ -83,7 +83,6 @@ import org.opencord.olt.AccessDeviceService;
 import org.opencord.olt.AccessSubscriberId;
 import org.opencord.olt.internalapi.AccessDeviceFlowService;
 import org.opencord.olt.internalapi.AccessDeviceMeterService;
-import org.opencord.olt.internalapi.DeviceBandwidthProfile;
 import org.opencord.sadis.BandwidthProfileInformation;
 import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SadisService;
@@ -695,28 +694,28 @@ public class Olt
             // queue up the meters to be created
             if (upMeterId == null) {
                 log.debug("Missing meter for upstream {}", upstreamBpInfo.id());
-                checkAndCreateDevMeter(new DeviceBandwidthProfile(deviceId, upstreamBpInfo));
+                checkAndCreateDevMeter(deviceId, upstreamBpInfo);
             }
             if (downMeterId == null) {
                 log.debug("Missing meter for downstream {}", downstreamBpInfo.id());
-                checkAndCreateDevMeter(new DeviceBandwidthProfile(deviceId, downstreamBpInfo));
+                checkAndCreateDevMeter(deviceId, downstreamBpInfo);
             }
         }
     }
-    private void checkAndCreateDevMeter(DeviceBandwidthProfile dm) {
-        if (oltMeterService.isMeterPending(dm)) {
-            log.debug("Meter is already pending {}", dm);
+    private void checkAndCreateDevMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        if (oltMeterService.isMeterPending(deviceId, bwpInfo)) {
+            log.debug("Meter is already pending {} on device {}", bwpInfo, deviceId);
             return;
         }
-        oltMeterService.addToPendingMeters(dm);
-        createMeter(dm);
+        oltMeterService.addToPendingMeters(deviceId, bwpInfo);
+        createMeter(deviceId, bwpInfo);
     }
 
-    private void createMeter(DeviceBandwidthProfile dm) {
-        log.debug("Creating Meter {} from queue for subscriber", dm);
+    private void createMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        log.debug("Creating Meter with {} on {} for subscriber", bwpInfo, deviceId);
         CompletableFuture<Object> meterFuture = new CompletableFuture<>();
 
-        MeterId meterId = oltMeterService.createMeter(dm.getDevId(), dm.getBwInfo(),
+        MeterId meterId = oltMeterService.createMeter(deviceId, bwpInfo,
                                                       meterFuture);
 
         meterFuture.thenAcceptAsync(result -> {
@@ -726,12 +725,12 @@ public class Olt
                 SubscriberFlowInfo fi = subsIterator.next();
                 if (result == null) {
                     // meter install sent to device
-                    log.debug("Meter {} installed for bw {}", meterId, dm.getBwInfo());
+                    log.debug("Meter {} installed for bw {} on {}", meterId, bwpInfo, deviceId);
 
                     MeterId upMeterId = oltMeterService
-                            .getMeterIdFromBpMapping(dm.getDevId(), fi.getUpBpInfo());
+                            .getMeterIdFromBpMapping(deviceId, fi.getUpBpInfo());
                     MeterId downMeterId = oltMeterService
-                            .getMeterIdFromBpMapping(dm.getDevId(), fi.getDownBpInfo());
+                            .getMeterIdFromBpMapping(deviceId, fi.getDownBpInfo());
                     if (upMeterId != null && downMeterId != null) {
                         log.debug("Provisioning subscriber after meter {}" +
                                           "installation and both meters are present " +
@@ -746,13 +745,13 @@ public class Olt
                         handleSubFlowsWithMeters(fi);
                         subsIterator.remove();
                     }
-                    oltMeterService.removeFromPendingMeters(new DeviceBandwidthProfile(dm.getDevId(), dm.getBwInfo()));
+                    oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
                 } else {
                     // meter install failed
                     log.error("Addition of subscriber {} failed due to meter " +
                                       "{} with result {}", fi, meterId, result);
                     subsIterator.remove();
-                    oltMeterService.removeFromPendingMeters(new DeviceBandwidthProfile(dm.getDevId(), dm.getBwInfo()));
+                    oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
                 }
             }
         });
@@ -1054,6 +1053,8 @@ public class Olt
                     // on every instance, see how it's done in the InternalDeviceListener
                     // in FlowRuleManager: no mastership check for purgeOnDisconnection
                     flowRuleService.purgeFlowRules(devId);
+                    oltFlowService.clearDeviceState(devId);
+                    oltMeterService.clearDeviceState(devId);
                     return;
                 } else if (!isLocalLeader) {
                     log.debug("Not handling event because instance is not leader for {}", devId);
@@ -1180,6 +1181,11 @@ public class Olt
         private void handleDeviceDisconnection(Device device, boolean sendUniEvent) {
             programmedDevices.remove(device.id());
             removeAllSubscribers(device.id());
+            //Handle case where OLT disconnects during subscriber provisioning
+            pendingSubscribers.removeIf(fi -> fi.getDevId().equals(device.id()));
+            oltFlowService.clearDeviceState(device.id());
+
+            //Complete meter and flow purge
             flowRuleService.purgeFlowRules(device.id());
             oltMeterService.clearMeters(device.id());
             post(new AccessDeviceEvent(
