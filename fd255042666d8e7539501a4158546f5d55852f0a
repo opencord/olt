@@ -53,6 +53,23 @@
     },
     {
       "key": {
+        "uuid": "6e6a0093_130faf03",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-24T02:01:57Z",
+      "side": 1,
+      "message": "consider calling clearDeviceState before you make the call to meterService, because the latter call will result in callbacks which will try to remove certain pendingRemoveMeters, while clearDeviceState will be doing the same thing. Maybe not a big deal if clearDeviceState will finish before the callbacks actually come from the meterService",
+      "revId": "fd255042666d8e7539501a4158546f5d55852f0a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "26ed0a39_6d5bdbd6",
         "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
         "patchSetId": 2
