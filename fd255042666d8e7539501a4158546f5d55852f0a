@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0d1d7b03_c248b66a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 715,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-24T01:43:17Z",
+      "side": 1,
+      "message": "ordering of parameters seems reversed.\nThere is no longer a queue",
+      "revId": "fd255042666d8e7539501a4158546f5d55852f0a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e590122a_3e375693",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 728,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-24T01:43:17Z",
+      "side": 1,
+      "message": "could use a deviceId;\n\nAlso please change to \"Meter {} sent for creation or already installed for bw {} on dev {}\", meterId, bwpInfo, deviceId);",
+      "revId": "fd255042666d8e7539501a4158546f5d55852f0a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef61866b_4487be97",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 520,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-24T01:43:17Z",
+      "side": 1,
+      "message": "Did you intend to have objective.id() as the first argument?",
+      "revId": "fd255042666d8e7539501a4158546f5d55852f0a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26ed0a39_6d5bdbd6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-06-24T01:43:17Z",
+      "side": 1,
+      "message": "the logs in this method could all use deviceIds. Multi-OLT is coming 😊",
+      "revId": "fd255042666d8e7539501a4158546f5d55852f0a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
