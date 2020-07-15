@@ -1046,15 +1046,12 @@ public class Olt
                         && !deviceService.isAvailable(devId) && deviceService.getPorts(devId).isEmpty()) {
                     log.info("Cleaning local state for non master instance upon " +
                                      "device disconnection {}", devId);
-                    programmedDevices.remove(devId);
                     // Since no mastership of the device is present upon disconnection
                     // the method in the FlowRuleManager only empties the local copy
                     // of the DeviceFlowTable thus this method needs to get called
                     // on every instance, see how it's done in the InternalDeviceListener
                     // in FlowRuleManager: no mastership check for purgeOnDisconnection
-                    flowRuleService.purgeFlowRules(devId);
-                    oltFlowService.clearDeviceState(devId);
-                    oltMeterService.clearDeviceState(devId);
+                    handleDeviceDisconnection(dev, false, false);
                     return;
                 } else if (!isLocalLeader) {
                     log.debug("Not handling event because instance is not leader for {}", devId);
@@ -1078,6 +1075,10 @@ public class Olt
                     //TODO: Port handling and bookkeeping should be improved once
                     // olt firmware handles correct behaviour.
                     case PORT_ADDED:
+                        if (!deviceService.isAvailable(devId)) {
+                            log.warn("Received {} for disconnected device {}, ignoring", event, devId);
+                            return;
+                        }
                         if (isUniPort(dev, port)) {
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
 
@@ -1085,7 +1086,8 @@ public class Olt
                                 log.info("eapol will be sent for port added {}", port);
                                 oltFlowService.processEapolFilteringObjectives(devId, port.number(), defaultBpId,
                                                                                null,
-                                                                               VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
+                                                                               VlanId.vlanId(EAPOL_DEFAULT_VLAN),
+                                                                               true);
                             }
                         } else {
                             SubscriberAndDeviceInformation deviceInfo = getOltInfo(dev);
@@ -1106,6 +1108,10 @@ public class Olt
                         }
                         break;
                     case PORT_UPDATED:
+                        if (!deviceService.isAvailable(devId)) {
+                            log.warn("Received {} for disconnected device {}, ignoring", event, devId);
+                            return;
+                        }
                         if (!isUniPort(dev, port)) {
                             SubscriberAndDeviceInformation deviceInfo = getOltInfo(dev);
                             if (deviceInfo != null && port.isEnabled()) {
@@ -1147,7 +1153,7 @@ public class Olt
                         handleDeviceConnection(dev, true);
                         break;
                     case DEVICE_REMOVED:
-                        handleDeviceDisconnection(dev, true);
+                        handleDeviceDisconnection(dev, true, true);
                         break;
                     case DEVICE_AVAILABILITY_CHANGED:
                         if (deviceService.isAvailable(devId)) {
@@ -1157,7 +1163,7 @@ public class Olt
                             if (deviceService.getPorts(devId).isEmpty()) {
                                 log.info("Handling controlled device disconnection .. "
                                                  + "flushing all state for dev:{}", devId);
-                                handleDeviceDisconnection(dev, false);
+                                handleDeviceDisconnection(dev, true, false);
                             } else {
                                 log.info("Disconnected device has available ports .. "
                                                  + "assuming temporary disconnection, "
@@ -1166,6 +1172,7 @@ public class Olt
                         }
                         break;
                     default:
+                        log.debug("Not handling event {}", event);
                         return;
                 }
             });
@@ -1178,7 +1185,7 @@ public class Olt
                     .forEach(p -> post(new AccessDeviceEvent(eventType, device.id(), p)));
         }
 
-        private void handleDeviceDisconnection(Device device, boolean sendUniEvent) {
+        private void handleDeviceDisconnection(Device device, boolean sendDisconnectedEvent, boolean sendUniEvent) {
             programmedDevices.remove(device.id());
             removeAllSubscribers(device.id());
             //Handle case where OLT disconnects during subscriber provisioning
@@ -1188,9 +1195,11 @@ public class Olt
             //Complete meter and flow purge
             flowRuleService.purgeFlowRules(device.id());
             oltMeterService.clearMeters(device.id());
-            post(new AccessDeviceEvent(
-                    AccessDeviceEvent.Type.DEVICE_DISCONNECTED, device.id(),
-                    null, null, null));
+            if (sendDisconnectedEvent) {
+                post(new AccessDeviceEvent(
+                        AccessDeviceEvent.Type.DEVICE_DISCONNECTED, device.id(),
+                        null, null, null));
+            }
             if (sendUniEvent) {
                 sendUniEvent(device, AccessDeviceEvent.Type.UNI_REMOVED);
             }
