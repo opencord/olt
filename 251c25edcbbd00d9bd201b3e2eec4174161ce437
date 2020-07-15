@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "28fdb68e_33bba880",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1057,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-07-15T12:11:29Z",
+      "side": 1,
+      "message": "oversight ?",
+      "revId": "251c25edcbbd00d9bd201b3e2eec4174161ce437",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb20b19d_7f3b8dae",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1061,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-07-15T12:11:29Z",
+      "side": 1,
+      "message": "same here",
+      "revId": "251c25edcbbd00d9bd201b3e2eec4174161ce437",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
