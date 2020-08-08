@@ -181,6 +181,7 @@ public class Olt
                                                                                         "olt-installer-%d"));
 
     protected ExecutorService eventExecutor;
+    protected ExecutorService retryExecutor;
 
     private ConsistentMultimap<ConnectPoint, UniTagInformation> programmedSubs;
 
@@ -190,6 +191,7 @@ public class Olt
     public void activate(ComponentContext context) {
         eventExecutor = newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
                                                                         "events-%d", log));
+        retryExecutor = Executors.newCachedThreadPool();
 
         modified(context);
         ApplicationId appId = coreService.registerApplication(APP_NAME);
@@ -239,6 +241,7 @@ public class Olt
         deviceService.removeListener(deviceListener);
         eventDispatcher.removeSink(AccessDeviceEvent.class);
         eventExecutor.shutdown();
+        retryExecutor.shutdown();
         log.info("Stopped");
     }
 
@@ -285,21 +288,60 @@ public class Olt
             return false;
         }
 
-        //delete Eapol authentication flow with default bandwidth
-        //wait until Eapol rule with defaultBpId is removed to install subscriber-based rules
-        //install subscriber flows
-        CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
-        oltFlowService.processEapolFilteringObjectives(deviceId, subscriberPortNo, defaultBpId, filterFuture,
-                                                       VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
-        filterFuture.thenAcceptAsync(filterStatus -> {
-            if (filterStatus == null) {
-                provisionUniTagList(connectPoint, uplinkPort.number(), sub);
-            } else {
-                log.error("The filtering future did not complete properly {} " +
-                                  "subscriber on {} is not provisioned", filterStatus, connectPoint);
-            }
-        });
+        // delete Eapol authentication flow with default bandwidth
+        // wait until Eapol rule with defaultBpId is removed to install subscriber-based rules
+        // retry deletion if it fails/times-out
+        retryExecutor.execute(new DeleteEapolInstallSub(connectPoint,
+                                                        uplinkPort, sub, 1));
         return true;
+    }
+
+    private class DeleteEapolInstallSub implements Runnable {
+        ConnectPoint cp;
+        Port uplinkPort;
+        SubscriberAndDeviceInformation sub;
+        private int attemptNumber;
+        static final int MAX_ATTEMPTS = 3;
+
+        DeleteEapolInstallSub(ConnectPoint cp, Port uplinkPort,
+                              SubscriberAndDeviceInformation sub,
+                              int attemptNumber) {
+            this.cp = cp;
+            this.uplinkPort = uplinkPort;
+            this.sub = sub;
+            this.attemptNumber = attemptNumber;
+        }
+
+        @Override
+        public void run() {
+            CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
+            oltFlowService.processEapolFilteringObjectives(cp.deviceId(), cp.port(),
+                                                     defaultBpId, filterFuture,
+                                                     VlanId.vlanId(EAPOL_DEFAULT_VLAN),
+                                                     false);
+            filterFuture.thenAcceptAsync(filterStatus -> {
+                if (filterStatus == null) {
+                    log.debug("Deafault eapol flow deleted in attempt {} of {}"
+                            + "... provisioning subscriber flows {}",
+                              attemptNumber, MAX_ATTEMPTS, cp);
+                    provisionUniTagList(cp, uplinkPort.number(), sub);
+                } else {
+                    if (attemptNumber <= MAX_ATTEMPTS) {
+                        log.warn("The filtering future failed {} for subscriber {}"
+                                + "... retrying {} of {} attempts",
+                                 filterStatus, cp, attemptNumber, MAX_ATTEMPTS);
+                        retryExecutor.execute(
+                                         new DeleteEapolInstallSub(cp, uplinkPort, sub,
+                                                                   attemptNumber + 1));
+                    } else {
+                        log.error("The filtering future failed {} for subscriber {}"
+                                + "after {} attempts. Subscriber provisioning failed",
+                                  filterStatus, cp, MAX_ATTEMPTS);
+                    }
+                }
+            });
+        }
+
     }
 
     @Override
