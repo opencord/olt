@@ -207,11 +207,15 @@ public class OltFlowService implements AccessDeviceFlowService {
         String tpId = get(properties, DEFAULT_TP_ID);
         defaultTechProfileId = isNullOrEmpty(tpId) ? DEFAULT_TP_ID_DEFAULT : Integer.parseInt(tpId.trim());
 
+        String eapolDeleteRetryMaxAttempts = get(properties, EAPOL_DELETE_RETRY_MAX_ATTEMPS);
+        defaultTechProfileId = isNullOrEmpty(eapolDeleteRetryMaxAttempts) ?
+                EAPOL_DELETE_RETRY_MAX_ATTEMPS_DEFAULT : Integer.parseInt(eapolDeleteRetryMaxAttempts.trim());
+
         log.info("modified. Values = enableDhcpOnProvisioning: {}, enableDhcpV4: {}, " +
                          "enableDhcpV6:{}, enableIgmpOnProvisioning:{}, " +
-                         "enableEapol{}, defaultTechProfileId: {}",
+                         "enableEapol{}, defaultTechProfileId: {}, eapolDeleteRetryMaxAttempts: {}",
                  enableDhcpOnProvisioning, enableDhcpV4, enableDhcpV6,
-                 enableIgmpOnProvisioning, enableEapol, defaultTechProfileId);
+                 enableIgmpOnProvisioning, enableEapol, defaultTechProfileId, eapolDeleteRetryMaxAttempts);
 
     }
 
