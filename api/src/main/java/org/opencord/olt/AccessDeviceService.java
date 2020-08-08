@@ -96,4 +96,13 @@ public interface AccessDeviceService
      */
     ImmutableMap<ConnectPoint, Set<UniTagInformation>> getProgSubs();
 
+    /**
+     * Returns information about subscribers that have NOT been programmed in the
+     * data-plane. It shows all uni tag information list of the subscribers even if
+     * these have not been programmed, meaning no flows have been sent to the device.
+     *
+     * @return an immutable map of locations and subscriber information
+     */
+    ImmutableMap<ConnectPoint, Set<UniTagInformation>> getFailedSubs();
+
 }
