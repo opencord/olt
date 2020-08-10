@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c34a4ab_6cb39646",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-10T07:20:06Z",
+      "side": 1,
+      "message": "nit, probably worth putting as property.",
+      "revId": "5b270d4bcd0b98d452cb42d85dc3c1129bcce858",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
