@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "928abf07_22479c43",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-11T10:32:32Z",
+      "side": 1,
+      "message": "being picky, can we call this getFailedSubs ?",
+      "revId": "f547068f63eb80fe5e0ea4ba2cff589a6f873ae5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fea26e8c_4c30a6a5",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDeviceService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-11T10:32:32Z",
+      "side": 1,
+      "message": "I woudl add programmed, meaning no flows were sent to VOLTHA.",
+      "revId": "f547068f63eb80fe5e0ea4ba2cff589a6f873ae5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a97ebbed_e03f5355",
+        "filename": "app/src/main/java/org/opencord/olt/cli/ShowErroredSubscribersCommand.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-11T10:32:32Z",
+      "side": 1,
+      "message": "ShowFailed",
+      "revId": "f547068f63eb80fe5e0ea4ba2cff589a6f873ae5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6e908f9_af20af94",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-11T10:32:32Z",
+      "side": 1,
+      "message": "same",
+      "revId": "f547068f63eb80fe5e0ea4ba2cff589a6f873ae5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac3e1ffe_7f10fd70",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-11T10:32:32Z",
+      "side": 1,
+      "message": "print of value of EAPOL_DELETE_RETRY_MAX_ATTEMPS shoudl be done here.",
+      "revId": "f547068f63eb80fe5e0ea4ba2cff589a6f873ae5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc839870_ee3ad849",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-11T10:32:32Z",
+      "side": 1,
+      "message": "to me this is conceptually wrong. shoudl be tatted in the OLT.java class in the modified, not here",
+      "revId": "f547068f63eb80fe5e0ea4ba2cff589a6f873ae5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
