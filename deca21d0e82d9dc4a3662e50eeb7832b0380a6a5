@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "59149089_750f7b24",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1000569
+      },
+      "writtenOn": "2020-08-24T12:02:10Z",
+      "side": 1,
+      "message": "Andrey Pozolotin  1:43 PM\nso you say add repos for simplicity - but this make it harder :wink:\nwhite_check_mark\neyes\nraised_hands\n\n\n\n\n\n1:43\nsorry I mean versions\n1:43\nAndrea Campanella\n11:49 AM\njust for easiness of use I’d like to extract the version here and the version at line 83 into two [properties, very much alike Sadis at line 34. Easier to change.\n\nandrea:house_with_garden:  1:44 PM\nwhy harder, it’s jjust defining a property and reusing it below\n1:44\nand when i read the fil i just change the property at the top withouth having to knwo where it is\n\nAndrey Pozolotin  1:45 PM\nno becasue plugin installation is a copy paste from the official repo\n1:45\nso on updates all you need to do is to copy paste again\n1:45\nwhich of course 1 seconds operation\n1:46\nwith version placed somewhere else it will become much harder\n\nno becasue plugin installation is a copy paste from the official repo\nwhite_check_mark\neyes\nraised_hands\n\n\n\n\n\n1:45\nso on updates all you need to do is to copy paste again\nwhite_check_mark\neyes\nraised_hands\n\n\n\n\n\n1:45\nwhich of course 1 seconds operation\nwhite_check_mark\neyes\nraised_hands\n\n\n\n\n\n1:46\nwith version placed somewhere else it will become much harder",
+      "parentUuid": "226a4a21_bc017829",
+      "revId": "deca21d0e82d9dc4a3662e50eeb7832b0380a6a5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "742b5f6d_89514e18",
         "filename": "spotbugs-security-exclude.xml",
         "patchSetId": 2
