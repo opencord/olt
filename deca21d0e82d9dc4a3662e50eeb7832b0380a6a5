@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "226a4a21_bc017829",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-24T09:49:09Z",
+      "side": 1,
+      "message": "just for easiness of use I\u0027d like to extract the version here and the version at line 83 into two [properties, very much alike Sadis at line 34. Easier to change.",
+      "revId": "deca21d0e82d9dc4a3662e50eeb7832b0380a6a5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "742b5f6d_89514e18",
+        "filename": "spotbugs-security-exclude.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-24T09:49:09Z",
+      "side": 1,
+      "message": "might want to update the date here",
+      "revId": "deca21d0e82d9dc4a3662e50eeb7832b0380a6a5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cdfabef1_1a2b7724",
+        "filename": "spotbugs-security-include.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-24T09:49:09Z",
+      "side": 1,
+      "message": "same",
+      "revId": "deca21d0e82d9dc4a3662e50eeb7832b0380a6a5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
