@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "6cc418df_4bdc9fb5",
+        "filename": "spotbugs-security-exclude.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000569
+      },
+      "writtenOn": "2020-08-24T12:09:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "742b5f6d_89514e18",
+      "revId": "deca21d0e82d9dc4a3662e50eeb7832b0380a6a5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cdfabef1_1a2b7724",
         "filename": "spotbugs-security-include.xml",
         "patchSetId": 2
@@ -68,6 +86,24 @@
       "revId": "deca21d0e82d9dc4a3662e50eeb7832b0380a6a5",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "233e3646_c67b0fa1",
+        "filename": "spotbugs-security-include.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1000569
+      },
+      "writtenOn": "2020-08-24T12:09:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cdfabef1_1a2b7724",
+      "revId": "deca21d0e82d9dc4a3662e50eeb7832b0380a6a5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
