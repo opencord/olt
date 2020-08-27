@@ -27,8 +27,8 @@ public final class OsgiPropertyConstants {
     public static final String DEFAULT_MCAST_SERVICE_NAME = "multicastServiceName";
     public static final String DEFAULT_MCAST_SERVICE_NAME_DEFAULT = "MC";
 
-    public static final String ENABLE_DHCP_ON_PROVISIONING = "enableDhcpOnProvisioning";
-    public static final boolean ENABLE_DHCP_ON_PROVISIONING_DEFAULT = false;
+    public static final String ENABLE_DHCP_ON_NNI = "enableDhcpOnNni";
+    public static final boolean ENABLE_DHCP_ON_NNI_DEFAULT = false;
 
     public static final String ENABLE_DHCP_V4 = "enableDhcpV4";
     public static final boolean ENABLE_DHCP_V4_DEFAULT = true;
@@ -36,8 +36,8 @@ public final class OsgiPropertyConstants {
     public static final String ENABLE_DHCP_V6 = "enableDhcpV6";
     public static final boolean ENABLE_DHCP_V6_DEFAULT = false;
 
-    public static final String ENABLE_IGMP_ON_PROVISIONING = "enableIgmpOnProvisioning";
-    public static final boolean ENABLE_IGMP_ON_PROVISIONING_DEFAULT = false;
+    public static final String ENABLE_IGMP_ON_NNI = "enableIgmpOnNni";
+    public static final boolean ENABLE_IGMP_ON_NNI_DEFAULT = false;
 
     public static final String DELETE_METERS = "deleteMeters";
     public static final boolean DELETE_METERS_DEFAULT = true;
