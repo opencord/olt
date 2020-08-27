@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d08d057_2d96f62f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-27T08:50:39Z",
+      "side": 1,
+      "message": "this change will require changes in kind-voltha and possibly Voltha-system-tests scripts. before merging we need to create those patches too.",
+      "revId": "c97979422fdbbdb2378596b52212cdff97bf1017",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
