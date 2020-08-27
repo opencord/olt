@@ -15,9 +15,32 @@
  */
 package org.opencord.olt.impl;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toSet;
+import static org.onlab.util.Tools.groupedThreads;
+import static org.opencord.olt.impl.OsgiPropertyConstants.DELETE_METERS;
+import static org.opencord.olt.impl.OsgiPropertyConstants.DELETE_METERS_DEFAULT;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
 import org.onlab.util.KryoNamespace;
 import org.onlab.util.Tools;
 import org.onosproject.cfg.ComponentConfigService;
@@ -52,31 +75,9 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toSet;
-import static org.onlab.util.Tools.groupedThreads;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DELETE_METERS;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DELETE_METERS_DEFAULT;
-import static org.slf4j.LoggerFactory.getLogger;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 
 /**
  * Provisions Meters on access devices.
@@ -98,7 +99,10 @@ public class OltMeterService implements AccessDeviceMeterService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected StorageService storageService;
 
-    protected boolean deleteMeters = true;
+    /**
+     * Delete meters when reference count drops to zero.
+     */
+    protected boolean deleteMeters = DELETE_METERS_DEFAULT;
 
     private ApplicationId appId;
     private static final String APP_NAME = "org.opencord.olt";
@@ -201,7 +205,7 @@ public class OltMeterService implements AccessDeviceMeterService {
     @Override
     public MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
                                CompletableFuture<Object> meterFuture) {
-        log.debug("Installing meter on {} for {}", deviceId, bpInfo);
+        log.debug("Creating meter on {} for {}", deviceId, bpInfo);
         if (bpInfo == null) {
             log.warn("Requested bandwidth profile information is NULL");
             meterFuture.complete(ObjectiveError.BADPARAMS);
@@ -246,7 +250,8 @@ public class OltMeterService implements AccessDeviceMeterService {
 
         Meter meter = meterService.submit(meterRequest);
         meterIdRef.set(meter.id());
-        log.info("Meter is created. Meter Id {}", meter.id());
+        log.info("Meter {} created and sent for installation on {} for {}",
+                 meter.id(), deviceId, bpInfo);
         return meter.id();
     }
 
