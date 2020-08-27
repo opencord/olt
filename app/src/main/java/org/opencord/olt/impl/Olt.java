@@ -1169,11 +1169,21 @@ public class Olt
                         break;
                     case PORT_REMOVED:
                         if (isUniPort(dev, port)) {
-                            removeSubscriber(new ConnectPoint(devId, port.number()));
-                            log.info("eapol will be send for port {} removed", port);
-                            oltFlowService.processEapolFilteringObjectives(devId, port.number(), defaultBpId,
-                                                                           null,
-                                                                           VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
+                            // if no subscriber is provisioned we need to remove the default EAPOL
+                            // if a subscriber was provisioned the default EAPOL will not be there and we can skip.
+                            // The EAPOL with subscriber tag will be removed by removeSubscriber call.
+                            Collection<? extends UniTagInformation> uniTagInformationSet =
+                                    programmedSubs.get(new ConnectPoint(port.element().id(), port.number())).value();
+                            if (uniTagInformationSet == null || uniTagInformationSet.isEmpty()) {
+                                log.info("No subscriber provisioned on port {} in PORT_REMOVED event, " +
+                                                 "removing default EAPOL flow", port);
+                                oltFlowService.processEapolFilteringObjectives(devId, port.number(), defaultBpId,
+                                                                               null,
+                                                                               VlanId.vlanId(EAPOL_DEFAULT_VLAN),
+                                                                               false);
+                            } else {
+                                removeSubscriber(new ConnectPoint(devId, port.number()));
+                            }
 
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, devId, port));
                         }
