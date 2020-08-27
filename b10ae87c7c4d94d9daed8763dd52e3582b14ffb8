@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6c2ac55c_8e9bd4e5",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-08-27T22:34:39Z",
+      "side": 1,
+      "message": "Since when we introduced the UniTag list in Sadis, device and port are not enough to identify a flow, so this message could be duplicated (1 time per each service that requires DHCP). It\u0027s something that we should ideally address (it could make sense to do that in a different patch)",
+      "range": {
+        "startLine": 239,
+        "startChar": 16,
+        "endLine": 240,
+        "endChar": 39
+      },
+      "revId": "b10ae87c7c4d94d9daed8763dd52e3582b14ffb8",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
