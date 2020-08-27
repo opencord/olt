@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c38f08c8_5a70c2ac",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1174,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-08-27T22:11:18Z",
+      "side": 1,
+      "message": "Actually default eapol will not be there\nbut subscriber-vlan based eapol will be there - this has to be removed. \nSee what we do in PORT_UPDATED",
+      "revId": "7f301e2a73e8fb816ac53e8f6d824f43344febeb",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
