@@ -16,6 +16,24 @@
       "revId": "c97979422fdbbdb2378596b52212cdff97bf1017",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32db1d4e_251eefc0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-08-27T22:08:19Z",
+      "side": 1,
+      "message": "made a change to kind\ndon\u0027t think voltha-system-tests need any change",
+      "parentUuid": "6d08d057_2d96f62f",
+      "revId": "c97979422fdbbdb2378596b52212cdff97bf1017",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
