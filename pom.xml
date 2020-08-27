@@ -65,6 +65,7 @@
                     <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
                 </configuration>
             </plugin>
+
             <!-- SpotBugs Static Analysis -->
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
