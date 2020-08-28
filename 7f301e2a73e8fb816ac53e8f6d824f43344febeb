@@ -16,6 +16,24 @@
       "revId": "7f301e2a73e8fb816ac53e8f6d824f43344febeb",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2c69ace_551550b6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1174,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-08-28T13:25:14Z",
+      "side": 1,
+      "message": "the remove of the subscriber based vlan EAPOL flow is done at line 400 of OLT.java in the removeSubscriber method already, which is called above. The PORT_UPDATED does not handle subscriber removal.",
+      "parentUuid": "c38f08c8_5a70c2ac",
+      "revId": "7f301e2a73e8fb816ac53e8f6d824f43344febeb",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
