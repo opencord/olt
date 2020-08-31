@@ -22,6 +22,30 @@
       "revId": "2266ec1f7951304257e5c37c1d725714c2991e3c",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce2fd9d2_5ed38078",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-08-31T23:07:54Z",
+      "side": 1,
+      "message": "Blaaa yes .. it was always wrong",
+      "parentUuid": "27392d3a_d8ff11fb",
+      "range": {
+        "startLine": 240,
+        "startChar": 54,
+        "endLine": 240,
+        "endChar": 65
+      },
+      "revId": "2266ec1f7951304257e5c37c1d725714c2991e3c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
