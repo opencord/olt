@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "27392d3a_d8ff11fb",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-08-31T21:19:11Z",
+      "side": 1,
+      "message": "shouldn\u0027t this be the reverse order?",
+      "range": {
+        "startLine": 240,
+        "startChar": 54,
+        "endLine": 240,
+        "endChar": 65
+      },
+      "revId": "2266ec1f7951304257e5c37c1d725714c2991e3c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
