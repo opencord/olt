@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "87cbd35c_74039fed",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-09-17T21:19:00Z",
+      "side": 1,
+      "message": "remove this since you are doing it below",
+      "range": {
+        "startLine": 306,
+        "startChar": 1,
+        "endLine": 307,
+        "endChar": 66
+      },
+      "revId": "24aa3517e77a8e176dffc3a24838dac7e0c912a1",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "685c2b77_20659d6a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2020-09-17T21:19:00Z",
+      "side": 1,
+      "message": "This is not required for ATT dhcp case. The dhcp packets come with a vlan tag (priority tag i.e vlanId\u003d0, same as dataplane traffic) unlike eapol packets that are untagged. And so, the push_vlan is only needed in eapol case.",
+      "range": {
+        "startLine": 316,
+        "startChar": 1,
+        "endLine": 318,
+        "endChar": 44
+      },
+      "revId": "24aa3517e77a8e176dffc3a24838dac7e0c912a1",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
