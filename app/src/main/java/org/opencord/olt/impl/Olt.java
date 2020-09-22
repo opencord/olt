@@ -291,11 +291,16 @@ public class Olt
         log.info("Call to provision subscriber at {}", connectPoint);
         DeviceId deviceId = connectPoint.deviceId();
         PortNumber subscriberPortNo = connectPoint.port();
-
         checkNotNull(deviceService.getPort(deviceId, subscriberPortNo),
                      "Invalid connect point:" + connectPoint);
 
-        // Find the subscriber on this connect point
+        if (isSubscriberInstalled(connectPoint)) {
+            log.warn("Subscriber at {} already provisioned or in the process .."
+                    + " not taking any more action", connectPoint);
+            return true;
+        }
+
+        // Find the subscriber config at this connect point
         SubscriberAndDeviceInformation sub = getSubscriber(connectPoint);
         if (sub == null) {
             log.warn("No subscriber found for {}", connectPoint);
@@ -315,6 +320,24 @@ public class Olt
         retryExecutor.execute(new DeleteEapolInstallSub(connectPoint,
                                                         uplinkPort, sub, 1));
         return true;
+    }
+
+    // returns true if subscriber is programmed or in the process of being programmed
+    private boolean isSubscriberInstalled(ConnectPoint connectPoint) {
+        Collection<? extends UniTagInformation> uniTagInformationSet =
+                programmedSubs.get(connectPoint).value();
+        if (!uniTagInformationSet.isEmpty()) {
+            return true;
+        }
+
+        for (SubscriberFlowInfo fi : pendingSubscribers) {
+            if (fi.getDevId().equals(connectPoint.deviceId())
+                    && fi.getUniPort().equals(connectPoint.port())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private class DeleteEapolInstallSub implements Runnable {
