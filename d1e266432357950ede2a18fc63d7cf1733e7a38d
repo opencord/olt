@@ -16,6 +16,24 @@
       "revId": "d1e266432357950ede2a18fc63d7cf1733e7a38d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32685184_3d4e05ff",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-10-23T15:14:42Z",
+      "side": 1,
+      "message": "no, the remove then add is not really possibile, a meter goes through this cycle of being pending only once, meaning that if it was pending then it gets removed from the but never goes back in pending unless is removed entirely from ONOS, it can\u0027t really be readied to the pending meters before that.",
+      "parentUuid": "b4b71022_9e1ede28",
+      "revId": "d1e266432357950ede2a18fc63d7cf1733e7a38d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
