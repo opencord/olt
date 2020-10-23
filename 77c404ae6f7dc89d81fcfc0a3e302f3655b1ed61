@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d39bd1af_65397459",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 799,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-10-23T12:19:09Z",
+      "side": 1,
+      "message": "It seems that the synchronized is really needed for the MeterService (looking at the issue), if it is the case we should try to move the synchronized inside the MeterService and if it is possible rethink its APIs. In this way you don\u0027t need to serialize access on the OLT class and you don\u0027t have to add the synchronized in other places of the OLT class.\n\nAlso it seems that a similar race condition it is possible in processEapolFilteringObjectives workflow.",
+      "revId": "77c404ae6f7dc89d81fcfc0a3e302f3655b1ed61",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86eddc89_ae750fd8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 809,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-10-23T12:19:09Z",
+      "side": 1,
+      "message": "It seems that you don\u0027t need here the syncronized",
+      "revId": "77c404ae6f7dc89d81fcfc0a3e302f3655b1ed61",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
