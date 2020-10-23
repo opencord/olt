@@ -42,6 +42,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -367,7 +370,14 @@ public class Olt
                     log.info("Default eapol flow deleted in attempt {} of {}"
                             + "... provisioning subscriber flows {}",
                              attemptNumber, eapolDeleteRetryMaxAttempts, cp);
-                    provisionUniTagList(cp, uplinkPort.number(), sub);
+                    Timer provision = new Timer();
+                    TimerTask action = new TimerTask() {
+                        public void run() {
+                            provisionUniTagList(cp, uplinkPort.number(), sub);
+                        }
+
+                    };
+                    provision.schedule(action, 100);
                 } else {
                     if (attemptNumber <= eapolDeleteRetryMaxAttempts) {
                         log.warn("The filtering future failed {} for subscriber {}"
