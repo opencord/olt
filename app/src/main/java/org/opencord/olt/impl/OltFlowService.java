@@ -473,12 +473,10 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                                null, bpInfo.id());
                 pendingEapolForMeters.add(fi);
 
-                if (oltMeterService.isMeterPending(devId, bpInfo)) {
-                    log.debug("Meter is already pending for EAPOL on {} with bp {}",
-                              devId, bpInfo);
+                //If false the meter is already being installed, skipping installation
+                if (!oltMeterService.checkAndAddPendingMeter(devId, bpInfo)) {
                     return;
                 }
-                oltMeterService.addToPendingMeters(devId, bpInfo);
                 MeterId innerMeterId = oltMeterService.createMeter(devId, bpInfo,
                                                                    meterFuture);
                 fi.setUpMeterId(innerMeterId);

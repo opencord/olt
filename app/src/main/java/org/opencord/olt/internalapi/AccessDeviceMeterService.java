@@ -68,14 +68,6 @@ public interface AccessDeviceMeterService {
                         CompletableFuture<Object> meterFuture);
 
     /**
-     * Adds the DeviceBandwidthProfile to the pendingMeters.
-     *
-     * @param deviceId the device
-     * @param bwpInfo the bandwidth profile info
-     */
-    void addToPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo);
-
-    /**
      * Removes the DeviceBandwidthProfile from the pendingMeters.
      *
      * @param deviceId the device
@@ -85,14 +77,18 @@ public interface AccessDeviceMeterService {
     void removeFromPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo);
 
     /**
-     * Checks if DeviceBandwidthProfile is pending.
+     * Checks if DeviceBandwidthProfile is pending installation.
+     * If so immediately returns false meaning that no further action is needed,
+     * if not it adds the bandwidth profile do the pending list and returns true,
+     * meaning that further action to install the meter is required.
      *
      * @param deviceId the device
      * @param bwpInfo the bandwidth profile info
      *
-     * @return true if pending.
+     * @return true if it was added to pending and a create meter action is needed,
+     * false if it is already pending and no further action is needed.
      */
-    boolean isMeterPending(DeviceId deviceId, BandwidthProfileInformation bwpInfo);
+    boolean checkAndAddPendingMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo);
 
     /**
      * Clears out meters for the given device.

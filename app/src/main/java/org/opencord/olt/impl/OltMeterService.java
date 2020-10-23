@@ -256,20 +256,6 @@ public class OltMeterService implements AccessDeviceMeterService {
     }
 
     @Override
-    public void addToPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
-        if (deviceId == null) {
-            return;
-        }
-        pendingMeters.compute(deviceId, (id, bwps) -> {
-            if (bwps == null) {
-                bwps = new HashSet<>();
-            }
-            bwps.add(bwpInfo);
-            return bwps;
-        });
-    }
-
-    @Override
     public void removeFromPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
         if (deviceId == null) {
             return;
@@ -281,11 +267,24 @@ public class OltMeterService implements AccessDeviceMeterService {
     }
 
     @Override
-    public boolean isMeterPending(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
-        if (!pendingMeters.containsKey(deviceId)) {
+    public synchronized boolean checkAndAddPendingMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        if (pendingMeters.containsKey(deviceId)
+                && pendingMeters.get(deviceId).contains(bwpInfo)) {
+            log.debug("Meter is already pending for EAPOL on {} with bp {}",
+                      deviceId, bwpInfo);
             return false;
         }
-        return pendingMeters.get(deviceId).contains(bwpInfo);
+        log.debug("Adding bandwidth profile {} to pending on {}",
+                  bwpInfo, deviceId);
+        pendingMeters.compute(deviceId, (id, bwps) -> {
+            if (bwps == null) {
+                bwps = new HashSet<>();
+            }
+            bwps.add(bwpInfo);
+            return bwps;
+        });
+
+        return true;
     }
 
     @Override

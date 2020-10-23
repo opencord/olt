@@ -300,17 +300,12 @@ public class OltFlowTest extends TestBase {
         }
 
         @Override
-        public void addToPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
-
-        }
-
-        @Override
         public void removeFromPendingMeters(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
 
         }
 
         @Override
-        public boolean isMeterPending(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        public boolean checkAndAddPendingMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
             return false;
         }
 

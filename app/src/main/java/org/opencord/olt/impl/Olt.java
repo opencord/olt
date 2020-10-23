@@ -797,11 +797,10 @@ public class Olt
         }
     }
     private void checkAndCreateDevMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
-        if (oltMeterService.isMeterPending(deviceId, bwpInfo)) {
-            log.debug("Meter is already pending {} on device {}", bwpInfo, deviceId);
+        //If false the meter is already being installed, skipping installation
+        if (!oltMeterService.checkAndAddPendingMeter(deviceId, bwpInfo)) {
             return;
         }
-        oltMeterService.addToPendingMeters(deviceId, bwpInfo);
         createMeter(deviceId, bwpInfo);
     }
 
