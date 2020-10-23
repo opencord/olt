@@ -796,7 +796,8 @@ public class Olt
             }
         }
     }
-    private void checkAndCreateDevMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+    private synchronized void checkAndCreateDevMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        // the pending meter map could not contain the pending meter here
         if (oltMeterService.isMeterPending(deviceId, bwpInfo)) {
             log.debug("Meter is already pending {} on device {}", bwpInfo, deviceId);
             return;
@@ -805,7 +806,7 @@ public class Olt
         createMeter(deviceId, bwpInfo);
     }
 
-    private void createMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+    private synchronized void createMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
         log.debug("Creating Meter with {} on {} for subscriber", bwpInfo, deviceId);
         CompletableFuture<Object> meterFuture = new CompletableFuture<>();
 
