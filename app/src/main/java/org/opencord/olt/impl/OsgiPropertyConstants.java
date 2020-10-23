@@ -53,4 +53,7 @@ public final class OsgiPropertyConstants {
 
     public static final String EAPOL_DELETE_RETRY_MAX_ATTEMPS = "eapolDeleteRetryMaxAttempts";
     public static final int EAPOL_DELETE_RETRY_MAX_ATTEMPS_DEFAULT = 3;
+
+    public static final String PROVISION_DELAY = "provisionDelay";
+    public static final int PROVISION_DELAY_DEFAULT = 100;
 }

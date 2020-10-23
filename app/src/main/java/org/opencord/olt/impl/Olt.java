@@ -25,12 +25,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.onlab.util.Tools.get;
 import static org.onlab.util.Tools.groupedThreads;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_NAME;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_NAME_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.EAPOL_DELETE_RETRY_MAX_ATTEMPS;
-import static org.opencord.olt.impl.OsgiPropertyConstants.EAPOL_DELETE_RETRY_MAX_ATTEMPS_DEFAULT;
+import static org.opencord.olt.impl.OsgiPropertyConstants.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
@@ -45,6 +40,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.onlab.packet.VlanId;
 import org.onlab.util.KryoNamespace;
@@ -111,6 +108,7 @@ import com.google.common.collect.Sets;
                 DEFAULT_MCAST_SERVICE_NAME + ":String=" + DEFAULT_MCAST_SERVICE_NAME_DEFAULT,
                 EAPOL_DELETE_RETRY_MAX_ATTEMPS + ":Integer=" +
                         EAPOL_DELETE_RETRY_MAX_ATTEMPS_DEFAULT,
+                PROVISION_DELAY + ":Integer=" + PROVISION_DELAY_DEFAULT,
         })
 public class Olt
         extends AbstractListenerManager<AccessDeviceEvent, AccessDeviceListener>
@@ -177,6 +175,11 @@ public class Olt
      **/
     protected int eapolDeleteRetryMaxAttempts = EAPOL_DELETE_RETRY_MAX_ATTEMPS_DEFAULT;
 
+    /**
+     * Delay between EAPOL removal and data plane flows provisioning.
+     */
+    protected int provisionDelay = PROVISION_DELAY_DEFAULT;
+
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final ClusterEventListener clusterListener = new InternalClusterListener();
 
@@ -191,6 +194,7 @@ public class Olt
 
     protected ExecutorService eventExecutor;
     protected ExecutorService retryExecutor;
+    protected ScheduledExecutorService provisionExecutor;
 
     private ConsistentMultimap<ConnectPoint, UniTagInformation> programmedSubs;
     private ConsistentMultimap<ConnectPoint, UniTagInformation> failedSubs;
@@ -202,6 +206,8 @@ public class Olt
         eventExecutor = newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
                                                                         "events-%d", log));
         retryExecutor = Executors.newCachedThreadPool();
+        provisionExecutor = Executors.newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
+                "provision-%d", log));
 
         modified(context);
         ApplicationId appId = coreService.registerApplication(APP_NAME);
@@ -258,6 +264,7 @@ public class Olt
         eventDispatcher.removeSink(AccessDeviceEvent.class);
         eventExecutor.shutdown();
         retryExecutor.shutdown();
+        provisionExecutor.shutdown();
         log.info("Stopped");
     }
 
@@ -367,7 +374,12 @@ public class Olt
                     log.info("Default eapol flow deleted in attempt {} of {}"
                             + "... provisioning subscriber flows {}",
                              attemptNumber, eapolDeleteRetryMaxAttempts, cp);
-                    provisionUniTagList(cp, uplinkPort.number(), sub);
+
+                    // FIXME this is needed to prevent that default EAPOL flow removal and
+                    // data plane flows install are received by the device at the same time
+                    provisionExecutor.schedule(
+                            () -> provisionUniTagList(cp, uplinkPort.number(), sub),
+                            provisionDelay, TimeUnit.MILLISECONDS);
                 } else {
                     if (attemptNumber <= eapolDeleteRetryMaxAttempts) {
                         log.warn("The filtering future failed {} for subscriber {}"
