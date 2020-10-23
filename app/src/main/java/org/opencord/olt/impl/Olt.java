@@ -45,6 +45,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.onlab.packet.VlanId;
 import org.onlab.util.KryoNamespace;
@@ -191,6 +193,7 @@ public class Olt
 
     protected ExecutorService eventExecutor;
     protected ExecutorService retryExecutor;
+    protected ScheduledExecutorService provisionExecutor;
 
     private ConsistentMultimap<ConnectPoint, UniTagInformation> programmedSubs;
     private ConsistentMultimap<ConnectPoint, UniTagInformation> failedSubs;
@@ -202,6 +205,7 @@ public class Olt
         eventExecutor = newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
                                                                         "events-%d", log));
         retryExecutor = Executors.newCachedThreadPool();
+        provisionExecutor = Executors.newSingleThreadScheduledExecutor();
 
         modified(context);
         ApplicationId appId = coreService.registerApplication(APP_NAME);
@@ -258,6 +262,7 @@ public class Olt
         eventDispatcher.removeSink(AccessDeviceEvent.class);
         eventExecutor.shutdown();
         retryExecutor.shutdown();
+        provisionExecutor.shutdown();
         log.info("Stopped");
     }
 
@@ -367,7 +372,8 @@ public class Olt
                     log.info("Default eapol flow deleted in attempt {} of {}"
                             + "... provisioning subscriber flows {}",
                              attemptNumber, eapolDeleteRetryMaxAttempts, cp);
-                    provisionUniTagList(cp, uplinkPort.number(), sub);
+                    provisionExecutor.schedule(
+                            () -> provisionUniTagList(cp, uplinkPort.number(), sub), 100, TimeUnit.MILLISECONDS);
                 } else {
                     if (attemptNumber <= eapolDeleteRetryMaxAttempts) {
                         log.warn("The filtering future failed {} for subscriber {}"
