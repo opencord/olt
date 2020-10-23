@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b4b71022_9e1ede28",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-10-23T14:47:14Z",
+      "side": 1,
+      "message": "(minor) is this ok ? Is that possible a remove followed by add (and viceversa) ?\ntwo operations that arrive in a short timeframe",
+      "revId": "d1e266432357950ede2a18fc63d7cf1733e7a38d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
