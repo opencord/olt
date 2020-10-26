@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ebce0ea2_f24d4f86",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 373,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-10-26T08:48:25Z",
+      "side": 1,
+      "message": "it does not seem to be an ideal implementation. I would prefer to use a scheduled exec.",
+      "revId": "1b885f23a118b5069b7e85474ed9fcc93a670865",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
