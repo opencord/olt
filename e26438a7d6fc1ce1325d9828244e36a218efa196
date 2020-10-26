@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "04bd97a2_c49b903b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-10-26T16:45:17Z",
+      "side": 1,
+      "message": "uses the thread factory groupedThreads",
+      "revId": "e26438a7d6fc1ce1325d9828244e36a218efa196",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cecd382d_ccdefbd6",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-10-26T16:45:17Z",
+      "side": 1,
+      "message": "define a constant for 100 with a FIXME explaining why this is needed",
+      "revId": "e26438a7d6fc1ce1325d9828244e36a218efa196",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
