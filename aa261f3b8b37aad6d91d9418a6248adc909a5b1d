@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b5809a4a_aff818a4",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 771,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-10-29T23:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "948c0162_52d917eb",
+      "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aaa1a9a9_a56ac9de",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4ab55e1_8d1a320e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 825,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-10-29T23:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aaa1a9a9_a56ac9de",
+      "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "1415eca7_97f654b0",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 838,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-10-29T23:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ed73abcc_7e6a3c1d",
+      "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d73fcd97_7f6998ce",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 1
@@ -67,6 +121,24 @@
       "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae12453e_5f5e1f2a",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 969,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-10-29T23:13:42Z",
+      "side": 1,
+      "message": "Probably I don\u0027t but does it make a difference? it will we called under the hood anyway",
+      "parentUuid": "d73fcd97_7f6998ce",
+      "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
