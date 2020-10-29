@@ -185,12 +185,12 @@ public class OltMeterService implements AccessDeviceMeterService {
                 .filter(meterKey -> meterKey.deviceId().equals(deviceId))
                 .findFirst();
         if (meterKeyForDevice.isPresent()) {
-            log.debug("Found meter {} for bandwidth profile {}",
-                    meterKeyForDevice.get().meterId(), bandwidthProfile);
+            log.debug("Found meter {} for bandwidth profile {} on {}",
+                    meterKeyForDevice.get().meterId(), bandwidthProfile, deviceId);
             return meterKeyForDevice.get().meterId();
         } else {
-            log.warn("Bandwidth Profile '{}' is not currently mapped to a meter in {}",
-                     bandwidthProfile, bpInfoToMeter.get(bandwidthProfile).value());
+            log.warn("Bandwidth Profile '{}' is not currently mapped to a meter on {} , {}",
+                     bandwidthProfile, deviceId, bpInfoToMeter.get(bandwidthProfile).value());
             return null;
         }
     }
@@ -270,7 +270,7 @@ public class OltMeterService implements AccessDeviceMeterService {
     public synchronized boolean checkAndAddPendingMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
         if (pendingMeters.containsKey(deviceId)
                 && pendingMeters.get(deviceId).contains(bwpInfo)) {
-            log.debug("Meter is already pending for EAPOL on {} with bp {}",
+            log.debug("Meter is already pending on {} with bp {}",
                       deviceId, bwpInfo);
             return false;
         }
