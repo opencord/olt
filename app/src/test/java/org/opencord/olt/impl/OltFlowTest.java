@@ -295,7 +295,7 @@ public class OltFlowTest extends TestBase {
 
         @Override
         public MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
-                                   CompletableFuture<Object> meterFuture) {
+                                   CompletableFuture<Pair<DeviceId, BandwidthProfileInformation>> meterFuture) {
             return usMeterId;
         }
 

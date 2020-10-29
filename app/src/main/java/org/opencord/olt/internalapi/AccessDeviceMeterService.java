@@ -17,6 +17,7 @@ package org.opencord.olt.internalapi;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.apache.commons.lang3.tuple.Pair;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.meter.MeterId;
 import org.onosproject.net.meter.MeterKey;
@@ -65,7 +66,7 @@ public interface AccessDeviceMeterService {
      * @return meter id that is generated for the given parameters
      */
     MeterId createMeter(DeviceId deviceId, BandwidthProfileInformation bpInfo,
-                        CompletableFuture<Object> meterFuture);
+                        CompletableFuture<Pair<DeviceId, BandwidthProfileInformation>> meterFuture);
 
     /**
      * Removes the DeviceBandwidthProfile from the pendingMeters.
