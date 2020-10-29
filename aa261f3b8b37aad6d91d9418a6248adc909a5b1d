@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "948c0162_52d917eb",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 771,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-10-29T22:14:21Z",
+      "side": 1,
+      "message": "maybe use dev/port to be consistent with the rest",
+      "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aaa1a9a9_a56ac9de",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 825,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-10-29T22:14:21Z",
+      "side": 1,
+      "message": "the meter is per device and not per port, so you do not need the port here, thus no need to pass it down. you could actually remove the for subscriber here given the generality of the meter.",
+      "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed73abcc_7e6a3c1d",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 838,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-10-29T22:14:21Z",
+      "side": 1,
+      "message": "same",
+      "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d73fcd97_7f6998ce",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 969,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-10-29T22:14:21Z",
+      "side": 1,
+      "message": "why do you need the explicit call to toString() ?",
+      "revId": "aa261f3b8b37aad6d91d9418a6248adc909a5b1d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
