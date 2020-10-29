@@ -324,14 +324,14 @@ public class OltFlowService implements AccessDeviceFlowService {
         FilteringObjective dhcpUpstream = dhcpUpstreamBuilder.add(new ObjectiveContext() {
             @Override
             public void onSuccess(Objective objective) {
-                log.info("DHCP {} filter for device {} on port {} {}.",
+                log.info("DHCP {} filter for dev/port {}/{} {}.",
                         (ethType.equals(EthType.EtherType.IPV4.ethType())) ? V4 : V6,
                         devId, port, (install) ? INSTALLED : REMOVED);
             }
 
             @Override
             public void onError(Objective objective, ObjectiveError error) {
-                log.info("DHCP {} filter for device {} on port {} failed {} because {}",
+                log.info("DHCP {} filter for dev/port {}/{} failed {} because {}",
                         (ethType.equals(EthType.EtherType.IPV4.ethType())) ? V4 : V6,
                         devId, port, (install) ? INSTALLATION : REMOVAL,
                         error);
@@ -406,13 +406,13 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("Igmp filter for {} on {} {}.",
+                        log.info("Igmp filter for dev/port {}/{} {}.",
                                 devId, port, (install) ? INSTALLED : REMOVED);
                     }
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
-                        log.info("Igmp filter for {} on {} failed {} because {}.",
+                        log.info("Igmp filter for dev/port {}/{} failed {} because {}.",
                                 devId, port, (install) ? INSTALLATION : REMOVAL,
                                 error);
                     }
@@ -437,7 +437,7 @@ public class OltFlowService implements AccessDeviceFlowService {
         BandwidthProfileInformation bpInfo = getBandwidthProfileInformation(bpId);
         if (bpInfo == null) {
             log.warn("Bandwidth profile {} is not found. Authentication flow"
-                    + " will not be installed", bpId);
+                    + " will not be installed on {}/{}", bpId, devId, portNumber);
             if (filterFuture != null) {
                 filterFuture.complete(ObjectiveError.BADPARAMS);
             }
@@ -449,23 +449,27 @@ public class OltFlowService implements AccessDeviceFlowService {
             boolean added = pendingAddEapol.add(cp);
             if (!added) {
                 if (filterFuture != null) {
-                    log.warn("The eapol flow is processing for the port {}. Ignoring this request", portNumber);
+                    log.warn("The eapol flow is processing for connect point {}. Ignoring this request", cp.toString());
                     filterFuture.complete(null);
                 }
                 return;
             }
-            log.info("connectPoint added to pendingAddEapol map {}", cp.toString());
+            log.info("connectPoint added to pendingAddEapol map {} before installation", cp.toString());
         }
 
         DefaultFilteringObjective.Builder filterBuilder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+        //TODO pass the bpInfo.Id to the meterFuture
         CompletableFuture<Object> meterFuture = new CompletableFuture<>();
 
+        log.info("Bandwidth profile {} associated to EAPOL on {}", bpInfo.id(), devId);
         // check if meter exists and create it only for an install
         final MeterId meterId = oltMeterService.getMeterIdFromBpMapping(devId, bpInfo.id());
+        //TODO does not pass here
+        log.info("Meter id {} for Bandwidth profile {} associated to EAPOL on {}", meterId, bpInfo.id(), devId);
         if (meterId == null) {
             if (install) {
-                log.debug("Need to install meter for EAPOL with bwp {}", bpInfo.id());
+                log.debug("Need to install meter for EAPOL with bwp {} on dev/port {}", bpInfo.id(), cp.toString());
                 SubscriberFlowInfo fi = new SubscriberFlowInfo(devId, null, cp.port(),
                                                                new UniTagInformation.Builder()
                                                                        .setPonCTag(vlanId).build(),
@@ -486,7 +490,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                 // Nevertheless we can still delete the flow as we only need the
                 // correct 'match' to do so.
                 log.warn("Unknown meter id for bp {}, still proceeding with "
-                        + "delete of eapol flow for {}/{}", bpInfo.id(), devId, portNumber);
+                        + "delete of eapol flow for {}", bpInfo.id(), cp.toString());
                 SubscriberFlowInfo fi = new SubscriberFlowInfo(devId, null, cp.port(),
                                                                new UniTagInformation.Builder()
                                                                        .setPonCTag(vlanId).build(),
@@ -495,7 +499,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                 handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, meterId);
             }
         } else {
-            log.debug("Meter {} was previously created for bp {}", meterId, bpInfo.id());
+            log.debug("Meter {} was previously created for bp {} on {}", meterId, bpInfo.id(), cp.toString());
             SubscriberFlowInfo fi = new SubscriberFlowInfo(devId, null, cp.port(),
                                                            new UniTagInformation.Builder()
                                                                    .setPonCTag(vlanId).build(),
@@ -507,19 +511,24 @@ public class OltFlowService implements AccessDeviceFlowService {
         }
         meterFuture.thenAcceptAsync(result -> {
             //for each pending eapol flow we check if the meter is there.
+            //TODO possibly the iterator gets taken at time t0, while the sub is added at time t1
+            // and thus never considered
             Iterator<SubscriberFlowInfo> eapIterator = pendingEapolForMeters.iterator();
             while (eapIterator.hasNext()) {
                 SubscriberFlowInfo fi = eapIterator.next();
+                log.debug("handing pending eapol on {}/{} for {}", fi.getDevId(), fi.getUniPort(), fi);
                 if (result == null) {
                     MeterId mId = oltMeterService
                             .getMeterIdFromBpMapping(devId, fi.getUpBpInfo());
                     if (mId != null) {
+                        log.debug("Meter installation completed for subscriber on {}, handling EAPOL trap flow",
+                                cp.toString());
                         handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, mId);
                         eapIterator.remove();
                     }
                 } else {
-                    log.warn("Meter installation error while sending eapol trap flow. " +
-                                     "Result {} and MeterId {}", result, meterId);
+                    log.warn("Meter installation error while sending EAPOL trap flow to {}. " +
+                                     "Result {} and MeterId {}", cp.toString(), result, meterId);
                     eapIterator.remove();
                 }
                 oltMeterService.removeFromPendingMeters(devId, bpInfo);
@@ -557,7 +566,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("Eapol filter {} for {} on {} {} with meter {}.",
+                        log.info("Eapol filter {} for {} on {}/{} with meter {}.",
                                  objective.id(), fi.getDevId(), fi.getUniPort(),
                                  (install) ? INSTALLED : REMOVED, mId);
                         if (filterFuture != null) {
@@ -568,7 +577,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
-                        log.error("Eapol filter {} for {} on {} with meter {} " +
+                        log.error("Eapol filter {} for {}/{} with meter {} " +
                                          "failed {} because {}", objective.id(),
                                  fi.getDevId(), fi.getUniPort(), mId,
                                  (install) ? INSTALLATION : REMOVAL,
@@ -614,13 +623,13 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("LLDP filter for device {} on port {} {}.",
+                        log.info("LLDP filter for dev/port {}/{} {}.",
                                 devId, port, (install) ? INSTALLED : REMOVED);
                     }
 
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
-                        log.info("LLDP filter for device {} on port {} failed {} because {}",
+                        log.info("LLDP filter for dev/port {}/{} failed {} because {}",
                                 devId, port, (install) ? INSTALLATION : REMOVAL,
                                 error);
                     }
