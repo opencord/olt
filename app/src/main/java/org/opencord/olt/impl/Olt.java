@@ -684,10 +684,14 @@ public class Olt
     private void provisionUniTagList(ConnectPoint connectPoint, PortNumber uplinkPort,
                                      SubscriberAndDeviceInformation sub) {
 
-        log.debug("Provisioning vlans for subscriber {} on dev/port: {}", sub, connectPoint);
+        log.debug("Provisioning vlans for subscriber on dev/port: {}", connectPoint.toString());
+        if (log.isTraceEnabled()) {
+            log.trace("Subscriber informations {}", sub);
+        }
 
         if (sub.uniTagList() == null || sub.uniTagList().isEmpty()) {
-            log.warn("Unitaglist doesn't exist for the subscriber {}", sub.id());
+            log.warn("Unitaglist doesn't exist for the subscriber {} on dev/port {}",
+                    sub.id(), connectPoint.toString());
             return;
         }
 
@@ -744,7 +748,8 @@ public class Olt
     private void handleSubscriberFlows(DeviceId deviceId, PortNumber uplinkPort, PortNumber subscriberPort,
                                        UniTagInformation tagInfo) {
 
-        log.debug("Provisioning vlan-based flows for the uniTagInformation {}", tagInfo);
+        log.debug("Provisioning vlan-based flows for the uniTagInformation {} on dev/port {}/{}",
+                tagInfo, deviceId, subscriberPort);
 
         Port port = deviceService.getPort(deviceId, subscriberPort);
 
@@ -763,7 +768,7 @@ public class Olt
                 getBandwidthProfileInformation(tagInfo.getDownstreamBandwidthProfile());
         if (upstreamBpInfo == null) {
             log.warn("No meter installed since no Upstream BW Profile definition found for "
-                             + "ctag {} stag {} tpId {} and Device/port: {}:{}",
+                             + "ctag {} stag {} tpId {} and dev/port: {}/{}",
                      tagInfo.getPonCTag(), tagInfo.getPonSTag(),
                      tagInfo.getTechnologyProfileId(), deviceId,
                      subscriberPort);
@@ -771,7 +776,7 @@ public class Olt
         }
         if (downstreamBpInfo == null) {
             log.warn("No meter installed since no Downstream BW Profile definition found for "
-                             + "ctag {} stag {} tpId {} and Device/port: {}:{}",
+                             + "ctag {} stag {} tpId {} and dev/port: {}/{}",
                      tagInfo.getPonCTag(), tagInfo.getPonSTag(),
                      tagInfo.getTechnologyProfileId(), deviceId,
                      subscriberPort);
@@ -788,22 +793,22 @@ public class Olt
                                                        downstreamBpInfo.id(), upstreamBpInfo.id());
 
         if (upMeterId != null && downMeterId != null) {
-            log.debug("Meters are existing for upstream {} and downstream {}",
-                     upstreamBpInfo.id(), downstreamBpInfo.id());
+            log.debug("Meters are existing for upstream {} and downstream {} on dev/port {}/{}",
+                     upstreamBpInfo.id(), downstreamBpInfo.id(), deviceId, subscriberPort);
             handleSubFlowsWithMeters(fi);
         } else {
-            log.debug("Adding {} to pending subs", fi);
+            log.debug("Adding {} on {}/{} to pending subs", fi, deviceId, subscriberPort);
             // one or both meters are not ready. It's possible they are in the process of being
             // created for other subscribers that share the same bandwidth profile.
             pendingSubscribers.add(fi);
 
             // queue up the meters to be created
             if (upMeterId == null) {
-                log.debug("Missing meter for upstream {}", upstreamBpInfo.id());
+                log.debug("Missing meter for upstream {} on {}/{}", upstreamBpInfo.id(), deviceId, subscriberPort);
                 checkAndCreateDevMeter(deviceId, upstreamBpInfo);
             }
             if (downMeterId == null) {
-                log.debug("Missing meter for downstream {}", downstreamBpInfo.id());
+                log.debug("Missing meter for downstream {} on {}/{}", downstreamBpInfo.id(), deviceId, subscriberPort);
                 checkAndCreateDevMeter(deviceId, downstreamBpInfo);
             }
         }
@@ -817,7 +822,7 @@ public class Olt
     }
 
     private void createMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
-        log.debug("Creating Meter with {} on {} for subscriber", bwpInfo, deviceId);
+        log.debug("Creating Meter with {} on {}", bwpInfo, deviceId);
         CompletableFuture<Object> meterFuture = new CompletableFuture<>();
 
         MeterId meterId = oltMeterService.createMeter(deviceId, bwpInfo,
@@ -837,10 +842,10 @@ public class Olt
                     MeterId downMeterId = oltMeterService
                             .getMeterIdFromBpMapping(deviceId, fi.getDownBpInfo());
                     if (upMeterId != null && downMeterId != null) {
-                        log.debug("Provisioning subscriber after meter {}" +
+                        log.debug("Provisioning subscriber after meter {} " +
                                           "installation and both meters are present " +
-                                          "upstream {} and downstream {}",
-                                  meterId, upMeterId, downMeterId);
+                                          "upstream {} and downstream {} on {}/{}",
+                                  meterId, upMeterId, downMeterId, deviceId, fi.getUniPort());
                         // put in the meterIds  because when fi was first
                         // created there may or may not have been a meterId
                         // depending on whether the meter was created or
@@ -853,8 +858,8 @@ public class Olt
                     oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
                 } else {
                     // meter install failed
-                    log.error("Addition of subscriber {} failed due to meter " +
-                                      "{} with result {}", fi, meterId, result);
+                    log.error("Addition of subscriber {} on {}/{} failed due to meter " +
+                                      "{} with result {}", fi, deviceId, fi.getUniPort(), meterId, result);
                     subsIterator.remove();
                     oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
                 }
@@ -868,7 +873,8 @@ public class Olt
      * @param subscriberFlowInfo relevant information for subscriber
      */
     private void handleSubFlowsWithMeters(SubscriberFlowInfo subscriberFlowInfo) {
-        log.debug("Provisioning subscriber flows based on {}", subscriberFlowInfo);
+        log.debug("Provisioning subscriber flows on {}/{} based on {}",
+                  subscriberFlowInfo.getDevId(), subscriberFlowInfo.getUniPort(), subscriberFlowInfo);
         UniTagInformation tagInfo = subscriberFlowInfo.getTagInfo();
         CompletableFuture<ObjectiveError> upFuture = new CompletableFuture<>();
         CompletableFuture<ObjectiveError> downFuture = new CompletableFuture<>();
@@ -879,7 +885,8 @@ public class Olt
         flowObjectiveService.forward(subscriberFlowInfo.getDevId(), upFwd.add(new ObjectiveContext() {
             @Override
             public void onSuccess(Objective objective) {
-                log.debug("Upstream flow installed successfully {}", subscriberFlowInfo);
+                log.debug("Upstream HSIA flow {} installed successfully on {}/{}",
+                        subscriberFlowInfo, subscriberFlowInfo.getDevId(), subscriberFlowInfo.getUniPort());
                 upFuture.complete(null);
             }
 
@@ -895,7 +902,8 @@ public class Olt
         flowObjectiveService.forward(subscriberFlowInfo.getDevId(), downFwd.add(new ObjectiveContext() {
             @Override
             public void onSuccess(Objective objective) {
-                log.debug("Downstream flow installed successfully {}", subscriberFlowInfo);
+                log.debug("Downstream HSIA flow {} installed successfully on {}/{}",
+                        subscriberFlowInfo, subscriberFlowInfo.getDevId(), subscriberFlowInfo.getUniPort());
                 downFuture.complete(null);
             }
 
@@ -908,20 +916,18 @@ public class Olt
         upFuture.thenAcceptBothAsync(downFuture, (upStatus, downStatus) -> {
             AccessDeviceEvent.Type type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_REGISTERED;
             if (downStatus != null) {
-                log.error("Flow with innervlan {} and outerVlan {} on device {} " +
-                                  "on port {} failed downstream installation: {}",
+                log.error("Flow with innervlan {} and outerVlan {} on {}/{} failed downstream installation: {}",
                           tagInfo.getPonCTag(), tagInfo.getPonSTag(), subscriberFlowInfo.getDevId(),
                           subscriberFlowInfo.getUniPort(), downStatus);
                 type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_REGISTRATION_FAILED;
             } else if (upStatus != null) {
-                log.error("Flow with innerVlan {} and outerVlan {} on device {} " +
-                                  "on port {} failed upstream installation: {}",
+                log.error("Flow with innervlan {} and outerVlan {} on {}/{} failed downstream installation: {}",
                           tagInfo.getPonCTag(), tagInfo.getPonSTag(), subscriberFlowInfo.getDevId(),
                           subscriberFlowInfo.getUniPort(), upStatus);
                 type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_REGISTRATION_FAILED;
             } else {
                 log.debug("Upstream and downstream data plane flows are installed successfully " +
-                                 "for {}", subscriberFlowInfo);
+                                 "for {}/{}", subscriberFlowInfo.getDevId(), subscriberFlowInfo.getUniPort());
                 oltFlowService.processEapolFilteringObjectives(subscriberFlowInfo.getDevId(),
                                                                subscriberFlowInfo.getUniPort(),
                                                                tagInfo.getUpstreamBandwidthProfile(),
@@ -960,17 +966,17 @@ public class Olt
      */
     private Optional<UniTagInformation> getUniTagInformation(ConnectPoint cp, VlanId innerVlan, VlanId outerVlan,
                                                              int tpId) {
-        log.info("Getting uni tag information for cp: {}, innerVlan: {}, outerVlan: {}, tpId: {}", cp, innerVlan,
-                 outerVlan, tpId);
+        log.debug("Getting uni tag information for cp: {}, innerVlan: {}, outerVlan: {}, tpId: {}",
+                cp.toString(), innerVlan, outerVlan, tpId);
         SubscriberAndDeviceInformation subInfo = getSubscriber(cp);
         if (subInfo == null) {
-            log.warn("Subscriber information doesn't exist for the connect point {}", cp);
+            log.warn("Subscriber information doesn't exist for the connect point {}", cp.toString());
             return Optional.empty();
         }
 
         List<UniTagInformation> uniTagList = subInfo.uniTagList();
         if (uniTagList == null) {
-            log.warn("Uni tag list is not found for the subscriber {}", subInfo.id());
+            log.warn("Uni tag list is not found for the subscriber {} on {}", subInfo.id(), cp.toString());
             return Optional.empty();
         }
 
@@ -984,8 +990,8 @@ public class Olt
         }
 
         if (service == null) {
-            log.warn("SADIS doesn't include the service with ponCtag {} ponStag {} and tpId {}",
-                     innerVlan, outerVlan, tpId);
+            log.warn("SADIS doesn't include the service with ponCtag {} ponStag {} and tpId {} on {}",
+                     innerVlan, outerVlan, tpId, cp.toString());
             return Optional.empty();
         }
 
@@ -1011,12 +1017,12 @@ public class Olt
                 }
                 if (isUniPort(dev, p)) {
                     if (!programmedSubs.containsKey(new ConnectPoint(dev.id(), p.number()))) {
-                        log.info("Creating Eapol for the uni {}", p);
+                        log.info("Creating Eapol on {}/{}", dev.id(), p.number());
                         oltFlowService.processEapolFilteringObjectives(dev.id(), p.number(), defaultBpId, null,
                                                                        VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
                     } else {
-                        log.debug("Subscriber Eapol for UNI port {} on device {} is already " +
-                                          "provisioned, not installing default", p.number(), dev.id());
+                        log.debug("Subscriber Eapol on {}/{} is already provisioned, not installing default",
+                                dev.id(), p.number());
                     }
                 } else {
                     oltFlowService.processNniFilteringObjectives(dev.id(), p.number(), true);
@@ -1163,7 +1169,7 @@ public class Olt
                     return;
                 }
 
-                log.debug("OLT got {} event for {} {}", eventType, event.subject(), event.port());
+                log.debug("OLT got {} event for {}/{}", eventType, event.subject(), event.port());
 
                 if (getOltInfo(dev) == null) {
                     // it's possible that we got an event for a previously
@@ -1188,7 +1194,7 @@ public class Olt
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port));
 
                             if (port.isEnabled() && !port.number().equals(PortNumber.LOCAL)) {
-                                log.info("eapol will be sent for port added {}", port);
+                                log.info("eapol will be sent for port added {}/{}", devId, port);
                                 oltFlowService.processEapolFilteringObjectives(devId, port.number(), defaultBpId,
                                                                                null,
                                                                                VlanId.vlanId(EAPOL_DEFAULT_VLAN),
@@ -1209,8 +1215,8 @@ public class Olt
                             Collection<? extends UniTagInformation> uniTagInformationSet =
                                     programmedSubs.get(new ConnectPoint(port.element().id(), port.number())).value();
                             if (uniTagInformationSet == null || uniTagInformationSet.isEmpty()) {
-                                log.info("No subscriber provisioned on port {} in PORT_REMOVED event, " +
-                                                 "removing default EAPOL flow", port);
+                                log.info("No subscriber provisioned on port {}/{} in PORT_REMOVED event, " +
+                                                 "removing default EAPOL flow", devId, port);
                                 oltFlowService.processEapolFilteringObjectives(devId, port.number(), defaultBpId,
                                                                                null,
                                                                                VlanId.vlanId(EAPOL_DEFAULT_VLAN),

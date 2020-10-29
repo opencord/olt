@@ -166,10 +166,10 @@ public class OltMeterService implements AccessDeviceMeterService {
                         ImmutableMap::copyOf));
     }
 
-    void addMeterIdToBpMapping(DeviceId deviceId, MeterId meterId, String bandwidthProfile) {
+    boolean addMeterIdToBpMapping(DeviceId deviceId, MeterId meterId, String bandwidthProfile) {
         log.debug("adding bp {} to meter {} mapping for device {}",
                  bandwidthProfile, meterId, deviceId);
-        bpInfoToMeter.put(bandwidthProfile, MeterKey.key(deviceId, meterId));
+        return bpInfoToMeter.put(bandwidthProfile, MeterKey.key(deviceId, meterId));
     }
 
     @Override
@@ -185,12 +185,12 @@ public class OltMeterService implements AccessDeviceMeterService {
                 .filter(meterKey -> meterKey.deviceId().equals(deviceId))
                 .findFirst();
         if (meterKeyForDevice.isPresent()) {
-            log.debug("Found meter {} for bandwidth profile {}",
-                    meterKeyForDevice.get().meterId(), bandwidthProfile);
+            log.debug("Found meter {} for bandwidth profile {} on {}",
+                    meterKeyForDevice.get().meterId(), bandwidthProfile, deviceId);
             return meterKeyForDevice.get().meterId();
         } else {
-            log.warn("Bandwidth Profile '{}' is not currently mapped to a meter in {}",
-                     bandwidthProfile, bpInfoToMeter.get(bandwidthProfile).value());
+            log.warn("Bandwidth Profile '{}' is not currently mapped to a meter on {} , {}",
+                     bandwidthProfile, deviceId, bpInfoToMeter.get(bandwidthProfile).value());
             return null;
         }
     }
@@ -207,7 +207,7 @@ public class OltMeterService implements AccessDeviceMeterService {
                                CompletableFuture<Object> meterFuture) {
         log.debug("Creating meter on {} for {}", deviceId, bpInfo);
         if (bpInfo == null) {
-            log.warn("Requested bandwidth profile information is NULL");
+            log.warn("Requested bandwidth profile on {} information is NULL", deviceId);
             meterFuture.complete(ObjectiveError.BADPARAMS);
             return null;
         }
@@ -228,10 +228,16 @@ public class OltMeterService implements AccessDeviceMeterService {
                 .withContext(new MeterContext() {
                     @Override
                     public void onSuccess(MeterRequest op) {
-                        log.debug("Meter {} is installed on the device {}",
-                                 meterIdRef.get(), deviceId);
-                        addMeterIdToBpMapping(deviceId, meterIdRef.get(), bpInfo.id());
-                        meterFuture.complete(null);
+                        log.debug("Meter {} for {} is installed on the device {}",
+                                  meterIdRef.get(), bpInfo.id(), deviceId);
+                        boolean added = addMeterIdToBpMapping(deviceId, meterIdRef.get(), bpInfo.id());
+                        if (added) {
+                            meterFuture.complete(null);
+                        } else {
+                            log.error("Failed to add Meter {} for {} on {} to the meter-bandwidth mapping",
+                                      meterIdRef.get(), bpInfo.id(), deviceId);
+                            meterFuture.complete(ObjectiveError.UNKNOWN);
+                        }
                     }
 
                     @Override
@@ -270,7 +276,7 @@ public class OltMeterService implements AccessDeviceMeterService {
     public synchronized boolean checkAndAddPendingMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
         if (pendingMeters.containsKey(deviceId)
                 && pendingMeters.get(deviceId).contains(bwpInfo)) {
-            log.debug("Meter is already pending for EAPOL on {} with bp {}",
+            log.debug("Meter is already pending on {} with bp {}",
                       deviceId, bwpInfo);
             return false;
         }
