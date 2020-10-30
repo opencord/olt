@@ -24,16 +24,16 @@ import static org.opencord.olt.impl.OsgiPropertyConstants.DELETE_METERS;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DELETE_METERS_DEFAULT;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.List;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -272,6 +272,7 @@ public class OltMeterService implements AccessDeviceMeterService {
                 && pendingMeters.get(deviceId).contains(bwpInfo)) {
             log.debug("Meter is already pending on {} with bp {}",
                       deviceId, bwpInfo);
+
             return false;
         }
         log.debug("Adding bandwidth profile {} to pending on {}",

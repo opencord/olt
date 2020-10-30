@@ -17,6 +17,7 @@ package org.opencord.olt.impl;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.onlab.util.Tools.get;
+import static org.onlab.util.Tools.groupedThreads;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_TP_ID;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_TP_ID_DEFAULT;
 import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_DHCP_ON_NNI;
@@ -36,6 +37,9 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.onlab.packet.EthType;
 import org.onlab.packet.IPv4;
@@ -167,7 +171,9 @@ public class OltFlowService implements AccessDeviceFlowService {
     protected ApplicationId appId;
     protected BaseInformationService<BandwidthProfileInformation> bpService;
     protected BaseInformationService<SubscriberAndDeviceInformation> subsService;
-    private Set<SubscriberFlowInfo> pendingEapolForMeters = Sets.newConcurrentHashSet();;
+    private Set<SubscriberFlowInfo> pendingEapolForMeters = Sets.newConcurrentHashSet();
+
+    protected ScheduledExecutorService eapolExecutor;
 
     @Activate
     public void activate(ComponentContext context) {
@@ -175,6 +181,8 @@ public class OltFlowService implements AccessDeviceFlowService {
         subsService = sadisService.getSubscriberInfoService();
         componentConfigService.registerProperties(getClass());
         appId = coreService.getAppId(APP_NAME);
+        eapolExecutor = Executors.newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
+                "process-eapol-%d", log));
         log.info("started");
     }
 
@@ -182,6 +190,7 @@ public class OltFlowService implements AccessDeviceFlowService {
     @Deactivate
     public void deactivate(ComponentContext context) {
         componentConfigService.unregisterProperties(getClass(), false);
+        eapolExecutor.shutdown();
         log.info("stopped");
     }
 
@@ -219,10 +228,10 @@ public class OltFlowService implements AccessDeviceFlowService {
         defaultTechProfileId = isNullOrEmpty(tpId) ? DEFAULT_TP_ID_DEFAULT : Integer.parseInt(tpId.trim());
 
         log.info("modified. Values = enableDhcpOnNni: {}, enableDhcpV4: {}, " +
-                         "enableDhcpV6:{}, enableIgmpOnNni:{}, " +
-                         "enableEapol{}, defaultTechProfileId: {}",
-                 enableDhcpOnNni, enableDhcpV4, enableDhcpV6,
-                 enableIgmpOnNni, enableEapol, defaultTechProfileId);
+                        "enableDhcpV6:{}, enableIgmpOnNni:{}, " +
+                        "enableEapol{}, defaultTechProfileId: {}",
+                enableDhcpOnNni, enableDhcpV4, enableDhcpV6,
+                enableIgmpOnNni, enableEapol, defaultTechProfileId);
 
     }
 
@@ -236,7 +245,7 @@ public class OltFlowService implements AccessDeviceFlowService {
             // for UNI ports
             if (tagInformation != null && !tagInformation.getIsDhcpRequired()) {
                 log.debug("Dhcp provisioning is disabled for UNI port {} on "
-                        + "device {} for service {}", port, devId,
+                                + "device {} for service {}", port, devId,
                         tagInformation.getServiceName());
                 return;
             }
@@ -263,7 +272,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
             addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
                     upstreamMeterId, techProfileId, protocol, cTag, unitagMatch,
-                                       vlanPcp, upstream, install);
+                    vlanPcp, upstream, install);
         }
 
         if (enableDhcpV6) {
@@ -275,7 +284,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
             addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
                     upstreamMeterId, techProfileId, protocol, cTag, unitagMatch,
-                                       vlanPcp, upstream, install);
+                    vlanPcp, upstream, install);
         }
     }
 
@@ -317,7 +326,7 @@ public class OltFlowService implements AccessDeviceFlowService {
         }
 
         dhcpUpstreamBuilder.withMeta(treatmentBuilder
-                                  .setOutput(PortNumber.CONTROLLER).build());
+                .setOutput(PortNumber.CONTROLLER).build());
 
 
         FilteringObjective dhcpUpstream = dhcpUpstreamBuilder.add(new ObjectiveContext() {
@@ -350,15 +359,15 @@ public class OltFlowService implements AccessDeviceFlowService {
             // for UNI ports
             if (tagInformation != null && !tagInformation.getIsIgmpRequired()) {
                 log.debug("Igmp provisioning is disabled for UNI port {} on "
-                        + "device {} for service {}", port, devId,
-                          tagInformation.getServiceName());
+                                + "device {} for service {}", port, devId,
+                        tagInformation.getServiceName());
                 return;
             }
         } else {
             // for NNI ports
             if (!enableIgmpOnNni) {
                 log.debug("Igmp provisioning is disabled for NNI port {} on device {}",
-                          port, devId);
+                        port, devId);
                 return;
             }
         }
@@ -456,20 +465,32 @@ public class OltFlowService implements AccessDeviceFlowService {
         log.info("Meter id {} for Bandwidth profile {} associated to EAPOL on {}", meterId, bpInfo.id(), devId);
         if (meterId == null) {
             if (install) {
-                log.debug("Need to install meter for EAPOL with bwp {} on dev/port {}", bpInfo.id(), cp.toString());
+                log.debug("TEO Need to install meter for EAPOL with bwp {} on dev/port {}", bpInfo.id(), cp.toString());
                 SubscriberFlowInfo fi = new SubscriberFlowInfo(devId, null, cp.port(),
-                                                               new UniTagInformation.Builder()
-                                                                       .setPonCTag(vlanId).build(),
-                                                               null, null,
-                                                               null, bpInfo.id());
+                        new UniTagInformation.Builder()
+                                .setPonCTag(vlanId).build(),
+                        null, null,
+                        null, bpInfo.id());
                 pendingEapolForMeters.add(fi);
 
                 //If false the meter is already being installed, skipping installation
                 if (!oltMeterService.checkAndAddPendingMeter(devId, bpInfo)) {
+                    // FIXME who is completing the meterFuture in this case??
+                    // for now just retry this method later (dirty dirty hack)
+                    log.debug("TEO Meter for EAPOL with bwp {} on dev/port {} is being installed",
+                            bpInfo.id(), cp.toString());
+                    eapolExecutor.schedule(
+                            () -> {
+                                log.debug("TEO Restarting processEapolFilteringObjectives for bp {} on dev/port {}",
+                                        bpInfo.id(), cp.toString());
+                                processEapolFilteringObjectives(
+                                        devId, portNumber, bpId, filterFuture, vlanId, install);
+                            },
+                            3, TimeUnit.SECONDS);
                     return;
                 }
                 MeterId innerMeterId = oltMeterService.createMeter(devId, bpInfo,
-                                                                   meterFuture);
+                        meterFuture);
                 fi.setUpMeterId(innerMeterId);
             } else {
                 // this case should not happen as the request to remove an eapol
@@ -479,19 +500,19 @@ public class OltFlowService implements AccessDeviceFlowService {
                 log.warn("Unknown meter id for bp {}, still proceeding with "
                         + "delete of eapol flow for {}", bpInfo.id(), cp.toString());
                 SubscriberFlowInfo fi = new SubscriberFlowInfo(devId, null, cp.port(),
-                                                               new UniTagInformation.Builder()
-                                                                       .setPonCTag(vlanId).build(),
-                                                               null, meterId,
-                                                               null, bpInfo.id());
+                        new UniTagInformation.Builder()
+                                .setPonCTag(vlanId).build(),
+                        null, meterId,
+                        null, bpInfo.id());
                 handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, meterId);
             }
         } else {
             log.debug("Meter {} was previously created for bp {} on {}", meterId, bpInfo.id(), cp.toString());
             SubscriberFlowInfo fi = new SubscriberFlowInfo(devId, null, cp.port(),
-                                                           new UniTagInformation.Builder()
-                                                                   .setPonCTag(vlanId).build(),
-                                                           null, meterId,
-                                                           null, bpInfo.id());
+                    new UniTagInformation.Builder()
+                            .setPonCTag(vlanId).build(),
+                    null, meterId,
+                    null, bpInfo.id());
             handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, meterId);
             //No need for the future, meter is present.
             return;
@@ -515,7 +536,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                     }
                 } else {
                     log.warn("Meter installation error while sending EAPOL trap flow to {}. " +
-                                     "Result {} and MeterId {}", cp.toString(), result, meterId);
+                            "Result {} and MeterId {}", cp.toString(), result, meterId);
                     eapIterator.remove();
                 }
                 oltMeterService.removeFromPendingMeters(devId, bpInfo);
@@ -529,8 +550,8 @@ public class OltFlowService implements AccessDeviceFlowService {
                              TrafficTreatment.Builder treatmentBuilder,
                              SubscriberFlowInfo fi, MeterId mId) {
         log.info("Meter {} for {} on {}/{} exists. {} EAPOL trap flow",
-                 mId, fi.getUpBpInfo(), fi.getDevId(), fi.getUniPort(),
-                 (install) ? "Installing" : "Removing");
+                mId, fi.getUpBpInfo(), fi.getDevId(), fi.getUniPort(),
+                (install) ? "Installing" : "Removing");
         int techProfileId = getDefaultTechProfileId(fi.getDevId(), fi.getUniPort());
         // can happen in case of removal
         if (mId != null) {
@@ -541,21 +562,21 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .withKey(Criteria.matchInPort(fi.getUniPort()))
                 .addCondition(Criteria.matchEthType(EthType.EtherType.EAPOL.ethType()))
                 .withMeta(treatmentBuilder
-                                  .writeMetadata(createTechProfValueForWm(
-                                          fi.getTagInfo().getPonCTag(),
-                                          techProfileId), 0)
-                                  .setOutput(PortNumber.CONTROLLER)
-                                  .pushVlan()
-                                  .setVlanId(fi.getTagInfo().getPonCTag())
-                                  .build())
+                        .writeMetadata(createTechProfValueForWm(
+                                fi.getTagInfo().getPonCTag(),
+                                techProfileId), 0)
+                        .setOutput(PortNumber.CONTROLLER)
+                        .pushVlan()
+                        .setVlanId(fi.getTagInfo().getPonCTag())
+                        .build())
                 .fromApp(appId)
                 .withPriority(MAX_PRIORITY)
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
                         log.info("Eapol filter {} for {} on {}/{} with meter {}.",
-                                 objective.id(), fi.getDevId(), fi.getUniPort(),
-                                 (install) ? INSTALLED : REMOVED, mId);
+                                objective.id(), fi.getDevId(), fi.getUniPort(),
+                                (install) ? INSTALLED : REMOVED, mId);
                         if (filterFuture != null) {
                             filterFuture.complete(null);
                         }
@@ -564,10 +585,10 @@ public class OltFlowService implements AccessDeviceFlowService {
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
                         log.error("Eapol filter {} for {}/{} with meter {} " +
-                                         "failed {} because {}", objective.id(),
-                                 fi.getDevId(), fi.getUniPort(), mId,
-                                 (install) ? INSTALLATION : REMOVAL,
-                                 error);
+                                        "failed {} because {}", objective.id(),
+                                fi.getDevId(), fi.getUniPort(), mId,
+                                (install) ? INSTALLATION : REMOVAL,
+                                error);
                         if (filterFuture != null) {
                             filterFuture.complete(error);
                         }
@@ -587,7 +608,7 @@ public class OltFlowService implements AccessDeviceFlowService {
     @Override
     public void processNniFilteringObjectives(DeviceId devId, PortNumber port, boolean install) {
         log.info("{} flows for NNI port {} on device {}",
-                 install ? "Adding" : "Removing", port, devId);
+                install ? "Adding" : "Removing", port, devId);
         processLldpFilteringObjective(devId, port, install);
         processDhcpFilteringObjectives(devId, port, null, null, install, false);
         processIgmpFilteringObjectives(devId, port, null, null, install, false);
@@ -722,8 +743,8 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .setOutput(subscriberPort);
 
         treatmentBuilder.writeMetadata(createMetadata(tagInformation.getPonCTag(),
-                                                      tagInformation.getTechnologyProfileId(),
-                                                      subscriberPort), 0);
+                tagInformation.getTechnologyProfileId(),
+                subscriberPort), 0);
 
         // to remark inner vlan header
         if (tagInformation.getUsPonCTagPriority() != NO_PCP) {
