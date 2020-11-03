@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "497f92dc_7a09c49e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-11-03T18:30:00Z",
+      "side": 1,
+      "message": "should be WARN?",
+      "range": {
+        "startLine": 333,
+        "startChar": 20,
+        "endLine": 333,
+        "endChar": 24
+      },
+      "revId": "ed9e868e504f714fda81d1869f61a8bc02c60dcf",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d5418a9_cdc1c114",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-11-03T18:30:00Z",
+      "side": 1,
+      "message": "warn?",
+      "range": {
+        "startLine": 414,
+        "startChar": 28,
+        "endLine": 414,
+        "endChar": 32
+      },
+      "revId": "ed9e868e504f714fda81d1869f61a8bc02c60dcf",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb836cd6_8a93859b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 452,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-11-03T18:30:00Z",
+      "side": 1,
+      "message": "debug? seems redundant to have two messages back to back at the same level",
+      "range": {
+        "startLine": 452,
+        "startChar": 12,
+        "endLine": 452,
+        "endChar": 16
+      },
+      "revId": "ed9e868e504f714fda81d1869f61a8bc02c60dcf",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a9c4932_23fc9184",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 617,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-11-03T18:30:00Z",
+      "side": 1,
+      "message": "warn?",
+      "range": {
+        "startLine": 617,
+        "startChar": 28,
+        "endLine": 617,
+        "endChar": 32
+      },
+      "revId": "ed9e868e504f714fda81d1869f61a8bc02c60dcf",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
