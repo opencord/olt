@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d4c20ab8_c6f9f31c",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-11-05T22:13:50Z",
+      "side": 1,
+      "message": "removed and done",
+      "parentUuid": "d0d77d98_3bee937e",
+      "range": {
+        "startLine": 337,
+        "startChar": 8,
+        "endLine": 337,
+        "endChar": 33
+      },
+      "revId": "8aef398f7ea43e090ab34686e8dd3460651b0afa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "84dff1cf_c9a54edb",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "05a375c4_b7294561",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 809,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-11-05T22:13:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "84dff1cf_c9a54edb",
+      "range": {
+        "startLine": 809,
+        "startChar": 16,
+        "endLine": 809,
+        "endChar": 64
+      },
+      "revId": "8aef398f7ea43e090ab34686e8dd3460651b0afa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "48274202_4af18e1b",
         "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 2
@@ -59,6 +107,30 @@
       "writtenOn": "2020-11-05T16:27:22Z",
       "side": 1,
       "message": "do we need a message that tells us all the pendingSubscriber for a device have been provisioned?",
+      "range": {
+        "startLine": 881,
+        "startChar": 16,
+        "endLine": 881,
+        "endChar": 17
+      },
+      "revId": "8aef398f7ea43e090ab34686e8dd3460651b0afa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "487260cb_de441a13",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 881,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2020-11-05T22:13:50Z",
+      "side": 1,
+      "message": "added at line 849",
+      "parentUuid": "48274202_4af18e1b",
       "range": {
         "startLine": 881,
         "startChar": 16,
