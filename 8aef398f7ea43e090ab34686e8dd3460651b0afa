@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d0d77d98_3bee937e",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-11-05T16:27:22Z",
+      "side": 1,
+      "message": "what does this comment means?\n\ncan we add a comment saying that here we\u0027re checking that the subscriber is pending installation so we don\u0027t need to provision it again?",
+      "range": {
+        "startLine": 337,
+        "startChar": 8,
+        "endLine": 337,
+        "endChar": 33
+      },
+      "revId": "8aef398f7ea43e090ab34686e8dd3460651b0afa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84dff1cf_c9a54edb",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 809,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-11-05T16:27:22Z",
+      "side": 1,
+      "message": "Please add deviceId/portNo info to the log",
+      "range": {
+        "startLine": 809,
+        "startChar": 16,
+        "endLine": 809,
+        "endChar": 64
+      },
+      "revId": "8aef398f7ea43e090ab34686e8dd3460651b0afa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48274202_4af18e1b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 881,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2020-11-05T16:27:22Z",
+      "side": 1,
+      "message": "do we need a message that tells us all the pendingSubscriber for a device have been provisioned?",
+      "range": {
+        "startLine": 881,
+        "startChar": 16,
+        "endLine": 881,
+        "endChar": 17
+      },
+      "revId": "8aef398f7ea43e090ab34686e8dd3460651b0afa",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
