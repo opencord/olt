@@ -15,34 +15,8 @@
  */
 package org.opencord.olt.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-import static org.onlab.util.Tools.get;
-import static org.onlab.util.Tools.groupedThreads;
-import static org.opencord.olt.impl.OsgiPropertyConstants.*;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import org.onlab.packet.VlanId;
 import org.onlab.util.KryoNamespace;
 import org.onosproject.cfg.ComponentConfigService;
@@ -96,8 +70,33 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import static java.util.stream.Collectors.*;
+import static org.onlab.util.Tools.get;
+import static org.onlab.util.Tools.groupedThreads;
+import static org.opencord.olt.impl.OsgiPropertyConstants.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Provisions rules on access devices.
@@ -199,7 +198,7 @@ public class Olt
     private ConsistentMultimap<ConnectPoint, UniTagInformation> programmedSubs;
     private ConsistentMultimap<ConnectPoint, UniTagInformation> failedSubs;
 
-    private Set<SubscriberFlowInfo> pendingSubscribers;
+    private ConcurrentMap<DeviceId, BlockingQueue<SubscriberFlowInfo>> pendingSubscribersForDevice;
 
     @Activate
     public void activate(ComponentContext context) {
@@ -230,7 +229,7 @@ public class Olt
                 .withApplicationId(appId)
                 .build();
 
-        pendingSubscribers = Sets.newConcurrentHashSet();
+        pendingSubscribersForDevice = new ConcurrentHashMap<>();
         eventDispatcher.addSink(AccessDeviceEvent.class, listenerRegistry);
 
         subsService = sadisService.getSubscriberInfoService();
@@ -336,15 +335,20 @@ public class Olt
         if (!uniTagInformationSet.isEmpty()) {
             return true;
         }
-
-        for (SubscriberFlowInfo fi : pendingSubscribers) {
-            if (fi.getDevId().equals(connectPoint.deviceId())
-                    && fi.getUniPort().equals(connectPoint.port())) {
-                return true;
+        //Check if the subscriber is already getting provisioned
+        // so we do not provision twice
+        AtomicBoolean isPending = new AtomicBoolean(false);
+        pendingSubscribersForDevice.computeIfPresent(connectPoint.deviceId(), (id, infos) -> {
+            for (SubscriberFlowInfo fi : infos) {
+                if (fi.getUniPort().equals(connectPoint.port())) {
+                    isPending.set(true);
+                    break;
+                }
             }
-        }
+            return infos;
+        });
 
-        return false;
+        return isPending.get();
     }
 
     private class DeleteEapolInstallSub implements Runnable {
@@ -800,7 +804,14 @@ public class Olt
             log.debug("Adding {} on {}/{} to pending subs", fi, deviceId, subscriberPort);
             // one or both meters are not ready. It's possible they are in the process of being
             // created for other subscribers that share the same bandwidth profile.
-            pendingSubscribers.add(fi);
+            pendingSubscribersForDevice.compute(deviceId, (id, queue) -> {
+                if (queue == null) {
+                    queue = new LinkedBlockingQueue<>();
+                }
+                queue.add(fi);
+                log.info("Added {} to pending subscribers on {}/{}", fi, deviceId, subscriberPort);
+                return queue;
+            });
 
             // queue up the meters to be created
             if (upMeterId == null) {
@@ -829,42 +840,54 @@ public class Olt
                                                       meterFuture);
 
         meterFuture.thenAcceptAsync(result -> {
+            BlockingQueue<SubscriberFlowInfo> queue = pendingSubscribersForDevice.get(deviceId);
             // iterate through the subscribers on hold
-            Iterator<SubscriberFlowInfo> subsIterator = pendingSubscribers.iterator();
-            while (subsIterator.hasNext()) {
-                SubscriberFlowInfo fi = subsIterator.next();
-                if (result == null) {
-                    // meter install sent to device
-                    log.debug("Meter {} installed for bw {} on {}", meterId, bwpInfo, deviceId);
-
-                    MeterId upMeterId = oltMeterService
-                            .getMeterIdFromBpMapping(deviceId, fi.getUpBpInfo());
-                    MeterId downMeterId = oltMeterService
-                            .getMeterIdFromBpMapping(deviceId, fi.getDownBpInfo());
-                    if (upMeterId != null && downMeterId != null) {
-                        log.debug("Provisioning subscriber after meter {} " +
-                                          "installation and both meters are present " +
-                                          "upstream {} and downstream {} on {}/{}",
-                                  meterId, upMeterId, downMeterId, deviceId, fi.getUniPort());
-                        // put in the meterIds  because when fi was first
-                        // created there may or may not have been a meterId
-                        // depending on whether the meter was created or
-                        // not at that time.
-                        fi.setUpMeterId(upMeterId);
-                        fi.setDownMeterId(downMeterId);
-                        handleSubFlowsWithMeters(fi);
-                        subsIterator.remove();
+            if (queue != null) {
+                while (true) {
+                    //TODO this might return the reference and not the actual object so
+                    // it can be actually swapped underneath us.
+                    SubscriberFlowInfo fi = queue.peek();
+                    if (fi == null) {
+                        log.debug("No more subscribers pending on {}", deviceId);
+                        break;
                     }
-                    oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
-                } else {
-                    // meter install failed
-                    log.error("Addition of subscriber {} on {}/{} failed due to meter " +
-                                      "{} with result {}", fi, deviceId, fi.getUniPort(), meterId, result);
-                    subsIterator.remove();
-                    oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
+                    if (result == null) {
+                        // meter install sent to device
+                        log.debug("Meter {} installed for bw {} on {}", meterId, bwpInfo, deviceId);
+
+                        MeterId upMeterId = oltMeterService
+                                .getMeterIdFromBpMapping(deviceId, fi.getUpBpInfo());
+                        MeterId downMeterId = oltMeterService
+                                .getMeterIdFromBpMapping(deviceId, fi.getDownBpInfo());
+                        if (upMeterId != null && downMeterId != null) {
+                            log.debug("Provisioning subscriber after meter {} " +
+                                              "installation and both meters are present " +
+                                              "upstream {} and downstream {} on {}/{}",
+                                      meterId, upMeterId, downMeterId, deviceId, fi.getUniPort());
+                            // put in the meterIds  because when fi was first
+                            // created there may or may not have been a meterId
+                            // depending on whether the meter was created or
+                            // not at that time.
+                            fi.setUpMeterId(upMeterId);
+                            fi.setDownMeterId(downMeterId);
+                            handleSubFlowsWithMeters(fi);
+                            queue.remove(fi);
+                        }
+                        oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
+                    } else {
+                        // meter install failed
+                        log.error("Addition of subscriber {} on {}/{} failed due to meter " +
+                                          "{} with result {}", fi, deviceId, fi.getUniPort(),
+                                  meterId, result);
+                        queue.remove(fi);
+                        oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
+                    }
                 }
+            } else {
+                log.info("No pending subscribers on {}", deviceId);
             }
         });
+
     }
     /**
      * Add subscriber flows given meter information for both upstream and
@@ -1310,7 +1333,7 @@ public class Olt
             programmedDevices.remove(device.id());
             removeAllSubscribers(device.id());
             //Handle case where OLT disconnects during subscriber provisioning
-            pendingSubscribers.removeIf(fi -> fi.getDevId().equals(device.id()));
+            pendingSubscribersForDevice.remove(device.id());
             oltFlowService.clearDeviceState(device.id());
 
             //Complete meter and flow purge
