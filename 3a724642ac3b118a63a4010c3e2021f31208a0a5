@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a99f90a_6c369d4b",
+        "filename": "app/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2020-11-06T13:40:13Z",
+      "side": 1,
+      "message": "you may want to optimize a bit with computeIfPresent",
+      "revId": "3a724642ac3b118a63a4010c3e2021f31208a0a5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
