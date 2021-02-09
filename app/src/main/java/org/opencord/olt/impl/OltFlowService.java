@@ -241,7 +241,8 @@ public class OltFlowService implements AccessDeviceFlowService {
         int techProfileId = tagInformation != null ? tagInformation.getTechnologyProfileId() : NONE_TP_ID;
         VlanId cTag = tagInformation != null ? tagInformation.getPonCTag() : VlanId.NONE;
         VlanId unitagMatch = tagInformation != null ? tagInformation.getUniTagMatch() : VlanId.ANY;
-        Byte vlanPcp = tagInformation != null ? (byte) tagInformation.getUsPonCTagPriority() : null;
+        Byte vlanPcp = tagInformation != null && tagInformation.getUsPonCTagPriority() != NO_PCP
+                ? (byte) tagInformation.getUsPonCTagPriority() : null;
 
 
         if (enableDhcpV4) {

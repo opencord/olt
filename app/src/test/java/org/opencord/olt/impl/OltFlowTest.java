@@ -64,6 +64,7 @@ import com.google.common.collect.ListMultimap;
 public class OltFlowTest extends TestBase {
     private OltFlowService oltFlowService;
     PortNumber uniPortNumber = PortNumber.portNumber(1);
+    PortNumber uniPortNumber2 = PortNumber.portNumber(2);
     PortNumber nniPortNumber = PortNumber.portNumber(65535);
 
     UniTagInformation.Builder tagInfoBuilder = new UniTagInformation.Builder();
@@ -72,6 +73,21 @@ public class OltFlowTest extends TestBase {
             .setPonSTag(VlanId.vlanId((short) 7))
             .setDsPonCTagPriority(0)
             .setUsPonSTagPriority(0)
+            .setTechnologyProfileId(64)
+            .setDownstreamBandwidthProfile(dsBpId)
+            .setUpstreamBandwidthProfile(usBpId)
+            .setIsDhcpRequired(true)
+            .setIsIgmpRequired(true)
+            .build();
+
+    UniTagInformation.Builder tagInfoBuilderNoPcp = new UniTagInformation.Builder();
+    UniTagInformation uniTagInfoNoPcp = tagInfoBuilderNoPcp.setUniTagMatch(VlanId.vlanId((short) 35))
+            .setPonCTag(VlanId.vlanId((short) 34))
+            .setPonSTag(VlanId.vlanId((short) 7))
+            .setDsPonCTagPriority(-1)
+            .setUsPonSTagPriority(-1)
+            .setUsPonCTagPriority(-1)
+            .setDsPonSTagPriority(-1)
             .setTechnologyProfileId(64)
             .setDownstreamBandwidthProfile(dsBpId)
             .setUpstreamBandwidthProfile(usBpId)
@@ -114,11 +130,18 @@ public class OltFlowTest extends TestBase {
                                                       usMeterId, uniTagInfo,
                                                       false, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
+
+        // Ensure upstream flow has no pcp unless properly specified.
+        oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber2,
+                                                      usMeterId, uniTagInfoNoPcp,
+                                                      true, true);
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
+
         // ensure upstream flows are not added if uniTagInfo is missing dhcp requirement
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
                                                       usMeterId, uniTagInfoNoDhcpNoIgmp,
                                                       true, true);
-        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
 
         // ensure downstream traps don't succeed without global config for nni ports
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
@@ -127,7 +150,7 @@ public class OltFlowTest extends TestBase {
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
                                                       null, null,
                                                       false, false);
-        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
         // do global config for nni ports and now it should succeed
         oltFlowService.enableDhcpOnNni = true;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
@@ -136,21 +159,21 @@ public class OltFlowTest extends TestBase {
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
                                                       null, null,
                                                       false, false);
-        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 4;
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 5;
 
         // turn on DHCPv6 and we should get 2 flows
         oltFlowService.enableDhcpV6 = true;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
                                                       usMeterId, uniTagInfo,
                                                       true, true);
-        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 6;
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 7;
 
         // turn off DHCPv4 and it's only v6
         oltFlowService.enableDhcpV4 = false;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
                                                       usMeterId, uniTagInfo,
                                                       true, true);
-        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 7;
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 8;
 
         // cleanup
         oltFlowService.flowObjectiveService.clearQueue();
@@ -335,6 +358,16 @@ public class OltFlowTest extends TestBase {
                     filterForCriterion(filteringObjective.conditions(), Criterion.Type.VLAN_VID);
             PortCriterion portCriterion = (PortCriterion) filteringObjective.key();
 
+            filteringObjective.meta().allInstructions().forEach(instruction -> {
+                if (instruction.type().equals(Instruction.Type.L2MODIFICATION)) {
+                    L2ModificationInstruction l2Instruction = (L2ModificationInstruction) instruction;
+                    if (l2Instruction.subtype().equals(L2ModificationInstruction.L2SubType.VLAN_PCP)) {
+                        //this, given the uniTagInfo we provide, should not be present
+                        assert false;
+                    }
+                }
+            });
+
 
             if (ethType.ethType().equals(EthType.EtherType.LLDP.ethType()) ||
                     portCriterion.port().equals(nniPortNumber)) {
@@ -344,7 +377,8 @@ public class OltFlowTest extends TestBase {
             } else {
                 assert meter.meterId().equals(usMeterId) || meter.meterId().equals(dsMeterId);
                 assert writeMetadata != null;
-                assert vlanIdCriterion == null || vlanIdCriterion.vlanId() == uniTagInfo.getUniTagMatch();
+                assert vlanIdCriterion == null || vlanIdCriterion.vlanId() == uniTagInfo.getUniTagMatch()
+                        || vlanIdCriterion.vlanId() == uniTagInfoNoPcp.getUniTagMatch();
             }
 
         }
