@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2e59a30a_11ffcb4f",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-12T13:43:04Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
