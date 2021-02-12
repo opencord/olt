@@ -629,6 +629,8 @@ public class Olt
                                                       upstreamMeterId, uniTag, false, true);
         oltFlowService.processDhcpFilteringObjectives(deviceId, subscriberPort,
                                                       upstreamMeterId, uniTag, false, true);
+        oltFlowService.processPPPoEDFilteringObjectives(deviceId, subscriberPort,
+                                                        upstreamMeterId, uniTag, false, true);
 
         flowObjectiveService.forward(deviceId, upFwd.remove(new ObjectiveContext() {
             @Override
@@ -964,6 +966,11 @@ public class Olt
                                                               subscriberFlowInfo.getUniPort(),
                                                               subscriberFlowInfo.getUpId(),
                                                               tagInfo, true, true);
+
+                oltFlowService.processPPPoEDFilteringObjectives(subscriberFlowInfo.getDevId(),
+                                                                subscriberFlowInfo.getUniPort(),
+                                                                subscriberFlowInfo.getUpId(),
+                                                                tagInfo, true, true);
                 updateProgrammedSubscriber(new ConnectPoint(subscriberFlowInfo.getDevId(),
                                                             subscriberFlowInfo.getUniPort()),
                                            tagInfo, true);

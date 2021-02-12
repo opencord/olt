@@ -80,6 +80,23 @@ public interface AccessDeviceFlowService {
                                          VlanId vlanId, boolean install);
 
     /**
+     * Trap PPPoE discovery packets to the controller.
+     *
+     * @param devId           the target device identifier
+     * @param portNumber      the uni port for which this trap flow is designated
+     * @param upstreamMeterId the upstream meter id that includes the upstream
+     *                        bandwidth profile values such as PIR,CIR. If no meter id needs to be referenced,
+     *                        null can be sent
+     * @param tagInformation  the uni tag (ctag, stag) information
+     * @param install         true to install the flow, false to remove the flow
+     * @param upstream        true if trapped packets are flowing upstream towards
+     *                        server, false if packets are flowing downstream towards client
+     **/
+    void processPPPoEDFilteringObjectives(DeviceId devId, PortNumber portNumber,
+                                          MeterId upstreamMeterId, UniTagInformation tagInformation,
+                                          boolean install, boolean upstream);
+
+    /**
      * Trap lldp packets to the controller.
      *
      * @param devId   the device identifier

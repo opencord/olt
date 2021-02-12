@@ -182,6 +182,42 @@ public class OltFlowTest extends TestBase {
     }
 
     @Test
+    public void testPppoedFiltering() {
+        oltFlowService.flowObjectiveService.clearQueue();
+
+        // ensure pppoed traps are not added if global config is off.
+        oltFlowService.enablePppoe = false;
+        oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, uniPortNumber,
+                                                        usMeterId, uniTagInfo,
+                                                        true, true);
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 0;
+
+        // ensure upstream pppoed traps can be added and removed
+        oltFlowService.enablePppoe = true;
+        oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, uniPortNumber,
+                                                        usMeterId, uniTagInfo,
+                                                        true, true);
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 1;
+        oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, uniPortNumber,
+                                                        usMeterId, uniTagInfo,
+                                                        false, true);
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
+
+        // ensure downstream pppoed traps can be added and removed
+        oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, nniPortNumber,
+                                                        null, null,
+                                                        true, false);
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
+        oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, nniPortNumber,
+                                                        null, null,
+                                                        false, false);
+        assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 4;
+
+        // cleanup
+        oltFlowService.flowObjectiveService.clearQueue();
+    }
+
+    @Test
     public void testIgmpFiltering() {
         oltFlowService.flowObjectiveService.clearQueue();
 
