@@ -16,6 +16,52 @@
       "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a8e88c8_146cc735",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-02-12T14:03:28Z",
+      "side": 1,
+      "message": "nit: I think having an if-else can improve readability here.",
+      "range": {
+        "startLine": 357,
+        "startChar": 0,
+        "endLine": 361,
+        "endChar": 117
+      },
+      "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aed1dd0e_bf105d14",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-02-12T14:03:28Z",
+      "side": 1,
+      "message": "I\u0027m not sure the onos-dependencies is released nightly for snapshots. This should work if you publish onos-dependencies on the local maven repo, but not in CI.",
+      "range": {
+        "startLine": 25,
+        "startChar": 17,
+        "endLine": 25,
+        "endChar": 31
+      },
+      "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
