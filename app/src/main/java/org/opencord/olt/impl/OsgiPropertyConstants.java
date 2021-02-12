@@ -51,9 +51,15 @@ public final class OsgiPropertyConstants {
     public static final String ENABLE_EAPOL = "enableEapol";
     public static final boolean ENABLE_EAPOL_DEFAULT = true;
 
+    public static final String ENABLE_PPPOE = "enablePppoe";
+    public static final boolean ENABLE_PPPOE_DEFAULT = false;
+
     public static final String EAPOL_DELETE_RETRY_MAX_ATTEMPS = "eapolDeleteRetryMaxAttempts";
     public static final int EAPOL_DELETE_RETRY_MAX_ATTEMPS_DEFAULT = 3;
 
     public static final String PROVISION_DELAY = "provisionDelay";
     public static final int PROVISION_DELAY_DEFAULT = 100;
+
+    public static final String AUTHENTICATION_TYPE = "authenticationType";
+    public static final String AUTHENTICATION_TYPE_DEFAULT = "EAPOL";
 }
