@@ -81,7 +81,6 @@ public class TestBase {
     }
 
     private class MockBpService implements BaseInformationService<BandwidthProfileInformation> {
-
         @Override
         public void invalidateAll() {
 

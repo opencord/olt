@@ -84,6 +84,7 @@ import static org.slf4j.LoggerFactory.getLogger;
         ENABLE_DHCP_V6 + ":Boolean=" + ENABLE_DHCP_V6_DEFAULT,
         ENABLE_IGMP_ON_NNI + ":Boolean=" + ENABLE_IGMP_ON_NNI_DEFAULT,
         ENABLE_EAPOL + ":Boolean=" + ENABLE_EAPOL_DEFAULT,
+        ENABLE_PPPOE + ":Boolean=" + ENABLE_PPPOE_DEFAULT,
         DEFAULT_TP_ID + ":Integer=" + DEFAULT_TP_ID_DEFAULT
 })
 public class OltFlowService implements AccessDeviceFlowService {
@@ -149,6 +150,11 @@ public class OltFlowService implements AccessDeviceFlowService {
     protected boolean enableEapol = ENABLE_EAPOL_DEFAULT;
 
     /**
+     * Send PPPoED authentication trap flows before subscriber provisioning.
+     **/
+    protected boolean enablePppoe = ENABLE_PPPOE_DEFAULT;
+
+    /**
      * Default technology profile id that is used for authentication trap flows.
      **/
     protected int defaultTechProfileId = DEFAULT_TP_ID_DEFAULT;
@@ -205,14 +211,20 @@ public class OltFlowService implements AccessDeviceFlowService {
             enableEapol = eap;
         }
 
+        Boolean pppoe = Tools.isPropertyEnabled(properties, ENABLE_PPPOE);
+        if (pppoe != null) {
+            enablePppoe = pppoe;
+        }
+
         String tpId = get(properties, DEFAULT_TP_ID);
         defaultTechProfileId = isNullOrEmpty(tpId) ? DEFAULT_TP_ID_DEFAULT : Integer.parseInt(tpId.trim());
 
         log.info("modified. Values = enableDhcpOnNni: {}, enableDhcpV4: {}, " +
                          "enableDhcpV6:{}, enableIgmpOnNni:{}, " +
-                         "enableEapol{}, defaultTechProfileId: {}",
+                         "enableEapol{}, enablePppoe{}, defaultTechProfileId: {}",
                  enableDhcpOnNni, enableDhcpV4, enableDhcpV6,
-                 enableIgmpOnNni, enableEapol, defaultTechProfileId);
+                 enableIgmpOnNni, enableEapol,  enablePppoe,
+                 defaultTechProfileId);
 
     }
 
@@ -329,6 +341,77 @@ public class OltFlowService implements AccessDeviceFlowService {
         });
         flowObjectiveService.filter(devId, dhcpUpstream);
 
+    }
+
+    @Override
+    public void processPPPoEDFilteringObjectives(DeviceId devId, PortNumber portNumber,
+                                                 MeterId upstreamMeterId,
+                                                 UniTagInformation tagInformation,
+                                                 boolean install,
+                                                 boolean upstream) {
+        if (!enablePppoe) {
+            log.debug("PPPoED filtering is disabled. Ignoring request.");
+            return;
+        }
+
+        int techProfileId = NONE_TP_ID;
+        VlanId cTag = VlanId.NONE;
+        VlanId unitagMatch = VlanId.ANY;
+        Byte vlanPcp = null;
+
+        if (tagInformation != null) {
+            techProfileId = tagInformation.getTechnologyProfileId();
+            cTag = tagInformation.getPonCTag();
+            unitagMatch = tagInformation.getUniTagMatch();
+            if (tagInformation.getUsPonCTagPriority() != NO_PCP) {
+                vlanPcp = (byte) tagInformation.getUsPonCTagPriority();
+            }
+        }
+
+        DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
+        TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+        CompletableFuture<Object> meterFuture = new CompletableFuture<>();
+
+        if (upstreamMeterId != null) {
+            treatmentBuilder.meter(upstreamMeterId);
+        }
+
+        if (techProfileId != NONE_TP_ID) {
+            treatmentBuilder.writeMetadata(createTechProfValueForWm(cTag, techProfileId), 0);
+        }
+
+        DefaultFilteringObjective.Builder pppoedBuilder = (install ? builder.permit() : builder.deny())
+                .withKey(Criteria.matchInPort(portNumber))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.PPPoED.ethType()))
+                .fromApp(appId)
+                .withPriority(10000);
+
+        if (upstream) {
+            treatmentBuilder.setVlanId(cTag);
+            if (!VlanId.vlanId(VlanId.NO_VID).equals(unitagMatch)) {
+                pppoedBuilder.addCondition(Criteria.matchVlanId(unitagMatch));
+            }
+            if (vlanPcp != null) {
+                treatmentBuilder.setVlanPcp(vlanPcp);
+            }
+        }
+        pppoedBuilder = pppoedBuilder.withMeta(treatmentBuilder.setOutput(PortNumber.CONTROLLER).build());
+
+        FilteringObjective pppoed = pppoedBuilder
+                .add(new ObjectiveContext() {
+                    @Override
+                    public void onSuccess(Objective objective) {
+                        log.info("PPPoED filter for {} on {} {}.",
+                                devId, portNumber, (install) ? INSTALLED : REMOVED);
+                    }
+
+                    @Override
+                    public void onError(Objective objective, ObjectiveError error) {
+                        log.info("PPPoED filter for {} on {} failed {} because {}",
+                                devId, portNumber, (install) ? INSTALLATION : REMOVAL, error);
+                    }
+                });
+        flowObjectiveService.filter(devId, pppoed);
     }
 
     @Override
@@ -590,6 +673,7 @@ public class OltFlowService implements AccessDeviceFlowService {
         processLldpFilteringObjective(devId, port, install);
         processDhcpFilteringObjectives(devId, port, null, null, install, false);
         processIgmpFilteringObjectives(devId, port, null, null, install, false);
+        processPPPoEDFilteringObjectives(devId, port, null, null, install, false);
     }
 
 
