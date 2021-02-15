@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0bf42dfd_6d0adfd8",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1000740
+      },
+      "writtenOn": "2021-02-15T16:54:56Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "2e59a30a_11ffcb4f",
+      "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0a8e88c8_146cc735",
         "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 2
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "38711079_053b32f9",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1000740
+      },
+      "writtenOn": "2021-02-15T16:54:56Z",
+      "side": 1,
+      "message": "Agreed, please check if it\u0027s more readable now.",
+      "parentUuid": "0a8e88c8_146cc735",
+      "range": {
+        "startLine": 357,
+        "startChar": 0,
+        "endLine": 361,
+        "endChar": 117
+      },
+      "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "aed1dd0e_bf105d14",
         "filename": "pom.xml",
         "patchSetId": 2
@@ -53,6 +95,30 @@
       "writtenOn": "2021-02-12T14:03:28Z",
       "side": 1,
       "message": "I\u0027m not sure the onos-dependencies is released nightly for snapshots. This should work if you publish onos-dependencies on the local maven repo, but not in CI.",
+      "range": {
+        "startLine": 25,
+        "startChar": 17,
+        "endLine": 25,
+        "endChar": 31
+      },
+      "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd5413af_07bb5ad0",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000740
+      },
+      "writtenOn": "2021-02-15T16:54:56Z",
+      "side": 1,
+      "message": "You\u0027re right. However this change references to the constant \"EthType.EtherType.PPPoED\" which was not released in any Onos version yet (as far as I know).\n\nI think we have 2 possible solutions: request a minor release and update this reference or recreate that EthType constant locally. Personally I prefer the first solution, because PPPoE agent will need that Onos version anyway.",
+      "parentUuid": "aed1dd0e_bf105d14",
       "range": {
         "startLine": 25,
         "startChar": 17,
