@@ -84,6 +84,30 @@
     },
     {
       "key": {
+        "uuid": "186bcd11_76a783c9",
+        "filename": "app/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-02-15T17:02:43Z",
+      "side": 1,
+      "message": "Yes, thanks!\nDone",
+      "parentUuid": "38711079_053b32f9",
+      "range": {
+        "startLine": 357,
+        "startChar": 0,
+        "endLine": 361,
+        "endChar": 117
+      },
+      "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aed1dd0e_bf105d14",
         "filename": "pom.xml",
         "patchSetId": 2
@@ -119,6 +143,30 @@
       "side": 1,
       "message": "You\u0027re right. However this change references to the constant \"EthType.EtherType.PPPoED\" which was not released in any Onos version yet (as far as I know).\n\nI think we have 2 possible solutions: request a minor release and update this reference or recreate that EthType constant locally. Personally I prefer the first solution, because PPPoE agent will need that Onos version anyway.",
       "parentUuid": "aed1dd0e_bf105d14",
+      "range": {
+        "startLine": 25,
+        "startChar": 17,
+        "endLine": 25,
+        "endChar": 31
+      },
+      "revId": "aa64399fbc1099478f06efd37bab0a16c02c7210",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3bdcfbb5_cddaa838",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-02-15T17:02:43Z",
+      "side": 1,
+      "message": "I agree with your proposal. Another option could be that of having nightly releases for onos-dependencies, but I\u0027m not sure about the effort needed for doing that.",
+      "parentUuid": "fd5413af_07bb5ad0",
       "range": {
         "startLine": 25,
         "startChar": 17,
