@@ -30,12 +30,6 @@
     <description>OLT application for CORD</description>
 
     <properties>
-        <web.context>/onos/olt</web.context>
-        <api.version>1.0.0</api.version>
-        <api.title>ONOS OLT REST API</api.title>
-        <api.description>
-            APIs for interacting with the CORD OLT application.
-        </api.description>
         <onos.app.name>org.opencord.olt</onos.app.name>
         <onos.app.title>OLT Access Management</onos.app.title>
         <onos.app.origin>OpenCord</onos.app.origin>
@@ -44,66 +38,8 @@
         <onos.app.readme>
             CORD OLT Access management application
         </onos.app.readme>
-        <api.package>org.opencord.olt.rest</api.package>
         <olt.api.version>${project.version}</olt.api.version>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.opencord</groupId>
-            <artifactId>olt-api</artifactId>
-            <version>${olt.api.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opencord</groupId>
-            <artifactId>sadis-api</artifactId>
-            <version>${sadis.api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.onosproject</groupId>
-            <artifactId>onos-cli</artifactId>
-            <version>${onos.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.onosproject</groupId>
-            <artifactId>onos-api</artifactId>
-            <version>${onos.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.onosproject</groupId>
-            <artifactId>onos-core-serializers</artifactId>
-            <version>${onos.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.karaf.shell</groupId>
-            <artifactId>org.apache.karaf.shell.console</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.karaf.shell</groupId>
-            <artifactId>org.apache.karaf.shell.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-    </dependencies>
 
     <build>
         <plugins>
@@ -111,26 +47,6 @@
                 <groupId>org.onosproject</groupId>
                 <artifactId>onos-maven-plugin</artifactId>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <_wab>src/main/webapp/</_wab>
-                        <Include-Resource>
-                            WEB-INF/classes/apidoc/swagger.json=target/swagger.json,
-                            {maven-resources}
-                        </Include-Resource>
-                        <Import-Package>
-                            *,org.glassfish.jersey.servlet
-                        </Import-Package>
-                        <Web-ContextPath>${web.context}</Web-ContextPath>
-                        <Karaf-Commands>org.opencord.olt.cli</Karaf-Commands>
-                    </instructions>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 </project>

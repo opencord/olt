@@ -21,6 +21,7 @@
      featuresRepo="mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features"
      features="${project.artifactId}" apps="org.opencord.sadis">
     <description>${project.description}</description>
-    <artifact>mvn:${project.groupId}/${project.artifactId}/${project.version}</artifact>
     <artifact>mvn:${project.groupId}/olt-api/${project.version}</artifact>
+    <artifact>mvn:${project.groupId}/olt-impl/${project.version}</artifact>
+    <artifact>mvn:${project.groupId}/olt-web/${project.version}</artifact>
 </app>
