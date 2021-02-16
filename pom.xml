@@ -36,6 +36,8 @@
 
     <modules>
         <module>api</module>
+        <module>web</module>
+        <module>impl</module>
         <module>app</module>
     </modules>
 
