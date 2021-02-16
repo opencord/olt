@@ -20,5 +20,6 @@
         <feature>onos-api</feature>
         <bundle>mvn:${project.groupId}/olt-api/${project.version}</bundle>
         <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/olt-web/${project.version}</bundle>
     </feature>
 </features>
