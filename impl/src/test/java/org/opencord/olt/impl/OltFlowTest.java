@@ -28,6 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.onlab.packet.EthType;
+import org.onlab.packet.MacAddress;
 import org.onlab.packet.VlanId;
 import org.onosproject.cluster.NodeId;
 import org.onosproject.cluster.RoleInfo;
@@ -67,6 +68,8 @@ public class OltFlowTest extends TestBase {
     PortNumber uniPortNumber = PortNumber.portNumber(1);
     PortNumber uniPortNumber2 = PortNumber.portNumber(2);
     PortNumber nniPortNumber = PortNumber.portNumber(65535);
+
+    MacAddress macAddress = MacAddress.valueOf("00:00:00:00:0a:0b");
 
     UniTagInformation.Builder tagInfoBuilder = new UniTagInformation.Builder();
     UniTagInformation uniTagInfo = tagInfoBuilder.setUniTagMatch(VlanId.vlanId((short) 35))
@@ -126,55 +129,55 @@ public class OltFlowTest extends TestBase {
         // ensure upstream dhcp traps can be added and removed
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
                 usMeterId, uniTagInfo,
-                true, true);
+                true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 1;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
                 usMeterId, uniTagInfo,
-                false, true);
+                false, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // Ensure upstream flow has no pcp unless properly specified.
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber2,
                 usMeterId, uniTagInfoNoPcp,
-                true, true);
+                true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
 
         // ensure upstream flows are not added if uniTagInfo is missing dhcp requirement
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
                 usMeterId, uniTagInfoNoDhcpNoIgmp,
-                true, true);
+                true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
 
         // ensure downstream traps don't succeed without global config for nni ports
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
                 null, null,
-                true, false);
+                true, false, Optional.empty());
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
                 null, null,
-                false, false);
+                false, false, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
         // do global config for nni ports and now it should succeed
         oltFlowService.enableDhcpOnNni = true;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
                 null, null,
-                true, false);
+                true, false, Optional.empty());
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
                 null, null,
-                false, false);
+                false, false, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 5;
 
         // turn on DHCPv6 and we should get 2 flows
         oltFlowService.enableDhcpV6 = true;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
                 usMeterId, uniTagInfo,
-                true, true);
+                true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 7;
 
         // turn off DHCPv4 and it's only v6
         oltFlowService.enableDhcpV4 = false;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
                 usMeterId, uniTagInfo,
-                true, true);
+                true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 8;
 
         // cleanup
@@ -302,7 +305,8 @@ public class OltFlowTest extends TestBase {
     @Test
     public void testDownBuilder() {
         ForwardingObjective objective =
-                oltFlowService.createDownBuilder(nniPortNumber, uniPortNumber, dsMeterId, uniTagInfo).remove();
+                oltFlowService.createDownBuilder(nniPortNumber, uniPortNumber, dsMeterId, uniTagInfo,
+                        Optional.of(macAddress)).remove();
         checkObjective(objective, false);
     }
 
@@ -334,6 +338,7 @@ public class OltFlowTest extends TestBase {
 
         if (!upstream) {
             assert selector.getCriterion(Criterion.Type.METADATA) != null;
+            assert selector.getCriterion(Criterion.Type.ETH_DST) != null;
         }
     }
 
