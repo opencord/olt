@@ -68,6 +68,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 
 import java.util.Dictionary;
+import java.util.Optional;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
@@ -271,13 +272,15 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                MeterId upstreamMeterId,
                                                UniTagInformation tagInformation,
                                                boolean install,
-                                               boolean upstream) {
+                                               boolean upstream,
+                                               Optional<CompletableFuture<ObjectiveError>> dhcpFuture) {
         if (upstream) {
             // for UNI ports
             if (tagInformation != null && !tagInformation.getIsDhcpRequired()) {
                 log.debug("Dhcp provisioning is disabled for UNI port {} on "
                         + "device {} for service {}", port, devId,
                         tagInformation.getServiceName());
+                dhcpFuture.ifPresent(f -> f.complete(null));
                 return;
             }
         } else {
@@ -285,6 +288,7 @@ public class OltFlowService implements AccessDeviceFlowService {
             if (!enableDhcpOnNni) {
                 log.debug("Dhcp provisioning is disabled for NNI port {} on "
                         + "device {}", port, devId);
+                dhcpFuture.ifPresent(f -> f.complete(null));
                 return;
             }
         }
@@ -304,7 +308,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
             addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
                     upstreamMeterId, techProfileId, protocol, cTag, unitagMatch,
-                                       vlanPcp, upstream, install);
+                                       vlanPcp, upstream, install, dhcpFuture);
         }
 
         if (enableDhcpV6) {
@@ -316,7 +320,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
             addDhcpFilteringObjectives(devId, port, udpSrc, udpDst, ethType,
                     upstreamMeterId, techProfileId, protocol, cTag, unitagMatch,
-                                       vlanPcp, upstream, install);
+                                       vlanPcp, upstream, install, dhcpFuture);
         }
     }
 
@@ -324,7 +328,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                                             EthType ethType, MeterId upstreamMeterId, int techProfileId, byte protocol,
                                             VlanId cTag, VlanId unitagMatch,
                                             Byte vlanPcp, boolean upstream,
-                                            boolean install) {
+                                            boolean install, Optional<CompletableFuture<ObjectiveError>> dhcpFuture) {
 
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
@@ -367,6 +371,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                 log.info("DHCP {} filter for dev/port {}/{} {}.",
                         (ethType.equals(EthType.EtherType.IPV4.ethType())) ? V4 : V6,
                         devId, port, (install) ? INSTALLED : REMOVED);
+                dhcpFuture.ifPresent(f -> f.complete(null));
             }
 
             @Override
@@ -375,6 +380,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                         (ethType.equals(EthType.EtherType.IPV4.ethType())) ? V4 : V6,
                         devId, port, (install) ? INSTALLATION : REMOVAL,
                         error);
+                dhcpFuture.ifPresent(f -> f.complete(error));
             }
         });
         flowObjectiveService.filter(devId, dhcpUpstream);
@@ -710,7 +716,7 @@ public class OltFlowService implements AccessDeviceFlowService {
         log.info("{} flows for NNI port {} on device {}",
                  install ? "Adding" : "Removing", port, devId);
         processLldpFilteringObjective(devId, port, install);
-        processDhcpFilteringObjectives(devId, port, null, null, install, false);
+        processDhcpFilteringObjectives(devId, port, null, null, install, false, Optional.empty());
         processIgmpFilteringObjectives(devId, port, null, null, install, false);
         processPPPoEDFilteringObjectives(devId, port, null, null, install, false);
     }
@@ -816,7 +822,8 @@ public class OltFlowService implements AccessDeviceFlowService {
     public ForwardingObjective.Builder createDownBuilder(PortNumber uplinkPort,
                                                          PortNumber subscriberPort,
                                                          MeterId downstreamMeterId,
-                                                         UniTagInformation tagInformation) {
+                                                         UniTagInformation tagInformation,
+                                                         Optional<MacAddress> macAddress) {
 
         //subscriberVlan can be any valid Vlan here including ANY to make sure the packet is tagged
         TrafficSelector.Builder selectorBuilder = DefaultTrafficSelector.builder()
@@ -833,11 +840,7 @@ public class OltFlowService implements AccessDeviceFlowService {
             selectorBuilder.matchVlanPcp((byte) tagInformation.getDsPonSTagPriority());
         }
 
-        if (tagInformation.getConfiguredMacAddress() != null &&
-                !tagInformation.getConfiguredMacAddress().equals("") &&
-                !MacAddress.NONE.equals(MacAddress.valueOf(tagInformation.getConfiguredMacAddress()))) {
-            selectorBuilder.matchEthDst(MacAddress.valueOf(tagInformation.getConfiguredMacAddress()));
-        }
+        macAddress.ifPresent(selectorBuilder::matchEthDst);
 
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder()
                 .popVlan()
