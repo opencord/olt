@@ -17,6 +17,7 @@ package org.opencord.olt.impl;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
+import org.onlab.packet.MacAddress;
 import org.onlab.packet.VlanId;
 import org.onlab.util.KryoNamespace;
 import org.onosproject.cfg.ComponentConfigService;
@@ -29,6 +30,8 @@ import org.onosproject.cluster.NodeId;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.event.AbstractListenerManager;
+import org.onosproject.event.EventListener;
+import org.onosproject.event.ListenerService;
 import org.onosproject.mastership.MastershipService;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.ConnectPoint;
@@ -47,9 +50,15 @@ import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
 import org.onosproject.net.meter.MeterId;
 import org.onosproject.store.serializers.KryoNamespaces;
+import org.onosproject.store.service.ConsistentMap;
 import org.onosproject.store.service.ConsistentMultimap;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
+import org.onosproject.store.service.Versioned;
+import org.opencord.maclearner.api.MacLearnerEvent;
+import org.opencord.maclearner.api.MacLearnerKey;
+import org.opencord.maclearner.api.MacLearnerListener;
+import org.opencord.maclearner.api.MacLearnerService;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
 import org.opencord.olt.AccessDeviceService;
@@ -68,6 +77,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -88,6 +98,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -159,6 +170,12 @@ public class Olt
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected ComponentConfigService componentConfigService;
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL,
+            bind = "bindMacLeanerService",
+            unbind = "unbindMacLearnerService",
+            policy = ReferencePolicy.DYNAMIC)
+    protected volatile MacLearnerService macLearnerService;
+
     /**
      * Default bandwidth profile id that is used for authentication trap flows.
      **/
@@ -181,6 +198,7 @@ public class Olt
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
     private final ClusterEventListener clusterListener = new InternalClusterListener();
+    private final MacLearnerListener macLearnerListener = new InternalMacLearnerListener();
 
     private ConsistentHasher hasher;
 
@@ -192,6 +210,7 @@ public class Olt
                                                                                         "olt-installer-%d"));
 
     protected ExecutorService eventExecutor;
+    protected ExecutorService macEventExecutor;
     protected ExecutorService retryExecutor;
     protected ScheduledExecutorService provisionExecutor;
 
@@ -199,11 +218,13 @@ public class Olt
     private ConsistentMultimap<ConnectPoint, UniTagInformation> failedSubs;
 
     private ConcurrentMap<DeviceId, BlockingQueue<SubscriberFlowInfo>> pendingSubscribersForDevice;
+    private ConsistentMap<MacLearnerKey, SubscriberFlowInfo> waitingMacSubscribers;
 
     @Activate
     public void activate(ComponentContext context) {
         eventExecutor = newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
                                                                         "events-%d", log));
+        macEventExecutor = Executors.newFixedThreadPool(8, groupedThreads("onos/olt", "mac-events-%d", log));
         retryExecutor = Executors.newCachedThreadPool();
         provisionExecutor = Executors.newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
                 "provision-%d", log));
@@ -226,6 +247,19 @@ public class Olt
         failedSubs = storageService.<ConnectPoint, UniTagInformation>consistentMultimapBuilder()
                 .withName("volt-failed-subs")
                 .withSerializer(Serializer.using(serializer))
+                .withApplicationId(appId)
+                .build();
+
+        KryoNamespace macSerializer = KryoNamespace.newBuilder()
+                .register(KryoNamespaces.API)
+                .register(MacLearnerKey.class)
+                .register(SubscriberFlowInfo.class)
+                .register(UniTagInformation.class)
+                .build();
+
+        waitingMacSubscribers = storageService.<MacLearnerKey, SubscriberFlowInfo>consistentMapBuilder()
+                .withName("volt-waiting-mac-subs")
+                .withSerializer(Serializer.using(macSerializer))
                 .withApplicationId(appId)
                 .build();
 
@@ -262,6 +296,7 @@ public class Olt
         deviceService.removeListener(deviceListener);
         eventDispatcher.removeSink(AccessDeviceEvent.class);
         eventExecutor.shutdown();
+        macEventExecutor.shutdown();
         retryExecutor.shutdown();
         provisionExecutor.shutdown();
         log.info("Stopped");
@@ -290,6 +325,42 @@ public class Olt
             defaultBpId = DEFAULT_BP_ID_DEFAULT;
             multicastServiceName = DEFAULT_MCAST_SERVICE_NAME_DEFAULT;
         }
+    }
+
+    private final AtomicReference<MacLearnerService> macLearnerServiceRef = new AtomicReference<>();
+
+    protected void bindMacLeanerService(MacLearnerService service) {
+        bindAndAddListener(service, macLearnerServiceRef, macLearnerListener);
+        log.info("MacLearnerService binds to Olt-App.");
+    }
+
+    protected void unbindMacLearnerService(MacLearnerService service) {
+        unbindAndRemoveListener(service, macLearnerServiceRef, macLearnerListener);
+        log.info("MacLearnerService unbinds from Olt-App.");
+    }
+
+    <S extends ListenerService<?, L>, L extends EventListener<?>> void bindAndAddListener(
+            S incomingService, AtomicReference<S> serviceRef, L listener) {
+        if (incomingService == null) {
+            return;
+        }
+        if (serviceRef.compareAndSet(null, incomingService)) {
+            log.info("Adding listener on {}", incomingService.getClass().getSimpleName());
+            incomingService.addListener(listener);
+        } else {
+            log.warn("Trying to bind AccessDeviceService but it is already bound");
+        }
+    }
+
+    <S extends ListenerService<?, L>, L extends EventListener<?>> void unbindAndRemoveListener(
+            S outgoingService, AtomicReference<S> serviceRef, L listener) {
+        if (outgoingService != null &&
+                serviceRef.compareAndSet(outgoingService, null)) {
+            log.info("Removing listener on {}", outgoingService.getClass().getSimpleName());
+            outgoingService.removeListener(listener);
+        }
+        // Else, ignore. This is not the instance currently bound, or the
+        // outgoing service is null.
     }
 
     @Override
@@ -368,7 +439,7 @@ public class Olt
 
         @Override
         public void run() {
-            CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
+            CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture<>();
             oltFlowService.processEapolFilteringObjectives(cp.deviceId(), cp.port(),
                                                      defaultBpId, filterFuture,
                                                      VlanId.vlanId(EAPOL_DEFAULT_VLAN),
@@ -480,7 +551,7 @@ public class Olt
             //delete Eapol authentication flow with default bandwidth
             //wait until Eapol rule with defaultBpId is removed to install subscriber-based rules
             //install subscriber flows
-            CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture();
+            CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture<>();
             oltFlowService.processEapolFilteringObjectives(subsPort.deviceId(), subsPort.port(), defaultBpId,
                                                            filterFuture, VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
             filterFuture.thenAcceptAsync(filterStatus -> {
@@ -609,8 +680,8 @@ public class Olt
 
         log.info("Unprovisioning vlans for {} at {}/{}", uniTag, deviceId, subscriberPort);
 
-        CompletableFuture<ObjectiveError> downFuture = new CompletableFuture();
-        CompletableFuture<ObjectiveError> upFuture = new CompletableFuture();
+        CompletableFuture<ObjectiveError> downFuture = new CompletableFuture<>();
+        CompletableFuture<ObjectiveError> upFuture = new CompletableFuture<>();
 
         VlanId deviceVlan = uniTag.getPonSTag();
         VlanId subscriberVlan = uniTag.getPonCTag();
@@ -620,15 +691,46 @@ public class Olt
         MeterId downstreamMeterId = oltMeterService
                 .getMeterIdFromBpMapping(deviceId, uniTag.getDownstreamBandwidthProfile());
 
+        Versioned<SubscriberFlowInfo> waitingMacSubFlowInfo =
+                waitingMacSubscribers.remove(new MacLearnerKey(deviceId, subscriberPort, subscriberVlan));
+        if (waitingMacSubFlowInfo != null) {
+            // only dhcp objectives applied previously, so only dhcp uninstallation objective will be processed
+            log.debug("Waiting MAC service removed and dhcp uninstallation objective will be processed. " +
+                    "waitingMacSubFlowInfo:{}", waitingMacSubFlowInfo.value());
+            CompletableFuture<ObjectiveError> dhcpFuture = new CompletableFuture<>();
+            oltFlowService.processDhcpFilteringObjectives(deviceId, subscriberPort,
+                    upstreamMeterId, uniTag, false, true, Optional.of(dhcpFuture));
+            dhcpFuture.thenAcceptAsync(dhcpStatus -> {
+                AccessDeviceEvent.Type type;
+                if (dhcpStatus == null) {
+                    type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_UNREGISTERED;
+                    log.debug("Dhcp uninstallation objective was processed successfully for cTag {}, sTag {}, " +
+                                    "tpId {} and Device/Port:{}", uniTag.getPonCTag(), uniTag.getPonSTag(),
+                            uniTag.getTechnologyProfileId(), subscriberPort);
+                    updateProgrammedSubscriber(new ConnectPoint(deviceId, subscriberPort), uniTag, false);
+                } else {
+                    type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_UNREGISTRATION_FAILED;
+                    log.error("Dhcp uninstallation objective was failed for cTag {}, sTag {}, " +
+                                    "tpId {} and Device/Port:{} :{}", uniTag.getPonCTag(), uniTag.getPonSTag(),
+                            uniTag.getTechnologyProfileId(), subscriberPort, dhcpStatus);
+                }
+                post(new AccessDeviceEvent(type, deviceId, deviceService.getPort(deviceId, subscriberPort),
+                        deviceVlan, subscriberVlan, uniTag.getTechnologyProfileId()));
+            });
+            return;
+        }
+
         ForwardingObjective.Builder upFwd =
                 oltFlowService.createUpBuilder(uplink, subscriberPort, upstreamMeterId, uniTag);
+
+        Optional<MacAddress> macAddress = getMacAddress(deviceId, subscriberPort, uniTag);
         ForwardingObjective.Builder downFwd =
-                oltFlowService.createDownBuilder(uplink, subscriberPort, downstreamMeterId, uniTag);
+                oltFlowService.createDownBuilder(uplink, subscriberPort, downstreamMeterId, uniTag, macAddress);
 
         oltFlowService.processIgmpFilteringObjectives(deviceId, subscriberPort,
                                                       upstreamMeterId, uniTag, false, true);
         oltFlowService.processDhcpFilteringObjectives(deviceId, subscriberPort,
-                                                      upstreamMeterId, uniTag, false, true);
+                                                      upstreamMeterId, uniTag, false, true, Optional.empty());
         oltFlowService.processPPPoEDFilteringObjectives(deviceId, subscriberPort,
                                                         upstreamMeterId, uniTag, false, true);
 
@@ -898,6 +1000,61 @@ public class Olt
      * @param subscriberFlowInfo relevant information for subscriber
      */
     private void handleSubFlowsWithMeters(SubscriberFlowInfo subscriberFlowInfo) {
+        log.debug("Provisioning subscriber flows based on {}", subscriberFlowInfo);
+        UniTagInformation tagInfo = subscriberFlowInfo.getTagInfo();
+        if (tagInfo.getIsDhcpRequired()) {
+            Optional<MacAddress> macAddress =
+                    getMacAddress(subscriberFlowInfo.getDevId(), subscriberFlowInfo.getUniPort(), tagInfo);
+            if (subscriberFlowInfo.getTagInfo().getEnableMacLearning()) {
+                MacLearnerKey macKey = new MacLearnerKey(subscriberFlowInfo.getDevId(),
+                        subscriberFlowInfo.getUniPort(), tagInfo.getPonCTag());
+                if (macAddress.isPresent()) {
+                    log.debug("MAC Address {} obtained for {}", macAddress.get(), subscriberFlowInfo);
+                } else if (macLearnerService == null) {
+                    log.error("Mac Learner Service not found to learn MAC Address for: {}", subscriberFlowInfo);
+                    post(new AccessDeviceEvent(AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_REGISTRATION_FAILED,
+                            subscriberFlowInfo.getDevId(),
+                            deviceService.getPort(subscriberFlowInfo.getDevId(), subscriberFlowInfo.getUniPort()),
+                            tagInfo.getPonSTag(), tagInfo.getPonCTag(), tagInfo.getTechnologyProfileId()));
+                    return;
+                } else {
+                    waitingMacSubscribers.put(macKey, subscriberFlowInfo);
+                    log.debug("Adding sub to waiting mac map: {}", subscriberFlowInfo);
+                }
+
+                CompletableFuture<ObjectiveError> dhcpFuture = new CompletableFuture<>();
+                oltFlowService.processDhcpFilteringObjectives(subscriberFlowInfo.getDevId(),
+                        subscriberFlowInfo.getUniPort(), subscriberFlowInfo.getUpId(),
+                        tagInfo, true, true, Optional.of(dhcpFuture));
+                dhcpFuture.thenAcceptAsync(dhcpStatus -> {
+                    if (dhcpStatus != null) {
+                        log.error("Dhcp Objective failed for: {}", subscriberFlowInfo);
+                        if (macAddress.isEmpty()) {
+                            waitingMacSubscribers.remove(macKey);
+                        }
+                        post(new AccessDeviceEvent(AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_REGISTRATION_FAILED,
+                                subscriberFlowInfo.getDevId(),
+                                deviceService.getPort(subscriberFlowInfo.getDevId(), subscriberFlowInfo.getUniPort()),
+                                tagInfo.getPonSTag(), tagInfo.getPonCTag(), tagInfo.getTechnologyProfileId()));
+                    } else {
+                        log.debug("Dhcp Objective success for: {}", subscriberFlowInfo);
+                        if (macAddress.isPresent()) {
+                            continueProvisioningSubs(subscriberFlowInfo, macAddress);
+                        }
+                    }
+                });
+            } else {
+                log.debug("Dynamic MAC Learning disabled, so will not learn for: {}", subscriberFlowInfo);
+                // dhcp flows will handle after data plane flows
+                continueProvisioningSubs(subscriberFlowInfo, macAddress);
+            }
+        } else {
+            // dhcp not required for this service
+            continueProvisioningSubs(subscriberFlowInfo, Optional.empty());
+        }
+    }
+
+    private void continueProvisioningSubs(SubscriberFlowInfo subscriberFlowInfo, Optional<MacAddress> macAddress) {
         log.debug("Provisioning subscriber flows on {}/{} based on {}",
                   subscriberFlowInfo.getDevId(), subscriberFlowInfo.getUniPort(), subscriberFlowInfo);
         UniTagInformation tagInfo = subscriberFlowInfo.getTagInfo();
@@ -923,7 +1080,7 @@ public class Olt
 
         ForwardingObjective.Builder downFwd =
                 oltFlowService.createDownBuilder(subscriberFlowInfo.getNniPort(), subscriberFlowInfo.getUniPort(),
-                                                 subscriberFlowInfo.getDownId(), subscriberFlowInfo.getTagInfo());
+                        subscriberFlowInfo.getDownId(), subscriberFlowInfo.getTagInfo(), macAddress);
         flowObjectiveService.forward(subscriberFlowInfo.getDevId(), downFwd.add(new ObjectiveContext() {
             @Override
             public void onSuccess(Objective objective) {
@@ -946,7 +1103,7 @@ public class Olt
                           subscriberFlowInfo.getUniPort(), downStatus);
                 type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_REGISTRATION_FAILED;
             } else if (upStatus != null) {
-                log.error("Flow with innervlan {} and outerVlan {} on {}/{} failed downstream installation: {}",
+                log.error("Flow with innervlan {} and outerVlan {} on {}/{} failed upstream installation: {}",
                           tagInfo.getPonCTag(), tagInfo.getPonSTag(), subscriberFlowInfo.getDevId(),
                           subscriberFlowInfo.getUniPort(), upStatus);
                 type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_REGISTRATION_FAILED;
@@ -957,10 +1114,14 @@ public class Olt
                                                                subscriberFlowInfo.getUniPort(),
                                                                tagInfo.getUpstreamBandwidthProfile(),
                                                                null, tagInfo.getPonCTag(), true);
+
+
+                if (!tagInfo.getEnableMacLearning()) {
                 oltFlowService.processDhcpFilteringObjectives(subscriberFlowInfo.getDevId(),
                                                               subscriberFlowInfo.getUniPort(),
                                                               subscriberFlowInfo.getUpId(),
-                                                              tagInfo, true, true);
+                                                                  tagInfo, true, true, Optional.empty());
+                }
 
                 oltFlowService.processIgmpFilteringObjectives(subscriberFlowInfo.getDevId(),
                                                               subscriberFlowInfo.getUniPort(),
@@ -981,6 +1142,36 @@ public class Olt
                                        tagInfo.getPonSTag(), tagInfo.getPonCTag(),
                                        tagInfo.getTechnologyProfileId()));
         }, oltInstallers);
+    }
+
+    /**
+     * Returns mac address from tag info if present, else tries to got from maclearner app.
+     *
+     * @param deviceId device ID
+     * @param portNumber uni port
+     * @param tagInformation tag info
+     * @return MAC Address of subscriber
+     */
+    private Optional<MacAddress> getMacAddress(DeviceId deviceId, PortNumber portNumber,
+                                               UniTagInformation tagInformation) {
+        if (isMacAddressValid(tagInformation)) {
+            log.debug("Got from the uniTagInformation {}", tagInformation.getConfiguredMacAddress());
+            return Optional.of(MacAddress.valueOf(tagInformation.getConfiguredMacAddress()));
+        } else if (tagInformation.getEnableMacLearning() && macLearnerService != null) {
+            Optional<MacAddress> obtainedMacAddress = macLearnerService
+                    .getMacMapping(deviceId, portNumber, tagInformation.getPonCTag());
+            if (obtainedMacAddress.isPresent()) {
+                log.debug("Got from MacLearner App {}", obtainedMacAddress.get());
+                return obtainedMacAddress;
+            }
+        }
+        return Optional.empty();
+    }
+
+    private boolean isMacAddressValid(UniTagInformation tagInformation) {
+        return tagInformation.getConfiguredMacAddress() != null &&
+                !tagInformation.getConfiguredMacAddress().trim().equals("") &&
+                !MacAddress.NONE.equals(MacAddress.valueOf(tagInformation.getConfiguredMacAddress()));
     }
 
     /**
@@ -1164,6 +1355,36 @@ public class Olt
         return false;
     }
 
+    private class InternalMacLearnerListener implements MacLearnerListener {
+
+        @Override
+        public void event(MacLearnerEvent event) {
+            macEventExecutor.execute(() -> {
+                if (!event.type().equals(MacLearnerEvent.Type.ADDED)) {
+                    return;
+                }
+                DeviceId deviceId = event.subject().deviceId();
+                PortNumber portNumber = event.subject().portNumber();
+                VlanId vlanId = event.subject().vlanId();
+                MacAddress macAddress = event.subject().macAddress();
+                Versioned<SubscriberFlowInfo> waitingMacSubFlowInfo =
+                        waitingMacSubscribers.remove(new MacLearnerKey(deviceId, portNumber, vlanId));
+                if (waitingMacSubFlowInfo != null) {
+                    log.debug("Continuing provisioning for waiting mac service. event: {}", event);
+                    SubscriberFlowInfo subscriberFlowInfo = waitingMacSubFlowInfo.value();
+                    continueProvisioningSubs(subscriberFlowInfo, Optional.of(macAddress));
+                } else {
+                    log.debug("Mac event received, but there is no waiting mac sub. event: {}", event);
+                }
+            });
+        }
+
+        @Override
+        public boolean isRelevant(MacLearnerEvent event) {
+            return isLocalLeader(event.subject().deviceId());
+        }
+    }
+
     private class InternalDeviceListener implements DeviceListener {
         private Set<DeviceId> programmedDevices = Sets.newConcurrentHashSet();
 
@@ -1339,6 +1560,7 @@ public class Olt
         private void handleDeviceDisconnection(Device device, boolean sendDisconnectedEvent, boolean sendUniEvent) {
             programmedDevices.remove(device.id());
             removeAllSubscribers(device.id());
+            removeWaitingMacSubs(device.id());
             //Handle case where OLT disconnects during subscriber provisioning
             pendingSubscribersForDevice.remove(device.id());
             oltFlowService.clearDeviceState(device.id());
@@ -1373,6 +1595,14 @@ public class Olt
                     .collect(toList());
 
             subs.forEach(e -> programmedSubs.remove(e.getKey(), e.getValue()));
+        }
+
+        private void removeWaitingMacSubs(DeviceId deviceId) {
+            List<MacLearnerKey> waitingMacKeys = waitingMacSubscribers.stream()
+                    .filter(k -> k.getKey().getDeviceId().equals(deviceId))
+                    .map(Map.Entry::getKey)
+                    .collect(toList());
+            waitingMacKeys.forEach(k -> waitingMacSubscribers.remove(k));
         }
 
     }
