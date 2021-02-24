@@ -1,0 +1,293 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "19915331_1d86afb9",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 698,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3aa93d3d_3baf2490",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 707,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cdc3b40_41cd4548",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 713,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "you might want to add the DHCP status in here.",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e83e4fb8_10bc52b7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1003,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afe5e628_e7b75c56",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1015,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "I\u0027m not sure we want this, is this tore-trigger the provisioning from the NB ?",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44ea8282_5e25cdc9",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1022,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59e95504_fa63ce0f",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1027,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf503e19_1fba6659",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1036,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "add the dhcpStatus",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "311a6458_78e8c1e9",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1039,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "why are we not removing it all the time ?",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eee533ab_f14509eb",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1045,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6698ecc3_07a18c53",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1085,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "please add some documentation here and in the method, at a first read it\u0027s not immediate to get why you need this method and what it does.",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72f6c553_1053573b",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1154,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "this method seems somewhat redundant, especially in the part of the MAC address learning line 1163, which is a duplicate of line 1011. can we simplify ?",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b19a58cd_9cf801d7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1157,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2e11acf_924f703c",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1160,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5855f17_1a45599d",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1166,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77b1e8f4_55f13bf4",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1375,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a60a1a7_99695a3a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1379,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-24T12:57:13Z",
+      "side": 1,
+      "message": "debug, also I\u0027d put the key in here, because you are looking for a specific subscriber",
+      "revId": "ef54855dd6c6e58826147497149c87b6c1866f19",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
