@@ -15,6 +15,7 @@
  */
 package org.opencord.olt.internalapi;
 
+import org.onlab.packet.MacAddress;
 import org.onlab.packet.VlanId;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
@@ -23,6 +24,7 @@ import org.onosproject.net.flowobjective.ObjectiveError;
 import org.onosproject.net.meter.MeterId;
 import org.opencord.sadis.UniTagInformation;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -42,12 +44,14 @@ public interface AccessDeviceFlowService {
      * @param install         true to install the flow, false to remove the flow
      * @param upstream        true if trapped packets are flowing upstream towards
      *                        server, false if packets are flowing downstream towards client
+     * @param dhcpFuture      gets result of dhcp objective when complete
      */
     void processDhcpFilteringObjectives(DeviceId devId, PortNumber port,
                                         MeterId upstreamMeterId,
                                         UniTagInformation tagInformation,
                                         boolean install,
-                                        boolean upstream);
+                                        boolean upstream,
+                                        Optional<CompletableFuture<ObjectiveError>> dhcpFuture);
 
     /**
      * Trap igmp packets to the controller.
@@ -156,12 +160,14 @@ public interface AccessDeviceFlowService {
      * @param subscriberPort the uni port
      * @param downstreamMeterId the meter id that is assigned to downstream flows
      * @param tagInformation the uni tag information
+     * @param macAddress the mac address
      * @return ForwardingObjective.Builder
      */
     ForwardingObjective.Builder createDownBuilder(PortNumber uplinkPort,
                                                   PortNumber subscriberPort,
                                                   MeterId downstreamMeterId,
-                                                  UniTagInformation tagInformation);
+                                                  UniTagInformation tagInformation,
+                                                  Optional<MacAddress> macAddress);
 
     /**
      * Clears pending mappings and state for device.
