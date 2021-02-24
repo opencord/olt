@@ -49,6 +49,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.opencord</groupId>
+            <artifactId>maclearner-api</artifactId>
+            <version>${maclearner.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.onosproject</groupId>
             <artifactId>onos-cli</artifactId>
             <version>${onos.version}</version>

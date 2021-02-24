@@ -21,5 +21,6 @@
         <bundle>mvn:${project.groupId}/olt-api/${project.version}</bundle>
         <bundle>mvn:${project.groupId}/olt-impl/${project.version}</bundle>
         <bundle>mvn:${project.groupId}/olt-web/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/maclearner-api/${maclearner.api.version}</bundle>
     </feature>
 </features>
