@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -116,6 +117,7 @@ public class OltFlowTest extends TestBase {
         oltFlowService.sadisService = new MockSadisService();
         oltFlowService.bpService = oltFlowService.sadisService.getBandwidthProfileService();
         oltFlowService.appId = appId;
+        oltFlowService.pendingEapolForDevice = Maps.newConcurrentMap();
     }
 
     @Test
@@ -123,56 +125,56 @@ public class OltFlowTest extends TestBase {
         oltFlowService.flowObjectiveService.clearQueue();
         // ensure upstream dhcp traps can be added and removed
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                      usMeterId, uniTagInfo,
-                                                      true, true);
+                usMeterId, uniTagInfo,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 1;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                      usMeterId, uniTagInfo,
-                                                      false, true);
+                usMeterId, uniTagInfo,
+                false, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // Ensure upstream flow has no pcp unless properly specified.
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber2,
-                                                      usMeterId, uniTagInfoNoPcp,
-                                                      true, true);
+                usMeterId, uniTagInfoNoPcp,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
 
         // ensure upstream flows are not added if uniTagInfo is missing dhcp requirement
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                      usMeterId, uniTagInfoNoDhcpNoIgmp,
-                                                      true, true);
+                usMeterId, uniTagInfoNoDhcpNoIgmp,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
 
         // ensure downstream traps don't succeed without global config for nni ports
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
-                                                      null, null,
-                                                      true, false);
+                null, null,
+                true, false);
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
-                                                      null, null,
-                                                      false, false);
+                null, null,
+                false, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
         // do global config for nni ports and now it should succeed
         oltFlowService.enableDhcpOnNni = true;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
-                                                      null, null,
-                                                      true, false);
+                null, null,
+                true, false);
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
-                                                      null, null,
-                                                      false, false);
+                null, null,
+                false, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 5;
 
         // turn on DHCPv6 and we should get 2 flows
         oltFlowService.enableDhcpV6 = true;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                      usMeterId, uniTagInfo,
-                                                      true, true);
+                usMeterId, uniTagInfo,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 7;
 
         // turn off DHCPv4 and it's only v6
         oltFlowService.enableDhcpV4 = false;
         oltFlowService.processDhcpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                      usMeterId, uniTagInfo,
-                                                      true, true);
+                usMeterId, uniTagInfo,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 8;
 
         // cleanup
@@ -188,29 +190,29 @@ public class OltFlowTest extends TestBase {
         // ensure pppoed traps are not added if global config is off.
         oltFlowService.enablePppoe = false;
         oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                        usMeterId, uniTagInfo,
-                                                        true, true);
+                usMeterId, uniTagInfo,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 0;
 
         // ensure upstream pppoed traps can be added and removed
         oltFlowService.enablePppoe = true;
         oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                        usMeterId, uniTagInfo,
-                                                        true, true);
+                usMeterId, uniTagInfo,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 1;
         oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                        usMeterId, uniTagInfo,
-                                                        false, true);
+                usMeterId, uniTagInfo,
+                false, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // ensure downstream pppoed traps can be added and removed
         oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, nniPortNumber,
-                                                        null, null,
-                                                        true, false);
+                null, null,
+                true, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
         oltFlowService.processPPPoEDFilteringObjectives(DEVICE_ID_1, nniPortNumber,
-                                                        null, null,
-                                                        false, false);
+                null, null,
+                false, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 4;
 
         // cleanup
@@ -223,31 +225,31 @@ public class OltFlowTest extends TestBase {
 
         // ensure igmp flows can be added and removed
         oltFlowService.processIgmpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                      usMeterId, uniTagInfo,
-                                                      true, true);
+                usMeterId, uniTagInfo,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 1;
         oltFlowService.processIgmpFilteringObjectives(DEVICE_ID_1, uniPortNumber, usMeterId,
-                                                      uniTagInfo,
-                                                      false, true);
+                uniTagInfo,
+                false, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // ensure igmp flow is not added if uniTag has no igmp requirement
         oltFlowService.processIgmpFilteringObjectives(DEVICE_ID_1, uniPortNumber,
-                                                      usMeterId, uniTagInfoNoDhcpNoIgmp,
-                                                      true, true);
+                usMeterId, uniTagInfoNoDhcpNoIgmp,
+                true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         //ensure igmp flow on NNI fails without global setting
         oltFlowService.processIgmpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
-                                                      null, null,
-                                                      true, false);
+                null, null,
+                true, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // igmp trap on NNI should succeed with global config
         oltFlowService.enableIgmpOnNni = true;
         oltFlowService.processIgmpFilteringObjectives(DEVICE_ID_1, nniPortNumber,
-                                                      null, null,
-                                                      true, false);
+                null, null,
+                true, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
         // cleanup
         oltFlowService.flowObjectiveService.clearQueue();
@@ -331,7 +333,7 @@ public class OltFlowTest extends TestBase {
         assert selector.getCriterion(Criterion.Type.VLAN_VID) != null;
 
         if (!upstream) {
-            assert  selector.getCriterion(Criterion.Type.METADATA) != null;
+            assert selector.getCriterion(Criterion.Type.METADATA) != null;
         }
     }
 

@@ -18,6 +18,8 @@ package org.opencord.olt.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
+
+import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,6 +55,7 @@ public class OltTest extends TestBase {
         olt.deviceService = new MockDeviceService();
         olt.sadisService = new MockSadisService();
         olt.subsService = olt.sadisService.getSubscriberInfoService();
+        olt.pendingSubscribersForDevice = Maps.newConcurrentMap();
     }
 
     /**
@@ -75,7 +78,7 @@ public class OltTest extends TestBase {
     public void testGetSubscriber() {
         ConnectPoint cp = ConnectPoint.deviceConnectPoint(OLT_DEV_ID + "/" + 2);
 
-        SubscriberAndDeviceInformation s =  olt.getSubscriber(cp);
+        SubscriberAndDeviceInformation s = olt.getSubscriber(cp);
 
         assertEquals(s.circuitId(), CLIENT_CIRCUIT_ID);
         assertEquals(s.nasPortId(), CLIENT_NAS_PORT_ID);
@@ -114,28 +117,33 @@ public class OltTest extends TestBase {
         }
     }
 
-    private class  MockPort implements Port {
+    private class MockPort implements Port {
 
         @Override
         public boolean isEnabled() {
             return true;
         }
+
         @Override
         public long portSpeed() {
             return 1000;
         }
+
         @Override
         public Element element() {
             return null;
         }
+
         @Override
         public PortNumber number() {
             return null;
         }
+
         @Override
         public Annotations annotations() {
             return new MockAnnotations();
         }
+
         @Override
         public Type type() {
             return Port.Type.FIBER;
@@ -147,15 +155,13 @@ public class OltTest extends TestBase {
             public String value(String val) {
                 return "BRCM12345678";
             }
+
             @Override
             public Set<String> keys() {
                 return null;
             }
         }
     }
-
-
-
 
 
 }

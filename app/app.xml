@@ -19,9 +19,10 @@
      category="Traffic Steering" url="http://onosproject.org"
      title="Optical Line Terminal App"
      featuresRepo="mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features"
-     features="${project.artifactId}" apps="org.opencord.sadis">
+     features="${project.artifactId}">
     <description>${project.description}</description>
-    <artifact>mvn:${project.groupId}/olt-api/${project.version}</artifact>
+    <artifact>mvn:${project.groupId}/olt-api/${olt.api.version}</artifact>
     <artifact>mvn:${project.groupId}/olt-impl/${project.version}</artifact>
     <artifact>mvn:${project.groupId}/olt-web/${project.version}</artifact>
+    <artifact>mvn:${project.groupId}/sadis-api/${sadis.api.version}</artifact>
 </app>

@@ -82,6 +82,11 @@ public class TestBase {
 
     private class MockBpService implements BaseInformationService<BandwidthProfileInformation> {
         @Override
+        public void clearLocalData() {
+
+        }
+
+        @Override
         public void invalidateAll() {
 
         }
@@ -110,6 +115,11 @@ public class TestBase {
         @Override
         public SubscriberAndDeviceInformation get(String id) {
             return sub;
+        }
+
+        @Override
+        public void clearLocalData() {
+
         }
 
         @Override

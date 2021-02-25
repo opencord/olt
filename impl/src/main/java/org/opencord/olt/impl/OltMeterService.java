@@ -77,7 +77,6 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 
 /**
  * Provisions Meters on access devices.
@@ -113,9 +112,9 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     protected ExecutorService eventExecutor;
 
-    private Map<DeviceId, Set<BandwidthProfileInformation>> pendingMeters;
-    private Map<DeviceId, Map<MeterKey, AtomicInteger>> pendingRemoveMeters;
-    ConsistentMultimap<String, MeterKey> bpInfoToMeter;
+    protected Map<DeviceId, Set<BandwidthProfileInformation>> pendingMeters;
+    protected Map<DeviceId, Map<MeterKey, AtomicInteger>> pendingRemoveMeters;
+    protected ConsistentMultimap<String, MeterKey> bpInfoToMeter;
 
     @Activate
     public void activate(ComponentContext context) {
@@ -127,6 +126,7 @@ public class OltMeterService implements AccessDeviceMeterService {
         KryoNamespace serializer = KryoNamespace.newBuilder()
                 .register(KryoNamespaces.API)
                 .register(MeterKey.class)
+                .register(BandwidthProfileInformation.class)
                 .build();
 
         bpInfoToMeter = storageService.<String, MeterKey>consistentMultimapBuilder()
@@ -137,8 +137,16 @@ public class OltMeterService implements AccessDeviceMeterService {
 
         meterService.addListener(meterListener);
         componentConfigService.registerProperties(getClass());
-        pendingMeters = Maps.newConcurrentMap();
-        pendingRemoveMeters = Maps.newConcurrentMap();
+        pendingMeters = storageService.<DeviceId, Set<BandwidthProfileInformation>>consistentMapBuilder()
+                .withName("volt-pending-meters")
+                .withSerializer(Serializer.using(serializer))
+                .withApplicationId(appId)
+                .build().asJavaMap();
+        pendingRemoveMeters = storageService.<DeviceId, Map<MeterKey, AtomicInteger>>consistentMapBuilder()
+                .withName("volt-pending-remove-meters")
+                .withSerializer(Serializer.using(serializer))
+                .withApplicationId(appId)
+                .build().asJavaMap();
         log.info("Olt Meter service started");
     }
 

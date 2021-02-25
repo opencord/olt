@@ -37,7 +37,6 @@
             APIs for interacting with the CORD OLT application.
         </api.description>
         <api.package>org.opencord.olt.rest</api.package>
-        <olt.api.version>${project.version}</olt.api.version>
     </properties>
 
     <dependencies>
@@ -51,7 +50,7 @@
         <dependency>
             <groupId>org.opencord</groupId>
             <artifactId>olt-impl</artifactId>
-            <version>${olt.api.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -101,7 +100,6 @@
             <artifactId>javax.ws.rs-api</artifactId>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 
     <build>
