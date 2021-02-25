@@ -37,7 +37,6 @@
             APIs for interacting with the CORD OLT application.
         </api.description>
         <api.package>org.opencord.olt.rest</api.package>
-        <olt.api.version>${project.version}</olt.api.version>
     </properties>
 
     <dependencies>
