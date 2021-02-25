@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "09980e6d_a7b1c2c0",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-02-25T14:31:10Z",
+      "side": 1,
+      "message": "why this one is only a local map ?",
+      "revId": "813d6386418c6a2e1673e9a79f5e51281ffbe437",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
