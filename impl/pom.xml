@@ -29,10 +29,6 @@
     <packaging>bundle</packaging>
     <description>OLT application for CORD</description>
 
-    <properties>
-        <olt.api.version>${project.version}</olt.api.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.opencord</groupId>
