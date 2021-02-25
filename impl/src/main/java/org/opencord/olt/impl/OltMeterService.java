@@ -115,7 +115,7 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     private Map<DeviceId, Set<BandwidthProfileInformation>> pendingMeters;
     private Map<DeviceId, Map<MeterKey, AtomicInteger>> pendingRemoveMeters;
-    ConsistentMultimap<String, MeterKey> bpInfoToMeter;
+    protected ConsistentMultimap<String, MeterKey> bpInfoToMeter;
 
     @Activate
     public void activate(ComponentContext context) {

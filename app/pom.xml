@@ -38,7 +38,6 @@
         <onos.app.readme>
             CORD OLT Access management application
         </onos.app.readme>
-        <olt.api.version>${project.version}</olt.api.version>
     </properties>
 
     <build>
