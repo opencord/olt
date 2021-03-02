@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "adc46673_f92db54f",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2021-03-02T22:50:29Z",
+      "side": 1,
+      "message": "typo \"Learner\" not Leaner",
+      "revId": "ace65acadf3b18f3dd27a635c8145e820f5ff46f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a75f055_bf98d576",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1106,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2021-03-02T22:50:29Z",
+      "side": 1,
+      "message": "thanks",
+      "revId": "ace65acadf3b18f3dd27a635c8145e820f5ff46f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4e90ac5_bc3e3535",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1120,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2021-03-02T22:50:29Z",
+      "side": 1,
+      "message": "indent missing",
+      "revId": "ace65acadf3b18f3dd27a635c8145e820f5ff46f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1a46795_861d2edc",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1168,
+      "author": {
+        "id": 1000068
+      },
+      "writtenOn": "2021-03-02T22:50:29Z",
+      "side": 1,
+      "message": "If you reach here, it can help to add a debug message \"Could not obtain mac address for dev/port {}/{}\" before returning empty",
+      "revId": "ace65acadf3b18f3dd27a635c8145e820f5ff46f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
