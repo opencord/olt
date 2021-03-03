@@ -320,9 +320,40 @@ public class OltMeterService implements AccessDeviceMeterService {
     private List<Band> createMeterBands(BandwidthProfileInformation bpInfo) {
         List<Band> meterBands = new ArrayList<>();
 
-        meterBands.add(createMeterBand(bpInfo.committedInformationRate(), bpInfo.committedBurstSize()));
-        meterBands.add(createMeterBand(bpInfo.exceededInformationRate(), bpInfo.exceededBurstSize()));
-        meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));
+        // add cir
+        if (bpInfo.committedInformationRate() != 0) {
+            meterBands.add(createMeterBand(bpInfo.committedInformationRate(), bpInfo.committedBurstSize()));
+        }
+
+        // check if both air and gir are set together in sadis
+        // if they are, set air to 0
+        if (bpInfo.assuredInformationRate() != 0 && bpInfo.guaranteedInformationRate() != 0) {
+            bpInfo.setAssuredInformationRate(0);
+        }
+
+        // add pir
+        long pir = bpInfo.peakInformationRate() != 0 ? bpInfo.peakInformationRate() : (bpInfo.exceededInformationRate()
+                + bpInfo.committedInformationRate() + bpInfo.guaranteedInformationRate()
+                + bpInfo.assuredInformationRate());
+
+        Long pbs = bpInfo.peakBurstSize() != null ? bpInfo.peakBurstSize() :
+                (bpInfo.exceededBurstSize() != null ? bpInfo.exceededBurstSize() : 0) +
+                        (bpInfo.committedBurstSize() != null ? bpInfo.committedBurstSize() : 0);
+
+        meterBands.add(createMeterBand(pir, pbs));
+
+        // add gir
+        if (bpInfo.guaranteedInformationRate() != 0) {
+            meterBands.add(createMeterBand(bpInfo.guaranteedInformationRate(), 0L));
+        }
+
+        // add air
+        // air is used in place of gir only if gir is
+        // not present and air is not 0, see line 330.
+        // Included for backwards compatibility, will be removed in VOLTHA 2.9.
+        if (bpInfo.assuredInformationRate() != 0) {
+            meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));
+        }
 
         return meterBands;
     }

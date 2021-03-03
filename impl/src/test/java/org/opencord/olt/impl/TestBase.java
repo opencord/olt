@@ -59,7 +59,7 @@ public class TestBase {
 
     protected void addBandwidthProfile(String id) {
         BandwidthProfileInformation bpInfo = new BandwidthProfileInformation();
-        bpInfo.setAssuredInformationRate(0);
+        bpInfo.setGuaranteedInformationRate(0);
         bpInfo.setCommittedInformationRate(10000);
         bpInfo.setCommittedBurstSize(1000L);
         bpInfo.setExceededBurstSize(2000L);
