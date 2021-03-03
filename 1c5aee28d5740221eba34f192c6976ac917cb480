@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "30a6d281_1d95f7b2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-03-03T14:20:09Z",
+      "side": 1,
+      "message": "I think this is worth having distributed as well, these are maps that shoudl not be populated for a long period of time. In any case we will run this through or nightly job to make sure it passes scale tests",
+      "parentUuid": "02e1a72b_bd93a9a8",
+      "revId": "1c5aee28d5740221eba34f192c6976ac917cb480",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4be31fd5_bd792890",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 6
@@ -64,6 +82,24 @@
       "writtenOn": "2021-03-03T14:12:49Z",
       "side": 1,
       "message": "How are handled pending-meters or subcribers in the cluster?\nIf we dont need consistent-meters/subs,I can get these back.\n\nIf the final decision is consisted-map,there are some part that I need to edit.(I didnt update consistent-maps)",
+      "parentUuid": "52cc4b9e_c7768738",
+      "revId": "1c5aee28d5740221eba34f192c6976ac917cb480",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "807a7ea0_ce3e20ac",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-03-03T14:20:09Z",
+      "side": 1,
+      "message": "one could make the assumption that no meters are pending during the operation, but also being the meter something that gets installed on the OLT and should not be \"pending\" for long and many subscribers will use it I do not see a penalty in performance here being affected.",
       "parentUuid": "52cc4b9e_c7768738",
       "revId": "1c5aee28d5740221eba34f192c6976ac917cb480",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
