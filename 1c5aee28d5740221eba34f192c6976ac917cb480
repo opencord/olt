@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "02e1a72b_bd93a9a8",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-03-03T13:50:31Z",
+      "side": 1,
+      "message": "same comment",
+      "revId": "1c5aee28d5740221eba34f192c6976ac917cb480",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4be31fd5_bd792890",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-03-03T13:50:31Z",
+      "side": 1,
+      "message": "Same here. Having them distributed comes with a cost.",
+      "revId": "1c5aee28d5740221eba34f192c6976ac917cb480",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52cc4b9e_c7768738",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-03-03T13:50:31Z",
+      "side": 1,
+      "message": "Do we expect to handle pending meters during an upgrade ? Saying that not sure if you really need to have them distributed.",
+      "revId": "1c5aee28d5740221eba34f192c6976ac917cb480",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
