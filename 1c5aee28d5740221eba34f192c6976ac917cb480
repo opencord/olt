@@ -50,6 +50,24 @@
       "revId": "1c5aee28d5740221eba34f192c6976ac917cb480",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c1b3f70_05dc56f3",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000682
+      },
+      "writtenOn": "2021-03-03T14:12:49Z",
+      "side": 1,
+      "message": "How are handled pending-meters or subcribers in the cluster?\nIf we dont need consistent-meters/subs,I can get these back.\n\nIf the final decision is consisted-map,there are some part that I need to edit.(I didnt update consistent-maps)",
+      "parentUuid": "52cc4b9e_c7768738",
+      "revId": "1c5aee28d5740221eba34f192c6976ac917cb480",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
