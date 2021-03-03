@@ -312,9 +312,14 @@ public class OltMeterService implements AccessDeviceMeterService {
     private List<Band> createMeterBands(BandwidthProfileInformation bpInfo) {
         List<Band> meterBands = new ArrayList<>();
 
+        long eir = bpInfo.peakInformationRate() == 0 ? bpInfo.exceededInformationRate()
+                : (bpInfo.peakInformationRate() - bpInfo.committedInformationRate());
+        Long ebs = bpInfo.peakBurstSize() == null ? bpInfo.exceededBurstSize()
+                : (bpInfo.peakBurstSize() - bpInfo.committedBurstSize());
+
         meterBands.add(createMeterBand(bpInfo.committedInformationRate(), bpInfo.committedBurstSize()));
-        meterBands.add(createMeterBand(bpInfo.exceededInformationRate(), bpInfo.exceededBurstSize()));
-        meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));
+        meterBands.add(createMeterBand(eir, ebs));
+        meterBands.add(createMeterBand(bpInfo.guaranteedInformationRate(), 0L));
 
         return meterBands;
     }
