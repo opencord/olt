@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5cf81186_689f8915",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-03-08T18:23:30Z",
+      "side": 1,
+      "message": "you might want to add a log here if the subFlowInfo is not present",
+      "revId": "d808ba60912358f54763c3522d393fad85a66458",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08ae39aa_d49d1c54",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 1345,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-03-08T18:23:30Z",
+      "side": 1,
+      "message": "insert log here please",
+      "revId": "d808ba60912358f54763c3522d393fad85a66458",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
