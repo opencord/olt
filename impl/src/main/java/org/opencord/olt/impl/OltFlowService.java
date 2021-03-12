@@ -847,7 +847,11 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                       tagInformation.getTechnologyProfileId(),
                                                       subscriberPort), 0);
 
-        // to remark inner vlan header
+        // Upstream pbit is used to remark inner vlan pbit.
+        // Upstream is used to avoid trusting the BNG to send the packet with correct pbit.
+        // this is done because ds mode 0 is used because ds mode 3 or 6 that allow for
+        // all pbit acceptance are not widely supported by vendors even though present in
+        // the OMCI spec.
         if (tagInformation.getUsPonCTagPriority() != NO_PCP) {
             treatmentBuilder.setVlanPcp((byte) tagInformation.getUsPonCTagPriority());
         }
