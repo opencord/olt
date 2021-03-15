@@ -1221,12 +1221,12 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
             if (event.type() == GroupEvent.Type.GROUP_ADDED ||
                     event.type() == GroupEvent.Type.GROUP_UPDATED) {
                 flowObjectiveStore.putNextGroup(obj.id(), new OltPipelineGroup(key));
-                pass(obj);
                 pendingGroups.invalidate(key);
+                pass(obj);
             } else if (event.type() == GroupEvent.Type.GROUP_REMOVED) {
                 flowObjectiveStore.removeNextGroup(obj.id());
-                pass(obj);
                 pendingGroups.invalidate(key);
+                pass(obj);
             }
         }
     }
