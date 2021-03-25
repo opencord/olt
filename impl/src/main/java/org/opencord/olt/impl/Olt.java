@@ -119,7 +119,6 @@ public class Olt
     private static final String SADIS_NOT_RUNNING = "Sadis is not running.";
     private static final String APP_NAME = "org.opencord.olt";
 
-    private static final short EAPOL_DEFAULT_VLAN = 4091;
     private static final String NO_UPLINK_PORT = "No uplink port found for OLT device {}";
 
     public static final int HASH_WEIGHT = 10;

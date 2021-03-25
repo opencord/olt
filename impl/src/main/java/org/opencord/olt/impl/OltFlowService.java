@@ -552,6 +552,7 @@ public class OltFlowService implements AccessDeviceFlowService {
         }
         log.info("Processing EAPOL with Bandwidth profile {} on {}/{}", bpId,
                  devId, portNumber);
+        // FIXME before provisioning we should use the default TP
         BandwidthProfileInformation bpInfo = getBandwidthProfileInformation(bpId);
         if (bpInfo == null) {
             log.warn("Bandwidth profile {} is not found. Authentication flow"
@@ -658,11 +659,26 @@ public class OltFlowService implements AccessDeviceFlowService {
         log.info("Meter {} for {} on {}/{} exists. {} EAPOL trap flow",
                  mId, fi.getUpBpInfo(), fi.getDevId(), fi.getUniPort(),
                  (install) ? "Installing" : "Removing");
-        int techProfileId = getDefaultTechProfileId(fi.getDevId(), fi.getUniPort());
         // can happen in case of removal
         if (mId != null) {
             treatmentBuilder.meter(mId);
         }
+
+        // if the eapol flow happens before provisioning (identified via the default VLAN)
+        // then use the default TP
+        int techProfileId = DEFAULT_TP_ID_DEFAULT;
+
+        log.info("TEO SubscriberFlowInfo c_tag is {}, is default? {}",
+                fi.getTagInfo().getPonCTag(), fi.getTagInfo().getPonCTag().toShort() == EAPOL_DEFAULT_VLAN);
+
+        if (fi.getTagInfo().getPonCTag().toShort() != EAPOL_DEFAULT_VLAN) {
+            techProfileId = getDefaultTechProfileId(fi.getDevId(), fi.getUniPort());
+            log.info("TEO using custom TP {}", techProfileId);
+        }
+
+        log.info("Using TpID {} to {} eapol filter on {}/{} with meter {}",
+                techProfileId, (install) ? "INSTALL" : "REMOVE", fi.getDevId(), fi.getUniPort(), mId);
+
         //Authentication trap flow uses only tech profile id as write metadata value
         FilteringObjective eapol = (install ? filterBuilder.permit() : filterBuilder.deny())
                 .withKey(Criteria.matchInPort(fi.getUniPort()))
@@ -680,9 +696,9 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("Eapol filter {} for {} on {}/{} with meter {}.",
-                                 objective.id(), fi.getDevId(), fi.getUniPort(),
-                                 (install) ? INSTALLED : REMOVED, mId);
+                        log.info("Eapol filter {} {} on {}/{} with meter {}.",
+                                 objective.id(), (install) ? INSTALLED : REMOVED,
+                                 fi.getDevId(), fi.getUniPort(), mId);
                         if (filterFuture != null) {
                             filterFuture.complete(null);
                         }
@@ -932,9 +948,12 @@ public class OltFlowService implements AccessDeviceFlowService {
         if (port != null) {
             SubscriberAndDeviceInformation info = subsService.get(port.annotations().value(AnnotationKeys.PORT_NAME));
             if (info != null && info.uniTagList().size() == 1) {
+                log.info("TEO getDefaultTechProfileId customTechProfileId {}",
+                        info.uniTagList().get(0).getTechnologyProfileId());
                 return info.uniTagList().get(0).getTechnologyProfileId();
             }
         }
+        log.info("TEO getDefaultTechProfileId defaultTechProfileId {}", defaultTechProfileId);
         return defaultTechProfileId;
     }
 

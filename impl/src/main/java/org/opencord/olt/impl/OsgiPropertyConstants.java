@@ -59,4 +59,6 @@ public final class OsgiPropertyConstants {
 
     public static final String PROVISION_DELAY = "provisionDelay";
     public static final int PROVISION_DELAY_DEFAULT = 100;
+
+    public static final short EAPOL_DEFAULT_VLAN = 4091;
 }

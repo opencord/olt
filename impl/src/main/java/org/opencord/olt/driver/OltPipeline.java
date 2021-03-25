@@ -155,12 +155,14 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
 
         // Init the accumulator, if enabled
         if (isAccumulatorEnabled()) {
-            log.debug("Building accumulator with maxObjs {}, batchMs {}, idleMs {}",
+            log.info("Building accumulator with maxObjs {}, batchMs {}, idleMs {}",
                       context.accumulatorMaxObjectives(), context.accumulatorMaxBatchMillis(),
                       context.accumulatorMaxIdleMillis());
             accumulator = new ObjectiveAccumulator(context.accumulatorMaxObjectives(),
                                                    context.accumulatorMaxBatchMillis(),
                                                    context.accumulatorMaxIdleMillis());
+        } else {
+            log.warn("Olt Pipeliner accumulator is disabled");
         }
 
 
