@@ -33,6 +33,29 @@
       "revId": "48d0ad1a68fe176015eb8f68bf5a570ac01ac28b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c9ec79c_9d2fe8c9",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1218,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-03-26T21:37:59Z",
+      "side": 1,
+      "message": "should this be wrapped in \"if (log.isTraceEnabled)\"",
+      "range": {
+        "startLine": 1218,
+        "startChar": 16,
+        "endLine": 1218,
+        "endChar": 25
+      },
+      "revId": "48d0ad1a68fe176015eb8f68bf5a570ac01ac28b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
