@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5584e2d3_aa985919",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltDriversLoader.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-03-26T18:35:29Z",
+      "side": 1,
+      "message": "How can we be sure that this delay is enough ? I would suggest implementing a simple producer/consumer mechanism. We can leverage the DriverManager event to unblock this thread.",
+      "revId": "48d0ad1a68fe176015eb8f68bf5a570ac01ac28b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecaeeefd_ccc94fa3",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltDriversLoader.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-03-26T18:35:29Z",
+      "side": 1,
+      "message": "Same here. In this case you can have only a poll mechanism",
+      "revId": "48d0ad1a68fe176015eb8f68bf5a570ac01ac28b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
