@@ -161,6 +161,8 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
             accumulator = new ObjectiveAccumulator(context.accumulatorMaxObjectives(),
                                                    context.accumulatorMaxBatchMillis(),
                                                    context.accumulatorMaxIdleMillis());
+        } else {
+            log.debug("Olt Pipeliner accumulator is disabled, processing immediately");
         }
 
 
@@ -1213,10 +1215,12 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
             GroupKey key = event.subject().appCookie();
             NextObjective obj = pendingGroups.getIfPresent(key);
             if (obj == null) {
-                log.debug("No pending group for {}, moving on", key);
+                if (log.isTraceEnabled()) {
+                    log.trace("No pending group for {}, moving on", key);
+                }
                 return;
             }
-            log.trace("Event {} for group {}, handling pending" +
+            log.debug("Event {} for group {}, handling pending" +
                               "NextGroup {}", event.type(), key, obj.id());
             if (event.type() == GroupEvent.Type.GROUP_ADDED ||
                     event.type() == GroupEvent.Type.GROUP_UPDATED) {
