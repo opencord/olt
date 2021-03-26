@@ -246,7 +246,7 @@ public class OltFlowService implements AccessDeviceFlowService {
 
         log.info("modified. Values = enableDhcpOnNni: {}, enableDhcpV4: {}, " +
                          "enableDhcpV6:{}, enableIgmpOnNni:{}, " +
-                         "enableEapol{}, enablePppoe{}, defaultTechProfileId: {}",
+                         "enableEapol:{}, enablePppoe:{}, defaultTechProfileId:{}",
                  enableDhcpOnNni, enableDhcpV4, enableDhcpV6,
                  enableIgmpOnNni, enableEapol,  enablePppoe,
                  defaultTechProfileId);
@@ -681,8 +681,8 @@ public class OltFlowService implements AccessDeviceFlowService {
                     @Override
                     public void onSuccess(Objective objective) {
                         log.info("Eapol filter {} for {} on {}/{} with meter {}.",
-                                 objective.id(), fi.getDevId(), fi.getUniPort(),
-                                 (install) ? INSTALLED : REMOVED, mId);
+                                 objective.id(), (install) ? INSTALLED : REMOVED,
+                                 fi.getDevId(), fi.getUniPort(), mId);
                         if (filterFuture != null) {
                             filterFuture.complete(null);
                         }

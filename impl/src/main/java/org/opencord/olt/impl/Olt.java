@@ -41,6 +41,7 @@ import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceEvent;
 import org.onosproject.net.device.DeviceListener;
 import org.onosproject.net.device.DeviceService;
+import org.onosproject.net.driver.DriverService;
 import org.onosproject.net.flow.FlowRuleService;
 import org.onosproject.net.flowobjective.FlowObjectiveService;
 import org.onosproject.net.flowobjective.ForwardingObjective;
@@ -134,8 +135,13 @@ public class Olt
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected DeviceService deviceService;
 
+
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected CoreService coreService;
+
+    //Dependency on driver service is to ensure correct startup order
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    protected DriverService driverService;
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL,
             bind = "bindSadisService",
@@ -1236,7 +1242,8 @@ public class Olt
         log.info("checkAndCreateDeviceFlows: deviceInfo {}", deviceInfo);
 
         if (deviceInfo != null) {
-            // This is an OLT device as per Sadis, we create flows for UNI and NNI ports
+            log.debug("Driver for device {} is {}", dev.id(),
+                     driverService.getDriver(dev.id()));
             for (Port p : deviceService.getPorts(dev.id())) {
                 if (PortNumber.LOCAL.equals(p.number()) || !p.isEnabled()) {
                     continue;

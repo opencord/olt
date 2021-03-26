@@ -59,4 +59,7 @@ public final class OsgiPropertyConstants {
 
     public static final String PROVISION_DELAY = "provisionDelay";
     public static final int PROVISION_DELAY_DEFAULT = 100;
+
+    public static final String REQUIRED_DRIVERS_PROPERTY_DELAY = "requiredDriversPropertyDelay";
+    public static final int REQUIRED_DRIVERS_PROPERTY_DELAY_DEFAULT = 5;
 }
