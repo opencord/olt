@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "dbe96106_026e093f",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltDriversLoader.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-03-29T08:36:45Z",
+      "side": 1,
+      "message": "Hi Pier, yes, you are correct, a produce/consumer pattern would be better in this case. Given the closeness of the release of voltha (tomorrow) I\u0027ve created a jira for this enhancement: https://jira.opencord.org/browse/VOL-3962",
+      "parentUuid": "5584e2d3_aa985919",
+      "revId": "48d0ad1a68fe176015eb8f68bf5a570ac01ac28b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ecaeeefd_ccc94fa3",
         "filename": "impl/src/main/java/org/opencord/olt/driver/OltDriversLoader.java",
         "patchSetId": 1
@@ -56,6 +74,30 @@
       "revId": "48d0ad1a68fe176015eb8f68bf5a570ac01ac28b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d937a9ca_a7d04377",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1218,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-03-29T08:36:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c9ec79c_9d2fe8c9",
+      "range": {
+        "startLine": 1218,
+        "startChar": 16,
+        "endLine": 1218,
+        "endChar": 25
+      },
+      "revId": "48d0ad1a68fe176015eb8f68bf5a570ac01ac28b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
