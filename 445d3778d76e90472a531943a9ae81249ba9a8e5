@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d856e528_39f3403a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-03-29T13:57:44Z",
+      "side": 1,
+      "message": "isn\u0027t PIR \u003d CIR + EIR ? why are we doing CIR + EIR + GIR ? ins\u0027t GIR included in CIR ? or is this a mutual exclusion case where always GIR or CIR are 0 ?",
+      "revId": "445d3778d76e90472a531943a9ae81249ba9a8e5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
