@@ -16,6 +16,24 @@
       "revId": "445d3778d76e90472a531943a9ae81249ba9a8e5",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52b66d97_b90e589a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1000405
+      },
+      "writtenOn": "2021-03-30T08:35:58Z",
+      "side": 1,
+      "message": "CIR is assured bw and GIR is like fixed bw. So I think PIR must be CIR + EIR + GIR. But if you think CIR already includes GIR in itself, then I can update it as PIR \u003d CIR + EIR.",
+      "parentUuid": "d856e528_39f3403a",
+      "revId": "445d3778d76e90472a531943a9ae81249ba9a8e5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
