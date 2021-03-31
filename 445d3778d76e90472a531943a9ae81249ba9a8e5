@@ -34,6 +34,24 @@
       "revId": "445d3778d76e90472a531943a9ae81249ba9a8e5",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2caba74_7904ae76",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-03-31T12:23:54Z",
+      "side": 1,
+      "message": "I asked thoughts on this on the thread we have with the team, let\u0027s hear their replies.",
+      "parentUuid": "52b66d97_b90e589a",
+      "revId": "445d3778d76e90472a531943a9ae81249ba9a8e5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
