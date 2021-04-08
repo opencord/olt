@@ -52,6 +52,24 @@
       "revId": "445d3778d76e90472a531943a9ae81249ba9a8e5",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a0d63f08_c0247fcc",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-04-08T09:02:46Z",
+      "side": 1,
+      "message": "this is ok as per discussion with Shaun and Paul. In the upstream case we will sum the three elements and achieve the maximum bandwidth on the PON, then in the downstream case the GIR will always be 0 so it will not matter in the computation. So no update is needed here.",
+      "parentUuid": "c2caba74_7904ae76",
+      "revId": "445d3778d76e90472a531943a9ae81249ba9a8e5",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
