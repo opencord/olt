@@ -88,6 +88,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
@@ -115,6 +117,9 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
     private GroupService groupService;
     private CoreService coreService;
     private StorageService storageService;
+    protected ExecutorService groupEventExecutor;
+
+
 
     private DeviceId deviceId;
     private ApplicationId appId;
@@ -122,6 +127,7 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
 
     protected FlowObjectiveStore flowObjectiveStore;
 
+    //TODO not distributed might be a problem ?
     private Cache<GroupKey, NextObjective> pendingGroups;
 
     protected static KryoNamespace appKryo = new KryoNamespace.Builder()
@@ -149,6 +155,10 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
         groupService = serviceDirectory.get(GroupService.class);
         flowObjectiveStore = context.store();
         storageService = serviceDirectory.get(StorageService.class);
+
+        groupEventExecutor = Executors.newFixedThreadPool(8, groupedThreads("onos/olt",
+                                                                            "olt-pipeliner-groups-events-%d", log));
+
 
         appId = coreService.registerApplication(
                 "org.onosproject.driver.OLTPipeline");
@@ -389,9 +399,10 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
         GroupKey key = new DefaultGroupKey(appKryo.serialize(nextObjective.id()));
 
         pendingGroups.put(key, nextObjective);
-        log.trace("NextObjective Operation {}", nextObjective.op());
+        log.info("NextObjective Operation {}, next obj {}", nextObjective.op(), nextObjective);
         switch (nextObjective.op()) {
             case ADD:
+                log.info("adding NEW group on {} for key {}", deviceId, key);
                 GroupDescription groupDesc =
                         new DefaultGroupDescription(deviceId,
                                                     GroupDescription.Type.ALL,
@@ -407,6 +418,8 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
                 groupService.removeGroup(deviceId, key, nextObjective.appId());
                 break;
             case ADD_TO_EXISTING:
+                log.info("adding to existing group on {} for key {} with treatement {}",
+                         deviceId, key, treatmentOpt);
                 groupService.addBucketsToGroup(deviceId, key,
                                                new GroupBuckets(
                                                        Collections.singletonList(
@@ -1212,26 +1225,34 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
     private class InnerGroupListener implements GroupListener {
         @Override
         public void event(GroupEvent event) {
-            GroupKey key = event.subject().appCookie();
-            NextObjective obj = pendingGroups.getIfPresent(key);
-            if (obj == null) {
-                if (log.isTraceEnabled()) {
-                    log.trace("No pending group for {}, moving on", key);
+            groupEventExecutor.submit(() -> {
+                //TODO possbile bottleneck, maybe requires multi-thread
+                log.info("Group Event {}, size {}, type {}", event.subject().id(),
+                         event.subject().buckets().buckets().size(), event.type());
+                GroupKey key = event.subject().appCookie();
+                NextObjective obj = pendingGroups.getIfPresent(key);
+                if (obj == null) {
+                    if (log.isTraceEnabled()) {
+                        log.trace("No pending group for {}, moving on", key);
+                    }
+                    return;
                 }
-                return;
-            }
-            log.debug("Event {} for group {}, handling pending" +
-                              "NextGroup {}", event.type(), key, obj.id());
-            if (event.type() == GroupEvent.Type.GROUP_ADDED ||
-                    event.type() == GroupEvent.Type.GROUP_UPDATED) {
-                flowObjectiveStore.putNextGroup(obj.id(), new OltPipelineGroup(key));
-                pendingGroups.invalidate(key);
-                pass(obj);
-            } else if (event.type() == GroupEvent.Type.GROUP_REMOVED) {
-                flowObjectiveStore.removeNextGroup(obj.id());
-                pendingGroups.invalidate(key);
-                pass(obj);
-            }
+                log.info("Event {} for id {} with group key {}, handling pending" +
+                                 "NextGroup {}, treatment {}", event.type(),
+                         event.subject().id(), key, obj.id(), obj.nextTreatments());
+                if (event.type() == GroupEvent.Type.GROUP_ADDED ||
+                        event.type() == GroupEvent.Type.GROUP_UPDATED) {
+                    flowObjectiveStore.putNextGroup(obj.id(), new OltPipelineGroup(key));
+                    pendingGroups.invalidate(key);
+                    log.info("Passing objective {}", obj);
+                    pass(obj);
+                } else if (event.type() == GroupEvent.Type.GROUP_REMOVED) {
+                    flowObjectiveStore.removeNextGroup(obj.id());
+                    pendingGroups.invalidate(key);
+                    pass(obj);
+                }
+                log.info("Finished handling Group Event {}", event.subject().id());
+            });
         }
     }
 

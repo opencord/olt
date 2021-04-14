@@ -1448,7 +1448,7 @@ public class Olt
                     return;
                 }
 
-                log.debug("OLT got {} event for {}/{}", eventType, event.subject(), event.port());
+                log.info("OLT got {} event for {}/{}", eventType, event.subject(), event.port());
 
                 if (getOltInfo(dev) == null) {
                     // it's possible that we got an event for a previously
