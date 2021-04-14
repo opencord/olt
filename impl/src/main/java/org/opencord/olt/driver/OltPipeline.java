@@ -88,6 +88,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
@@ -115,6 +117,10 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
     private GroupService groupService;
     private CoreService coreService;
     private StorageService storageService;
+    protected ExecutorService groupEventExecutor;
+
+    protected ExecutorService nextEventExecutor;
+
 
     private DeviceId deviceId;
     private ApplicationId appId;
@@ -122,6 +128,7 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
 
     protected FlowObjectiveStore flowObjectiveStore;
 
+    //TODO not distributed might be a problem ?
     private Cache<GroupKey, NextObjective> pendingGroups;
 
     protected static KryoNamespace appKryo = new KryoNamespace.Builder()
@@ -140,7 +147,7 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
 
     @Override
     public void init(DeviceId deviceId, PipelinerContext context) {
-        log.debug("Initiate OLT pipeline");
+        log.info("Initiate OLT pipeline for device {}", deviceId);
         this.serviceDirectory = context.directory();
         this.deviceId = deviceId;
 
@@ -149,6 +156,13 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
         groupService = serviceDirectory.get(GroupService.class);
         flowObjectiveStore = context.store();
         storageService = serviceDirectory.get(StorageService.class);
+
+        groupEventExecutor = Executors.newFixedThreadPool(8, groupedThreads("onos/olt",
+                                                                            "olt-pipeliner-groups-events-%d", log));
+
+        nextEventExecutor = Executors.newFixedThreadPool(8, groupedThreads("onos/olt",
+                                                                            "olt-pipeliner-next-process-%d", log));
+
 
         appId = coreService.registerApplication(
                 "org.onosproject.driver.OLTPipeline");
@@ -170,6 +184,7 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
                 .expireAfterWrite(20, TimeUnit.SECONDS)
                 .removalListener((RemovalNotification<GroupKey, NextObjective> notification) -> {
                     if (notification.getCause() == RemovalCause.EXPIRED) {
+                        log.error("Failing {} due to timeout", notification.getValue());
                         fail(notification.getValue(), ObjectiveError.GROUPINSTALLATIONFAILED);
                     }
                 }).build();
@@ -367,64 +382,68 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
 
     @Override
     public void next(NextObjective nextObjective) {
-        if (nextObjective.type() != NextObjective.Type.BROADCAST) {
-            log.error("OLT only supports broadcast groups.");
-            fail(nextObjective, ObjectiveError.BADPARAMS);
-            return;
-        }
+//        nextEventExecutor.submit(() -> {
+            log.info("NextObjective Operation {}, next obj {}, device {}", nextObjective.op(), nextObjective, deviceId);
+            if (nextObjective.type() != NextObjective.Type.BROADCAST) {
+                log.error("OLT only supports broadcast groups.");
+                fail(nextObjective, ObjectiveError.BADPARAMS);
+                return;
+            }
 
-        if (nextObjective.next().size() != 1 && !nextObjective.op().equals(Objective.Operation.REMOVE)) {
-            log.error("OLT only supports singleton broadcast groups.");
-            fail(nextObjective, ObjectiveError.BADPARAMS);
-            return;
-        }
+            if (nextObjective.next().size() != 1 && !nextObjective.op().equals(Objective.Operation.REMOVE)) {
+                log.error("OLT only supports singleton broadcast groups.");
+                fail(nextObjective, ObjectiveError.BADPARAMS);
+                return;
+            }
 
-        Optional<TrafficTreatment> treatmentOpt = nextObjective.next().stream().findFirst();
-        if (treatmentOpt.isEmpty() && !nextObjective.op().equals(Objective.Operation.REMOVE)) {
-            log.error("Next objective {} does not have a treatment", nextObjective);
-            fail(nextObjective, ObjectiveError.BADPARAMS);
-            return;
-        }
+            Optional<TrafficTreatment> treatmentOpt = nextObjective.next().stream().findFirst();
+            if (treatmentOpt.isEmpty() && !nextObjective.op().equals(Objective.Operation.REMOVE)) {
+                log.error("Next objective {} does not have a treatment", nextObjective);
+                fail(nextObjective, ObjectiveError.BADPARAMS);
+                return;
+            }
 
-        GroupKey key = new DefaultGroupKey(appKryo.serialize(nextObjective.id()));
+            GroupKey key = new DefaultGroupKey(appKryo.serialize(nextObjective.id()));
 
-        pendingGroups.put(key, nextObjective);
-        log.trace("NextObjective Operation {}", nextObjective.op());
-        switch (nextObjective.op()) {
-            case ADD:
-                GroupDescription groupDesc =
-                        new DefaultGroupDescription(deviceId,
-                                                    GroupDescription.Type.ALL,
-                                                    new GroupBuckets(
-                                                            Collections.singletonList(
-                                                                    buildBucket(treatmentOpt.get()))),
-                                                    key,
-                                                    null,
-                                                    nextObjective.appId());
-                groupService.addGroup(groupDesc);
-                break;
-            case REMOVE:
-                groupService.removeGroup(deviceId, key, nextObjective.appId());
-                break;
-            case ADD_TO_EXISTING:
-                groupService.addBucketsToGroup(deviceId, key,
-                                               new GroupBuckets(
-                                                       Collections.singletonList(
-                                                               buildBucket(treatmentOpt.get()))),
-                                               key, nextObjective.appId());
-                break;
-            case REMOVE_FROM_EXISTING:
-                groupService.removeBucketsFromGroup(deviceId, key,
-                                                    new GroupBuckets(
-                                                            Collections.singletonList(
-                                                                    buildBucket(treatmentOpt.get()))),
-                                                    key, nextObjective.appId());
-                break;
-            default:
-                log.warn("Unknown next objective operation: {}", nextObjective.op());
-        }
-
-
+            pendingGroups.put(key, nextObjective);
+            switch (nextObjective.op()) {
+                case ADD:
+                    log.info("adding NEW group on {} for key {}", deviceId, key);
+                    GroupDescription groupDesc =
+                            new DefaultGroupDescription(deviceId,
+                                                        GroupDescription.Type.ALL,
+                                                        new GroupBuckets(
+                                                                Collections.singletonList(
+                                                                        buildBucket(treatmentOpt.get()))),
+                                                        key,
+                                                        null,
+                                                        nextObjective.appId());
+                    groupService.addGroup(groupDesc);
+                    break;
+                case REMOVE:
+                    groupService.removeGroup(deviceId, key, nextObjective.appId());
+                    break;
+                case ADD_TO_EXISTING:
+                    log.info("adding to existing group on {} for key {} with treatement {}",
+                             deviceId, key, treatmentOpt);
+                    //possibly a sleep of 2 seconds here to avoid thread unsafety in the group manager
+                    groupService.addBucketsToGroup(deviceId, key,
+                                                   new GroupBuckets(
+                                                           Collections.singletonList(
+                                                                   buildBucket(treatmentOpt.get()))),
+                                                   key, nextObjective.appId());
+                    break;
+                case REMOVE_FROM_EXISTING:
+                    groupService.removeBucketsFromGroup(deviceId, key,
+                                                        new GroupBuckets(
+                                                                Collections.singletonList(
+                                                                        buildBucket(treatmentOpt.get()))),
+                                                        key, nextObjective.appId());
+                    break;
+                default:
+                    log.warn("Unknown next objective operation: {}", nextObjective.op());
+            }
+//        });
     }
 
     private GroupBucket buildBucket(TrafficTreatment treatment) {
@@ -1212,26 +1231,34 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
     private class InnerGroupListener implements GroupListener {
         @Override
         public void event(GroupEvent event) {
-            GroupKey key = event.subject().appCookie();
-            NextObjective obj = pendingGroups.getIfPresent(key);
-            if (obj == null) {
-                if (log.isTraceEnabled()) {
-                    log.trace("No pending group for {}, moving on", key);
+            groupEventExecutor.submit(() -> {
+                //TODO possbile bottleneck, maybe requires multi-thread
+                log.info("Group Event {}, size {}, type {}", event.subject().id(),
+                         event.subject().buckets().buckets().size(), event.type());
+                GroupKey key = event.subject().appCookie();
+                NextObjective obj = pendingGroups.getIfPresent(key);
+                if (obj == null) {
+                    if (log.isTraceEnabled()) {
+                        log.trace("No pending group for {}, moving on", key);
+                    }
+                    return;
                 }
-                return;
-            }
-            log.debug("Event {} for group {}, handling pending" +
-                              "NextGroup {}", event.type(), key, obj.id());
-            if (event.type() == GroupEvent.Type.GROUP_ADDED ||
-                    event.type() == GroupEvent.Type.GROUP_UPDATED) {
-                flowObjectiveStore.putNextGroup(obj.id(), new OltPipelineGroup(key));
-                pendingGroups.invalidate(key);
-                pass(obj);
-            } else if (event.type() == GroupEvent.Type.GROUP_REMOVED) {
-                flowObjectiveStore.removeNextGroup(obj.id());
-                pendingGroups.invalidate(key);
-                pass(obj);
-            }
+                log.info("Event {} for id {} for device {} with group key {}, handling pending" +
+                                 "NextGroup {}, treatment {}", event.type(),
+                         event.subject().id(), deviceId, key, obj.id(), obj.nextTreatments());
+                if (event.type() == GroupEvent.Type.GROUP_ADDED ||
+                        event.type() == GroupEvent.Type.GROUP_UPDATED) {
+                    flowObjectiveStore.putNextGroup(obj.id(), new OltPipelineGroup(key));
+                    pendingGroups.invalidate(key);
+                    log.info("Passing objective {} for device {}", obj, deviceId);
+                    pass(obj);
+                } else if (event.type() == GroupEvent.Type.GROUP_REMOVED) {
+                    flowObjectiveStore.removeNextGroup(obj.id());
+                    pendingGroups.invalidate(key);
+                    pass(obj);
+                }
+                log.info("Finished handling Group Event {}", event.subject().id());
+            });
         }
     }
 
