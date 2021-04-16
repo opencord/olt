@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b8c382ba_698131cd",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-04-16T07:46:56Z",
+      "side": 1,
+      "message": "put a check that both air and gir are not set together in sadis, if they are give priority to gir by setting air to 0",
+      "revId": "224a1900681a767bf1924c83a864f51014d65656",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c15da6c5_6de64c33",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-04-16T07:46:56Z",
+      "side": 1,
+      "message": "we can assume only the gir or the air here is present so we can do long pir \u003d bpInfo.peakInformationRate() !\u003d 0 ? bpInfo.peakInformationRate() : (bpInfo.exceededInformationRate() + bpInfo.committedInformationRate() + bpInfo.guaranteedInformationRate() + bpInfo.assuredInformationRate());",
+      "revId": "224a1900681a767bf1924c83a864f51014d65656",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "620edd0a_bfc2bcf4",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-04-16T07:46:56Z",
+      "side": 1,
+      "message": "add here also to be backwards compatible\n        // add air\n        if (bpInfo.assuredInformationRate() !\u003d 0) {\n            meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));\n        }",
+      "revId": "224a1900681a767bf1924c83a864f51014d65656",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
