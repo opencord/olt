@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d04193ee_527160b4",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2021-04-19T20:31:34Z",
+      "side": 1,
+      "message": "Still unsure if we are using this definition. See my later comment.",
+      "range": {
+        "startLine": 337,
+        "startChar": 25,
+        "endLine": 337,
+        "endChar": 47
+      },
+      "revId": "78f06fb20a9d667fbbdf1dea1b73f5cd6ede1b94",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a11d2c6_017d1ff2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2021-04-19T20:31:34Z",
+      "side": 1,
+      "message": "I may have missed some conversations as I was off work for some time. But I thought we decided that (https://docs.google.com/document/d/1HipmsHD5LEQlOc-Y2tYV7DHD1fn7-_1lehBgp79sRwU/edit?ts\u003d60337f04#) air will not be present in the sadis BW profile definition.",
+      "range": {
+        "startLine": 350,
+        "startChar": 0,
+        "endLine": 354,
+        "endChar": 0
+      },
+      "revId": "78f06fb20a9d667fbbdf1dea1b73f5cd6ede1b94",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
