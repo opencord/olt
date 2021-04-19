@@ -45,6 +45,30 @@
       "revId": "78f06fb20a9d667fbbdf1dea1b73f5cd6ede1b94",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "200fe72b_7bc6a876",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-04-19T20:38:25Z",
+      "side": 1,
+      "message": "I made the decision to bring it back to be backward compatible, see comment on sadis. it\u0027s either GIR or AIR to be used. AIR if set is used as GIR",
+      "parentUuid": "9a11d2c6_017d1ff2",
+      "range": {
+        "startLine": 350,
+        "startChar": 0,
+        "endLine": 354,
+        "endChar": 0
+      },
+      "revId": "78f06fb20a9d667fbbdf1dea1b73f5cd6ede1b94",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
