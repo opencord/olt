@@ -69,6 +69,30 @@
       "revId": "78f06fb20a9d667fbbdf1dea1b73f5cd6ede1b94",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ad76b21_2318a098",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2021-04-19T23:35:21Z",
+      "side": 1,
+      "message": "Ok. Sounds good. A comment here would be then useful.",
+      "parentUuid": "200fe72b_7bc6a876",
+      "range": {
+        "startLine": 350,
+        "startChar": 0,
+        "endLine": 354,
+        "endChar": 0
+      },
+      "revId": "78f06fb20a9d667fbbdf1dea1b73f5cd6ede1b94",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
