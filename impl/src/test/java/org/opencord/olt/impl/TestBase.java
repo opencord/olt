@@ -18,9 +18,12 @@ package org.opencord.olt.impl;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
+import org.onlab.packet.ChassisId;
 import org.onlab.packet.Ip4Address;
 import org.onlab.packet.MacAddress;
 import org.onosproject.core.DefaultApplicationId;
+import org.onosproject.net.DefaultDevice;
+import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.meter.MeterId;
 import org.onosproject.store.service.AsyncConsistentMultimap;
@@ -54,6 +57,9 @@ public class TestBase {
     protected String usBpId = "HSIA-US";
     protected String dsBpId = "HSIA-DS";
     protected DefaultApplicationId appId = new DefaultApplicationId(1, "OltServices");
+
+    protected static Device olt = new DefaultDevice(null, DeviceId.deviceId(OLT_DEV_ID), Device.Type.SWITCH,
+            "VOLTHA Project", "open_pon", "open_pon", "BBSIM_OLT_1", new ChassisId("a0a0a0a0a01"));
 
     Map<String, BandwidthProfileInformation> bpInformation = Maps.newConcurrentMap();
 
