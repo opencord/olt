@@ -16,8 +16,8 @@
 package org.opencord.olt.impl;
 
 import org.onosproject.net.DeviceId;
-import org.onosproject.net.PortNumber;
 import org.onosproject.net.meter.MeterId;
+import org.opencord.olt.AccessDevicePort;
 import org.opencord.sadis.UniTagInformation;
 
 import java.util.Objects;
@@ -27,8 +27,8 @@ import java.util.Objects;
  */
 class SubscriberFlowInfo {
     private final DeviceId devId;
-    private final PortNumber nniPort;
-    private final PortNumber uniPort;
+    private final AccessDevicePort nniPort;
+    private final AccessDevicePort uniPort;
     private final UniTagInformation tagInfo;
     private MeterId downId;
     private MeterId upId;
@@ -37,7 +37,6 @@ class SubscriberFlowInfo {
 
     /**
      * Builds the mapper of information.
-     * @param devId the device id
      * @param nniPort the nni port
      * @param uniPort the uni port
      * @param tagInfo the tag info
@@ -46,10 +45,10 @@ class SubscriberFlowInfo {
      * @param downBpInfo the downstream bandwidth profile
      * @param upBpInfo the upstream bandwidth profile
      */
-    SubscriberFlowInfo(DeviceId devId, PortNumber nniPort, PortNumber uniPort,
+    SubscriberFlowInfo(AccessDevicePort nniPort, AccessDevicePort uniPort,
                        UniTagInformation tagInfo, MeterId downId, MeterId upId,
                        String downBpInfo, String upBpInfo) {
-        this.devId = devId;
+        this.devId = uniPort.deviceId();
         this.nniPort = nniPort;
         this.uniPort = uniPort;
         this.tagInfo = tagInfo;
@@ -73,7 +72,7 @@ class SubscriberFlowInfo {
      *
      * @return nni port
      */
-    PortNumber getNniPort() {
+    AccessDevicePort getNniPort() {
         return nniPort;
     }
 
@@ -82,7 +81,7 @@ class SubscriberFlowInfo {
      *
      * @return uni port
      */
-    PortNumber getUniPort() {
+    AccessDevicePort getUniPort() {
         return uniPort;
     }
 
