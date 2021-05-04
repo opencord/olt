@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f966745f_b4d08866",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-05-04T11:14:58Z",
+      "side": 1,
+      "message": "missing javadoc on all of these methods",
+      "revId": "4bc80948c85e1c23257cbea00edcdfe1e83f100c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a61dbfd_3c394260",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-05-04T11:14:58Z",
+      "side": 1,
+      "message": "I think a better way to do this is device/number[name] with the squared brackets",
+      "revId": "4bc80948c85e1c23257cbea00edcdfe1e83f100c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
