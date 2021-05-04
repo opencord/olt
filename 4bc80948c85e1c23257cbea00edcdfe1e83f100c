@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e968ef93_296eef68",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-05-04T11:52:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f966745f_b4d08866",
+      "revId": "4bc80948c85e1c23257cbea00edcdfe1e83f100c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a61dbfd_3c394260",
         "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "4bc80948c85e1c23257cbea00edcdfe1e83f100c",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6183c24a_34340726",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-05-04T11:52:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a61dbfd_3c394260",
+      "revId": "4bc80948c85e1c23257cbea00edcdfe1e83f100c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
