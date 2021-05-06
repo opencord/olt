@@ -1352,20 +1352,24 @@ public class Olt
         return subsService.get(devSerialNo);
     }
 
-    // Custom-built function, when the device is not available we need a fallback mechanism
+    /**
+     * Checks for mastership or falls back to leadership on deviceId.
+     * If the device is available use mastership,
+     * otherwise fallback on leadership.
+     * Leadership on the device topic is needed because the master can be NONE
+     * in case the device went away, we still need to handle events
+     * consistently
+     */
     private boolean isLocalLeader(DeviceId deviceId) {
-        if (!mastershipService.isLocalMaster(deviceId)) {
-            // When the device is available we just check the mastership
-            if (deviceService.isAvailable(deviceId)) {
-                return false;
-            }
+        if (deviceService.isAvailable(deviceId)) {
+            return mastershipService.isLocalMaster(deviceId);
+        } else {
             // Fallback with Leadership service - device id is used as topic
             NodeId leader = leadershipService.runForLeadership(
                     deviceId.toString()).leaderNodeId();
             // Verify if this node is the leader
             return clusterService.getLocalNode().id().equals(leader);
         }
-        return true;
     }
 
     private boolean isNniPort(Port port) {
