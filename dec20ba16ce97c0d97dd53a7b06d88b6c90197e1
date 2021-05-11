@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "29891bd5_7a4fb421",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1356,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-05-11T12:00:46Z",
+      "side": 1,
+      "message": "nit: can you update the comments on the method similarly on what\u0027s done in the other patches?",
+      "range": {
+        "startLine": 1356,
+        "startChar": 4,
+        "endLine": 1356,
+        "endChar": 54
+      },
+      "revId": "dec20ba16ce97c0d97dd53a7b06d88b6c90197e1",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
