@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "92f749d8_32649c7b",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 702,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-05-14T10:16:26Z",
+      "side": 1,
+      "message": "Is passing subscriberPort enough?",
+      "range": {
+        "startLine": 702,
+        "startChar": 56,
+        "endLine": 702,
+        "endChar": 108
+      },
+      "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68a11b53_501e0447",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 718,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-05-14T10:16:26Z",
+      "side": 1,
+      "message": "I believe deviceId is redundant. Can it be retrieved directly from the subscriberPort?",
+      "range": {
+        "startLine": 718,
+        "startChar": 47,
+        "endLine": 718,
+        "endChar": 55
+      },
+      "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d0c2b55_3cec0e3d",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 774,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-05-14T10:16:26Z",
+      "side": 1,
+      "message": "Same comment as above",
+      "range": {
+        "startLine": 774,
+        "startChar": 16,
+        "endLine": 774,
+        "endChar": 84
+      },
+      "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd850258_476db468",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1455,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-05-14T10:16:26Z",
+      "side": 1,
+      "message": "I believe this block can be simplified like this:\n\n```\nAccessDevicePort port \u003d null;\nif (p !\u003d null) {\n  if (isUniPort(dev, p)) {\n    port \u003d new AccessDevicePort(p, AccessDevicePort.Type.UNI);\n  } else {\n    port \u003d new AccessDevicePort(p, AccessDevicePort.Type.NNI);\n  }\n}\n```",
+      "range": {
+        "startLine": 1447,
+        "startChar": 16,
+        "endLine": 1455,
+        "endChar": 17
+      },
+      "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d171f97a_e865c042",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/SubscriberFlowInfo.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2021-05-14T10:16:26Z",
+      "side": 1,
+      "message": "Just wondering, is the deviceID still needed? We can probably retrieve it from the AccessDevicePort.",
+      "range": {
+        "startLine": 49,
+        "startChar": 23,
+        "endLine": 49,
+        "endChar": 89
+      },
+      "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
