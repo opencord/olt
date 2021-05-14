@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1c83af68_52108307",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 702,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-05-14T11:26:16Z",
+      "side": 1,
+      "message": "yes, we only get MACs for subscriber port. This method must use Connect Point as input since called by InternalHostEventListener which has only Connect Point info.",
+      "parentUuid": "92f749d8_32649c7b",
+      "range": {
+        "startLine": 702,
+        "startChar": 56,
+        "endLine": 702,
+        "endChar": 108
+      },
+      "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "68a11b53_501e0447",
         "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 7
@@ -45,6 +69,30 @@
       "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f7e5482_a10a5db8",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 718,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-05-14T11:26:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68a11b53_501e0447",
+      "range": {
+        "startLine": 718,
+        "startChar": 47,
+        "endLine": 718,
+        "endChar": 55
+      },
+      "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     },
     {
       "key": {
@@ -91,6 +139,30 @@
       "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4798fba_ee526434",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1455,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-05-14T11:26:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd850258_476db468",
+      "range": {
+        "startLine": 1447,
+        "startChar": 16,
+        "endLine": 1455,
+        "endChar": 17
+      },
+      "revId": "89887e0a2d1ce1b524023e0211049638dba5b83d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     },
     {
       "key": {
