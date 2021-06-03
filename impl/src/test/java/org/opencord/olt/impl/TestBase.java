@@ -229,7 +229,17 @@ public class TestBase {
         }
 
         @Override
+        public boolean removeAll(Map<K, Collection<? extends V>> mapping) {
+            return false;
+        }
+
+        @Override
         public boolean putAll(K key, Collection<? extends V> values) {
+            return false;
+        }
+
+        @Override
+        public boolean putAll(Map<K, Collection<? extends V>> mapping) {
             return false;
         }
 
