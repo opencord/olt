@@ -282,6 +282,10 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     @Override
     public synchronized boolean checkAndAddPendingMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        if (bwpInfo == null) {
+            log.debug("Bandwidth profile is null for device: {}", deviceId);
+            return false;
+        }
         if (pendingMeters.containsKey(deviceId)
                 && pendingMeters.get(deviceId).contains(bwpInfo)) {
             log.debug("Meter is already pending on {} with bp {}",

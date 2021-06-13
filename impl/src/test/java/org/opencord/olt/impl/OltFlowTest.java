@@ -139,55 +139,55 @@ public class OltFlowTest extends TestBase {
         oltFlowService.flowObjectiveService.clearQueue();
         // ensure upstream dhcp traps can be added and removed
         oltFlowService.processDhcpFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfo,
+                usMeterId, null, uniTagInfo,
                 true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 1;
         oltFlowService.processDhcpFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfo,
+                usMeterId, null, uniTagInfo,
                 false, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // Ensure upstream flow has no pcp unless properly specified.
         oltFlowService.processDhcpFilteringObjectives(uniPort2,
-                usMeterId, uniTagInfoNoPcp,
+                usMeterId, null, uniTagInfoNoPcp,
                 true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
 
         // ensure upstream flows are not added if uniTagInfo is missing dhcp requirement
         oltFlowService.processDhcpFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfoNoDhcpNoIgmp,
+                usMeterId, null, uniTagInfoNoDhcpNoIgmp,
                 true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
 
         // ensure downstream traps don't succeed without global config for nni ports
         oltFlowService.processDhcpFilteringObjectives(nniPort,
-                null, null,
+                null, null, null,
                 true, false, Optional.empty());
         oltFlowService.processDhcpFilteringObjectives(nniPort,
-                null, null,
+                null, null, null,
                 false, false, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
         // do global config for nni ports and now it should succeed
         oltFlowService.enableDhcpOnNni = true;
         oltFlowService.processDhcpFilteringObjectives(nniPort,
-                null, null,
+                null, null, null,
                 true, false, Optional.empty());
         oltFlowService.processDhcpFilteringObjectives(nniPort,
-                null, null,
+                null, null, null,
                 false, false, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 5;
 
         // turn on DHCPv6 and we should get 2 flows
         oltFlowService.enableDhcpV6 = true;
         oltFlowService.processDhcpFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfo,
+                usMeterId, null, uniTagInfo,
                 true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 7;
 
         // turn off DHCPv4 and it's only v6
         oltFlowService.enableDhcpV4 = false;
         oltFlowService.processDhcpFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfo,
+                usMeterId, null, uniTagInfo,
                 true, true, Optional.empty());
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 8;
 
@@ -204,28 +204,28 @@ public class OltFlowTest extends TestBase {
         // ensure pppoed traps are not added if global config is off.
         oltFlowService.enablePppoe = false;
         oltFlowService.processPPPoEDFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfo,
+                usMeterId, null, uniTagInfo,
                 true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 0;
 
         // ensure upstream pppoed traps can be added and removed
         oltFlowService.enablePppoe = true;
         oltFlowService.processPPPoEDFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfo,
+                usMeterId, null, uniTagInfo,
                 true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 1;
         oltFlowService.processPPPoEDFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfo,
+                usMeterId, null, uniTagInfo,
                 false, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // ensure downstream pppoed traps can be added and removed
         oltFlowService.processPPPoEDFilteringObjectives(nniPort,
-                null, null,
+                null, null, null,
                 true, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
         oltFlowService.processPPPoEDFilteringObjectives(nniPort,
-                null, null,
+                null, null, null,
                 false, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 4;
 
@@ -239,30 +239,30 @@ public class OltFlowTest extends TestBase {
 
         // ensure igmp flows can be added and removed
         oltFlowService.processIgmpFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfo,
+                usMeterId, null, uniTagInfo,
                 true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 1;
         oltFlowService.processIgmpFilteringObjectives(uniPort1, usMeterId,
-                uniTagInfo,
+                null, uniTagInfo,
                 false, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // ensure igmp flow is not added if uniTag has no igmp requirement
         oltFlowService.processIgmpFilteringObjectives(uniPort1,
-                usMeterId, uniTagInfoNoDhcpNoIgmp,
+                usMeterId, null, uniTagInfoNoDhcpNoIgmp,
                 true, true);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         //ensure igmp flow on NNI fails without global setting
         oltFlowService.processIgmpFilteringObjectives(nniPort,
-                null, null,
+                null, null, null,
                 true, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 2;
 
         // igmp trap on NNI should succeed with global config
         oltFlowService.enableIgmpOnNni = true;
         oltFlowService.processIgmpFilteringObjectives(nniPort,
-                null, null,
+                null, null, null,
                 true, false);
         assert oltFlowService.flowObjectiveService.getPendingFlowObjectives().size() == 3;
         // cleanup
@@ -277,12 +277,12 @@ public class OltFlowTest extends TestBase {
 
         //will install
         oltFlowService.processEapolFilteringObjectives(uniPort1,
-                uniTagInfo.getUpstreamBandwidthProfile(), new CompletableFuture<>(),
+                uniTagInfo.getUpstreamBandwidthProfile(), Optional.empty(), new CompletableFuture<>(),
                 uniTagInfo.getUniTagMatch(), true);
 
         //bp profile doesn't exist
         oltFlowService.processEapolFilteringObjectives(uniPort1,
-                uniTagInfo.getDownstreamBandwidthProfile(), new CompletableFuture<>(),
+                uniTagInfo.getDownstreamBandwidthProfile(), Optional.empty(), new CompletableFuture<>(),
                 uniTagInfo.getUniTagMatch(), true);
     }
 
@@ -309,14 +309,14 @@ public class OltFlowTest extends TestBase {
     @Test
     public void testUpBuilder() {
         ForwardingObjective objective =
-                oltFlowService.createUpBuilder(nniPort, uniPort1, usMeterId, uniTagInfo).add();
+                oltFlowService.createUpBuilder(nniPort, uniPort1, usMeterId, usMeterId, uniTagInfo).add();
         checkObjective(objective, true);
     }
 
     @Test
     public void testDownBuilder() {
         ForwardingObjective objective =
-                oltFlowService.createDownBuilder(nniPort, uniPort1, dsMeterId, uniTagInfo,
+                oltFlowService.createDownBuilder(nniPort, uniPort1, dsMeterId, dsMeterId, uniTagInfo,
                         Optional.of(macAddress)).remove();
         checkObjective(objective, false);
     }
