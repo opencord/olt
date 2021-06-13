@@ -35,18 +35,22 @@ public interface AccessDeviceFlowService {
     /**
      * Provisions or removes trap-to-controller DHCP packets.
      *
-     * @param port            the uni port for which this trap flow is designated
-     * @param upstreamMeterId the upstream meter id that includes the upstream
-     *                        bandwidth profile values such as PIR,CIR. If no meter id needs to be referenced,
-     *                        null can be sent
-     * @param tagInformation  the uni tag (ctag, stag) information
-     * @param install         true to install the flow, false to remove the flow
-     * @param upstream        true if trapped packets are flowing upstream towards
-     *                        server, false if packets are flowing downstream towards client
-     * @param dhcpFuture      gets result of dhcp objective when complete
+     * @param port               the uni port for which this trap flow is designated
+     * @param upstreamMeterId    the upstream meter id that includes the upstream
+     *                           bandwidth profile values such as PIR,CIR. If no meter id needs to be referenced,
+     *                           null can be sent
+     * @param upstreamOltMeterId the upstream meter id of OLT device that includes the upstream
+     *                           bandwidth profile values such as PIR,CIR. If no meter id needs to be referenced,
+     *                           null can be sent
+     * @param tagInformation     the uni tag (ctag, stag) information
+     * @param install            true to install the flow, false to remove the flow
+     * @param upstream           true if trapped packets are flowing upstream towards
+     *                           server, false if packets are flowing downstream towards client
+     * @param dhcpFuture         gets result of dhcp objective when complete
      */
     void processDhcpFilteringObjectives(AccessDevicePort port,
                                         MeterId upstreamMeterId,
+                                        MeterId upstreamOltMeterId,
                                         UniTagInformation tagInformation,
                                         boolean install,
                                         boolean upstream,
@@ -55,14 +59,16 @@ public interface AccessDeviceFlowService {
     /**
      * Trap igmp packets to the controller.
      *
-     * @param port            Uni Port number
-     * @param upstreamMeterId upstream meter id that represents the upstream bandwidth profile
-     * @param tagInformation  the uni tag information of the subscriber
-     * @param install         the indicator to install or to remove the flow
-     * @param upstream        determines the direction of the flow
+     * @param port                  Uni Port number
+     * @param upstreamMeterId       upstream meter id that represents the upstream bandwidth profile
+     * @param upstreamOltMeterId    upstream meter id of OLT device that represents the upstream bandwidth profile
+     * @param tagInformation        the uni tag information of the subscriber
+     * @param install               the indicator to install or to remove the flow
+     * @param upstream              determines the direction of the flow
      */
     void processIgmpFilteringObjectives(AccessDevicePort port,
                                         MeterId upstreamMeterId,
+                                        MeterId upstreamOltMeterId,
                                         UniTagInformation tagInformation,
                                         boolean install,
                                         boolean upstream);
@@ -72,29 +78,39 @@ public interface AccessDeviceFlowService {
      *
      * @param port         the port for which this trap flow is designated
      * @param bpId         bandwidth profile id to add the related meter to the flow
+     * @param oltBpId      bandwidth profile id of OLT device to add the related meter to the flow
      * @param filterFuture completable future for this filtering objective operation
      * @param vlanId       the default or customer tag for a subscriber
      * @param install      true to install the flow, false to remove the flow
      */
-    void processEapolFilteringObjectives(AccessDevicePort port, String bpId,
+    void processEapolFilteringObjectives(AccessDevicePort port,
+                                         String bpId,
+                                         Optional<String> oltBpId,
                                          CompletableFuture<ObjectiveError> filterFuture,
-                                         VlanId vlanId, boolean install);
+                                         VlanId vlanId,
+                                         boolean install);
 
     /**
      * Trap PPPoE discovery packets to the controller.
      *
-     * @param port            the uni port for which this trap flow is designated
-     * @param upstreamMeterId the upstream meter id that includes the upstream
-     *                        bandwidth profile values such as PIR,CIR. If no meter id needs to be referenced,
-     *                        null can be sent
-     * @param tagInformation  the uni tag (ctag, stag) information
-     * @param install         true to install the flow, false to remove the flow
-     * @param upstream        true if trapped packets are flowing upstream towards
-     *                        server, false if packets are flowing downstream towards client
+     * @param port               the uni port for which this trap flow is designated
+     * @param upstreamMeterId    the upstream meter id that includes the upstream
+     *                           bandwidth profile values such as PIR,CIR. If no meter id needs to be referenced,
+     *                           null can be sent
+     * @param upstreamOltMeterId the upstream meter id of OLT device that includes the upstream
+     *                           bandwidth profile values such as PIR,CIR. If no meter id needs to be referenced,
+     *                           null can be sent
+     * @param tagInformation     the uni tag (ctag, stag) information
+     * @param install            true to install the flow, false to remove the flow
+     * @param upstream           true if trapped packets are flowing upstream towards
+     *                           server, false if packets are flowing downstream towards client
      **/
     void processPPPoEDFilteringObjectives(AccessDevicePort port,
-                                          MeterId upstreamMeterId, UniTagInformation tagInformation,
-                                          boolean install, boolean upstream);
+                                          MeterId upstreamMeterId,
+                                          MeterId upstreamOltMeterId,
+                                          UniTagInformation tagInformation,
+                                          boolean install,
+                                          boolean upstream);
 
     /**
      * Trap lldp packets to the controller.
@@ -135,31 +151,35 @@ public interface AccessDeviceFlowService {
      * Creates a ForwardingObjective builder for the upstream flows.
      * The treatment will contain push action
      *
-     * @param uplinkPort the nni port
-     * @param subscriberPort the uni port
-     * @param upstreamMeterId the meter id that is assigned to upstream flows
-     * @param uniTagInformation the uni tag information
+     * @param uplinkPort         the nni port
+     * @param subscriberPort     the uni port
+     * @param upstreamMeterId    the meter id that is assigned to upstream flows
+     * @param upstreamOltMeterId the meter id that is assigned to upstream flows for OLT device
+     * @param uniTagInformation  the uni tag information
      * @return ForwardingObjective.Builder
      */
     ForwardingObjective.Builder createUpBuilder(AccessDevicePort uplinkPort,
                                                 AccessDevicePort subscriberPort,
                                                 MeterId upstreamMeterId,
+                                                MeterId upstreamOltMeterId,
                                                 UniTagInformation uniTagInformation);
 
     /**
      * Creates a ForwardingObjective builder for the downstream flows.
      * The treatment will contain pop action
      *
-     * @param uplinkPort the nni port
-     * @param subscriberPort the uni port
-     * @param downstreamMeterId the meter id that is assigned to downstream flows
-     * @param tagInformation the uni tag information
-     * @param macAddress the mac address
+     * @param uplinkPort           the nni port
+     * @param subscriberPort       the uni port
+     * @param downstreamMeterId    the meter id that is assigned to downstream flows
+     * @param downstreamOltMeterId the meter id that is assigned to downstream flows
+     * @param tagInformation       the uni tag information
+     * @param macAddress           the mac address
      * @return ForwardingObjective.Builder
      */
     ForwardingObjective.Builder createDownBuilder(AccessDevicePort uplinkPort,
                                                   AccessDevicePort subscriberPort,
                                                   MeterId downstreamMeterId,
+                                                  MeterId downstreamOltMeterId,
                                                   UniTagInformation tagInformation,
                                                   Optional<MacAddress> macAddress);
 

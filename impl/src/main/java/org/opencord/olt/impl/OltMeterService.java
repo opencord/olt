@@ -182,6 +182,15 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     @Override
     public MeterId getMeterIdFromBpMapping(DeviceId deviceId, String bandwidthProfile) {
+        if (bandwidthProfile == null) {
+            log.warn("Bandwidth Profile requested is null");
+            return null;
+        }
+        if (bpInfoToMeter.get(bandwidthProfile) == null) {
+            log.warn("Bandwidth Profile '{}' is not present in the map",
+                     bandwidthProfile);
+            return null;
+        }
         if (bpInfoToMeter.get(bandwidthProfile).value().isEmpty()) {
             log.warn("Bandwidth Profile '{}' is not currently mapped to a meter",
                     bandwidthProfile);
@@ -282,6 +291,10 @@ public class OltMeterService implements AccessDeviceMeterService {
 
     @Override
     public synchronized boolean checkAndAddPendingMeter(DeviceId deviceId, BandwidthProfileInformation bwpInfo) {
+        if (bwpInfo == null) {
+            log.debug("Bandwidth profile is null for device: {}", deviceId);
+            return false;
+        }
         if (pendingMeters.containsKey(deviceId)
                 && pendingMeters.get(deviceId).contains(bwpInfo)) {
             log.debug("Meter is already pending on {} with bp {}",
