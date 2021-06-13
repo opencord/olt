@@ -62,4 +62,9 @@ public final class OsgiPropertyConstants {
 
     public static final String REQUIRED_DRIVERS_PROPERTY_DELAY = "requiredDriversPropertyDelay";
     public static final int REQUIRED_DRIVERS_PROPERTY_DELAY_DEFAULT = 5;
+
+    public static final String UPSTREAM_ONU = "upstreamOnu";
+    public static final String UPSTREAM_OLT = "upstreamOlt";
+    public static final String DOWNSTREAM_ONU = "downstreamOnu";
+    public static final String DOWNSTREAM_OLT = "downstreamOlt";
 }

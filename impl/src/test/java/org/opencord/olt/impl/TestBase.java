@@ -54,6 +54,8 @@ public class TestBase {
     protected static final DeviceId DEVICE_ID_1 = DeviceId.deviceId(OLT_DEV_ID);
     protected MeterId usMeterId = MeterId.meterId(1);
     protected MeterId dsMeterId = MeterId.meterId(2);
+    protected MeterId usOltMeterId = MeterId.meterId(3);
+    protected MeterId dsOltMeterId = MeterId.meterId(4);
     protected String usBpId = "HSIA-US";
     protected String dsBpId = "HSIA-DS";
     protected DefaultApplicationId appId = new DefaultApplicationId(1, "OltServices");
