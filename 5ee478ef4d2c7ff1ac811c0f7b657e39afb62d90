@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "bb418c80_3b05a4ea",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 941,
+      "author": {
+        "id": 1000816
+      },
+      "writtenOn": "2021-06-14T14:34:41Z",
+      "side": 1,
+      "message": "for the trap flows like dhcp or lldp, we need to assign correct meterId for ONU and OLT device. Since we send only one flow to voltha, we need to pass oltMeterId value into the openflow object. In voltha/go, this value is parsed and assigned to the flow for OLT device.",
+      "parentUuid": "c963a727_752b5822",
+      "revId": "5ee478ef4d2c7ff1ac811c0f7b657e39afb62d90",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "33663049_389dd871",
         "filename": "impl/src/main/java/org/opencord/olt/impl/SubscriberFlowInfo.java",
         "patchSetId": 1
