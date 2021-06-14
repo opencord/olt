@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9945bf77_6489cf61",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 915,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-14T13:02:42Z",
+      "side": 1,
+      "message": "I think we ought to try and extract it from the treatment itself to be backwards compatibile (no annotation). You can add here the: fetchMeter(fwd) method and try that",
+      "revId": "5ee478ef4d2c7ff1ac811c0f7b657e39afb62d90",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1ef7b32_2e8b2a3d",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 542,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-14T13:02:42Z",
+      "side": 1,
+      "message": "given that this is optional and is a string here is better to have an Optional\u003cString\u003e and then use the isEmpty methods. and initialise it with Optional.Empty()",
+      "revId": "5ee478ef4d2c7ff1ac811c0f7b657e39afb62d90",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c963a727_752b5822",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 941,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-14T13:02:42Z",
+      "side": 1,
+      "message": "why did you add the meter here ?",
+      "revId": "5ee478ef4d2c7ff1ac811c0f7b657e39afb62d90",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33663049_389dd871",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/SubscriberFlowInfo.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-14T13:02:42Z",
+      "side": 1,
+      "message": "need to add downOltId, downOltId, downOltBpInfo, upOltBpInfo here",
+      "revId": "5ee478ef4d2c7ff1ac811c0f7b657e39afb62d90",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
