@@ -121,6 +121,24 @@
       "revId": "5ee478ef4d2c7ff1ac811c0f7b657e39afb62d90",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ae2b97f_60b68604",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/SubscriberFlowInfo.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-14T15:21:00Z",
+      "side": 1,
+      "message": "you could compare them like this:\n- if both are different from null returning the result in that case.\n- returning false if one is null and the other is null\n- returning true if they are both null\n\nmakes sense ?",
+      "parentUuid": "e0a23da9_57708ea0",
+      "revId": "5ee478ef4d2c7ff1ac811c0f7b657e39afb62d90",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
