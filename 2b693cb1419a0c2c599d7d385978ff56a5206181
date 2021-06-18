@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "56f7815a_ad8afacf",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1010,
+      "author": {
+        "id": 1000816
+      },
+      "writtenOn": "2021-06-18T14:47:15Z",
+      "side": 1,
+      "message": "this was thenAcceptAsync before. It is changed to thenAccept to resolve race condition between meters. Now it works fine",
+      "parentUuid": "80ae24bb_1d5a9bec",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1d960fbf_6d3983cb",
         "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2021-06-18T13:39:28Z",
       "side": 1,
       "message": "why is this needed ?",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07ca6604_d1f93295",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1023,
+      "author": {
+        "id": 1000816
+      },
+      "writtenOn": "2021-06-18T14:47:15Z",
+      "side": 1,
+      "message": "it is added to resolve a possible race condition which is happened before",
+      "parentUuid": "1d960fbf_6d3983cb",
       "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
