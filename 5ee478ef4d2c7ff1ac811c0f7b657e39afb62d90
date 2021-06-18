@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "d6787270_bde19d8f",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 899,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-18T07:45:52Z",
+      "side": 1,
+      "message": "why was this removed ? is the check not needed anymore ?",
+      "revId": "5ee478ef4d2c7ff1ac811c0f7b657e39afb62d90",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9945bf77_6489cf61",
         "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
         "patchSetId": 1
