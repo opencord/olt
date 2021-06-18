@@ -50,6 +50,24 @@
       "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34a0e467_c9e80282",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1000816
+      },
+      "writtenOn": "2021-06-18T14:43:07Z",
+      "side": 1,
+      "message": "actually this mechanism is already used in other functions. When creating meters, first meterFuture is created and then \"theAccept\" is used to recieve the return value from onSucess of onFail.",
+      "parentUuid": "27f96e92_e5b628c5",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
