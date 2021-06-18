@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "80ae24bb_1d5a9bec",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1010,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-06-18T13:39:28Z",
+      "side": 1,
+      "message": "same here",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d960fbf_6d3983cb",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1023,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-06-18T13:39:28Z",
+      "side": 1,
+      "message": "why is this needed ?",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27f96e92_e5b628c5",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-06-18T13:39:28Z",
+      "side": 1,
+      "message": "have you done this change on purpose ? It seems that thenAccept can block indefinitely if the meterFuture is already completed. The code here suggests that there is a window between 636 and 639 where the meterFuture can complete beforehand",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    }
+  ]
+}
