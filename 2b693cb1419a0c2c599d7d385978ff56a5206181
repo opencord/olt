@@ -175,6 +175,24 @@
       "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "886c5f64_b0a24239",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1000816
+      },
+      "writtenOn": "2021-06-21T21:05:11Z",
+      "side": 1,
+      "message": "that is correct. Only this solved the issue in createMeter function in my tests. Thats why I used it here also",
+      "parentUuid": "e43b0bdb_870e0896",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
     }
   ]
 }
