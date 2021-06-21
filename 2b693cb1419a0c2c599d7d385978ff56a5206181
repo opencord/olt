@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "e211fc77_05439f9f",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1010,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-21T15:21:27Z",
+      "side": 1,
+      "message": "the issue is that we are blocking this for ever and this does not work. if you put back meterFuture.thenAcceptAsync you are seeing the subscriber being programmed twice, correct ?",
+      "parentUuid": "56f7815a_ad8afacf",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1d960fbf_6d3983cb",
         "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 3
@@ -72,6 +90,23 @@
     },
     {
       "key": {
+        "uuid": "045faac1_056a3886",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1051,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-21T15:21:27Z",
+      "side": 1,
+      "message": "remove",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "27f96e92_e5b628c5",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 3
@@ -101,6 +136,24 @@
       "side": 1,
       "message": "actually this mechanism is already used in other functions. When creating meters, first meterFuture is created and then \"theAccept\" is used to recieve the return value from onSucess of onFail.",
       "parentUuid": "27f96e92_e5b628c5",
+      "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e43b0bdb_870e0896",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-21T15:21:27Z",
+      "side": 1,
+      "message": "I\u0027ve spoken with pier, we need this to be Async. the issue you were seeing was that subscriber was getting provisioned twice ?",
+      "parentUuid": "34a0e467_c9e80282",
       "revId": "2b693cb1419a0c2c599d7d385978ff56a5206181",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
