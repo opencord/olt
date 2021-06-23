@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "dce99994_c3fdfb5a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1015,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-23T14:56:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc3c0d5b_06de68e4",
+      "range": {
+        "startLine": 1015,
+        "startChar": 36,
+        "endLine": 1015,
+        "endChar": 46
+      },
+      "revId": "b4b8ee1ab93a5e9be8846dce6dcd06595767bf4f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9864e5_c572d5cc",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "b4b8ee1ab93a5e9be8846dce6dcd06595767bf4f",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c4f6733_142ee6ac",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-06-23T14:56:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a9864e5_c572d5cc",
+      "range": {
+        "startLine": 190,
+        "startChar": 60,
+        "endLine": 190,
+        "endChar": 70
+      },
+      "revId": "b4b8ee1ab93a5e9be8846dce6dcd06595767bf4f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
     }
   ]
 }
