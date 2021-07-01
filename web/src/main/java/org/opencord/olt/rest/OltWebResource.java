@@ -22,6 +22,7 @@ import org.onosproject.net.PortNumber;
 import org.onosproject.rest.AbstractWebResource;
 import org.opencord.olt.AccessDeviceService;
 import org.opencord.olt.AccessSubscriberId;
+import org.slf4j.Logger;
 
 import java.util.Optional;
 import javax.ws.rs.Consumes;
@@ -34,6 +35,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * OLT REST APIs.
@@ -41,6 +43,9 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Path("oltapp")
 public class OltWebResource extends AbstractWebResource {
+
+    private final Logger log = getLogger(getClass());
+
 
     /**
      * Provision a subscriber.
@@ -62,7 +67,8 @@ public class OltWebResource extends AbstractWebResource {
         try {
             service.provisionSubscriber(connectPoint);
         } catch (Exception e) {
-            return Response.status(INTERNAL_SERVER_ERROR).build();
+            log.error("Can't provision subscriber {} due to exception", connectPoint, e);
+            return Response.status(INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
         return ok("").build();
     }
@@ -83,7 +89,12 @@ public class OltWebResource extends AbstractWebResource {
         DeviceId deviceId = DeviceId.deviceId(device);
         PortNumber portNumber = PortNumber.portNumber(port);
         ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
-        service.removeSubscriber(connectPoint);
+        try {
+            service.removeSubscriber(connectPoint);
+        } catch (Exception e) {
+            log.error("Can't remove subscriber {} due to exception", connectPoint, e);
+            return Response.status(INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
         return Response.noContent().build();
     }
 
