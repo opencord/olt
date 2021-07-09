@@ -245,7 +245,7 @@ public class OltMeterService implements AccessDeviceMeterService {
                 .withContext(new MeterContext() {
                     @Override
                     public void onSuccess(MeterRequest op) {
-                        log.debug("Meter {} for {} is installed on the device {}",
+                        log.info("Meter {} for {} is installed on the device {}",
                                   meterIdRef.get(), bpInfo.id(), deviceId);
                         boolean added = addMeterIdToBpMapping(deviceId, meterIdRef.get(), bpInfo.id());
                         if (added) {
@@ -301,7 +301,7 @@ public class OltMeterService implements AccessDeviceMeterService {
                       deviceId, bwpInfo);
             return false;
         }
-        log.debug("Adding bandwidth profile {} to pending on {}",
+        log.info("Adding bandwidth profile {} to pending on {}",
                   bwpInfo, deviceId);
         pendingMeters.compute(deviceId, (id, bwps) -> {
             if (bwps == null) {

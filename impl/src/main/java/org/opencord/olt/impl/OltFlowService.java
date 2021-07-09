@@ -48,6 +48,7 @@ import org.onosproject.net.flowobjective.ObjectiveContext;
 import org.onosproject.net.flowobjective.ObjectiveError;
 import org.onosproject.net.meter.MeterId;
 import org.onosproject.store.serializers.KryoNamespaces;
+import org.onosproject.store.service.AsyncDistributedLock;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
 import org.opencord.olt.AccessDevicePort;
@@ -75,7 +76,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -177,7 +177,8 @@ public class OltFlowService implements AccessDeviceFlowService {
     protected ApplicationId appId;
     protected BaseInformationService<BandwidthProfileInformation> bpService;
     protected BaseInformationService<SubscriberAndDeviceInformation> subsService;
-    protected Map<DeviceId, BlockingQueue<SubscriberFlowInfo>> pendingEapolForDevice;
+    protected Map<DeviceId, LinkedBlockingQueue<SubscriberFlowInfo>> pendingEapolForDevice;
+    protected AsyncDistributedLock pendingEapolForDeviceLock;
 
     @Activate
     public void activate(ComponentContext context) {
@@ -197,11 +198,14 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .register(AccessDevicePort.Type.class)
                 .register(LinkedBlockingQueue.class)
                 .build();
-        pendingEapolForDevice = storageService.<DeviceId, BlockingQueue<SubscriberFlowInfo>>consistentMapBuilder()
+        pendingEapolForDevice = storageService.<DeviceId, LinkedBlockingQueue<SubscriberFlowInfo>>consistentMapBuilder()
                 .withName("volt-pending-eapol")
                 .withSerializer(Serializer.using(serializer))
                 .withApplicationId(appId)
                 .build().asJavaMap();
+
+        pendingEapolForDeviceLock = storageService.lockBuilder().withName("OLT_pending_eapol_for_device").build();
+
         log.info("started");
     }
 
@@ -552,9 +556,9 @@ public class OltFlowService implements AccessDeviceFlowService {
             }
             return;
         }
-        log.info("Processing EAPOL with Bandwidth profile {} on {}", bpId, port);
+        log.info("Processing EAPOL with Bandwidth profile {} on {} with vlan {}", bpId, port, vlanId);
         BandwidthProfileInformation bpInfo = getBandwidthProfileInformation(bpId);
-        BandwidthProfileInformation oltBpInfo;
+        BandwidthProfileInformation oltBpInfo = null;
         if (oltBpId.isPresent()) {
             oltBpInfo = getBandwidthProfileInformation(oltBpId.get());
         } else {
@@ -570,8 +574,8 @@ public class OltFlowService implements AccessDeviceFlowService {
         }
 
         ConnectPoint cp = new ConnectPoint(port.deviceId(), port.number());
-        DefaultFilteringObjective.Builder filterBuilder = DefaultFilteringObjective.builder();
-        TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+        //DefaultFilteringObjective.Builder filterBuilder = DefaultFilteringObjective.builder();
+        //TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
         // check if meter exists and create it only for an install
         final MeterId meterId = oltMeterService.getMeterIdFromBpMapping(port.deviceId(), bpInfo.id());
         MeterId oltMeterId = null;
@@ -579,32 +583,41 @@ public class OltFlowService implements AccessDeviceFlowService {
             oltMeterId = oltBpId.map(id -> oltMeterService.getMeterIdFromBpMapping(port.deviceId(), id)).orElse(null);
         }
         log.info("Meter id {} for Bandwidth profile {} and OLT meter id {} for OLT Bandwidth profile {} " +
-                        "associated to EAPOL on {}", meterId, bpInfo.id(), oltMeterId, oltBpId, port.deviceId());
+                        "associated to EAPOL with vlan {} on {}", meterId, bpInfo.id(), oltMeterId, oltBpId,
+                 vlanId, port);
         if (meterId == null || (oltBpId.isPresent() && oltMeterId == null)) {
             if (install) {
-                log.debug("Need to install meter for EAPOL with bwp {} on {}", bpInfo.id(), port);
+                log.info("Need to install meter for EAPOL with bwp {} on {}", bpInfo.id(), port);
                 SubscriberFlowInfo fi = new SubscriberFlowInfo(null, port,
                                                             new UniTagInformation.Builder()
                                                                     .setPonCTag(vlanId).build(),
                                                         null, meterId, null, oltMeterId,
                                                     null, bpInfo.id(), null, oltBpInfo.id());
-                pendingEapolForDevice.compute(port.deviceId(), (id, queue) -> {
-                    if (queue == null) {
-                        queue = new LinkedBlockingQueue<>();
-                    }
-                    queue.add(fi);
-                    return queue;
-                });
-
+                pendingEapolForDeviceLock.lock();
+                //pendingEapolForDevice.compute(port.deviceId(), (id, queue) -> {
+                LinkedBlockingQueue<SubscriberFlowInfo> queue = pendingEapolForDevice.get(port.deviceId());
+                if (queue == null) {
+                    queue = new LinkedBlockingQueue<>();
+                }
+                queue.add(fi);
+                pendingEapolForDevice.put(port.deviceId(), queue);
+                pendingEapolForDeviceLock.unlock();
                 //If false the meter is already being installed, skipping installation
                 if (!oltMeterService.checkAndAddPendingMeter(port.deviceId(), bpInfo) &&
                         !oltMeterService.checkAndAddPendingMeter(port.deviceId(), oltBpInfo)) {
                     return;
                 }
                 List<BandwidthProfileInformation> bwpList = Arrays.asList(bpInfo, oltBpInfo);
+                log.info("Installing Meters for BPINFO {}, OLTBPINFO {} on {}, equals ? {}",
+                         bpInfo, oltBpInfo, port, bpInfo.equals(oltBpInfo));
+                //TODO possible duplication here
                 bwpList.stream().distinct().filter(Objects::nonNull)
-                        .forEach(bwp -> createMeterAndProceedEapol(port, bwp, filterFuture, install,
-                        cp, filterBuilder, treatmentBuilder));
+                        .forEach(bwp -> {
+                            log.info("creating meter and eapol for {} on {} with vlan {}", bwp, port, vlanId);
+                            createMeterAndProceedEapol(port, bwp, filterFuture, install,
+                                                       cp, DefaultFilteringObjective.builder(),
+                                                       DefaultTrafficTreatment.builder());
+                        });
             } else {
                 // this case should not happen as the request to remove an eapol
                 // flow should mean that the flow points to a meter that exists.
@@ -616,15 +629,17 @@ public class OltFlowService implements AccessDeviceFlowService {
                         new UniTagInformation.Builder().setPonCTag(vlanId).build(),
                         null, meterId, null, oltMeterId, null,
                         bpInfo.id(), null, oltBpInfo.id());
-                handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, meterId, oltMeterId);
+                handleEapol(filterFuture, install, cp, DefaultFilteringObjective.builder(),
+                            DefaultTrafficTreatment.builder(), fi, meterId, oltMeterId);
             }
         } else {
-            log.debug("Meter {} was previously created for bp {} on {}", meterId, bpInfo.id(), port);
+            log.info("Meter {} was previously created for bp {} on {}", meterId, bpInfo.id(), port);
             SubscriberFlowInfo fi = new SubscriberFlowInfo(null, port,
                     new UniTagInformation.Builder().setPonCTag(vlanId).build(),
                     null, meterId, null, oltMeterId, null,
                     bpInfo.id(), null, oltBpInfo.id());
-            handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi, meterId, oltMeterId);
+            handleEapol(filterFuture, install, cp, DefaultFilteringObjective.builder(),
+                        DefaultTrafficTreatment.builder(), fi, meterId, oltMeterId);
             //No need for the future, meter is present.
             return;
         }
@@ -640,48 +655,50 @@ public class OltFlowService implements AccessDeviceFlowService {
         DeviceId deviceId = port.deviceId();
         meterFuture.thenAccept(result -> {
             //for each pending eapol flow we check if the meter is there.
-            pendingEapolForDevice.compute(deviceId, (id, queue) -> {
-                if (queue != null && !queue.isEmpty()) {
-                    while (true) {
-                        //TODO this might return the reference and not the actual object
-                        // so it can be actually swapped underneath us.
-                        SubscriberFlowInfo fi = queue.peek();
-                        if (fi == null) {
-                            log.debug("No more subscribers eapol flows on {}", deviceId);
-                            queue = new LinkedBlockingQueue<>();
-                            break;
-                        }
-                        log.debug("handing pending eapol on {} for {}", fi.getUniPort(), fi);
-                        if (result == null) {
-                            MeterId mId = oltMeterService
-                                    .getMeterIdFromBpMapping(port.deviceId(), fi.getUpBpInfo());
-                            MeterId oltMeterId = oltMeterService
-                                    .getMeterIdFromBpMapping(port.deviceId(), fi.getUpOltBpInfo());
-                            if (mId != null && oltMeterId != null) {
-                                log.debug("Meter installation completed for subscriber on {}, " +
-                                                  "handling EAPOL trap flow", port);
-                                fi.setUpMeterId(mId);
-                                fi.setUpOltMeterId(oltMeterId);
-                                handleEapol(filterFuture, install, cp, filterBuilder, treatmentBuilder, fi,
-                                            mId, oltMeterId);
-                                queue.remove(fi);
-                            } else {
-                                log.debug("Not all meters for {} are yet installed for EAPOL meterID {}, " +
-                                                  "oltMeterId {}", fi, meterId, oltMeterId);
-                            }
-                        } else {
-                            log.warn("Meter installation error while sending EAPOL trap flow to {}. " +
-                                             "Result {} and MeterId {}", port, result, meterId);
-                            queue.remove(fi);
-                        }
-                        oltMeterService.removeFromPendingMeters(port.deviceId(), bwpInfo);
+            pendingEapolForDeviceLock.lock();
+            LinkedBlockingQueue<SubscriberFlowInfo> queue = pendingEapolForDevice.get(port.deviceId());
+            if (queue != null && !queue.isEmpty()) {
+                while (true) {
+                    //TODO this might return the reference and not the actual object
+                    // so it can be actually swapped underneath us.
+                    SubscriberFlowInfo fi = queue.peek();
+                    if (fi == null) {
+                        log.debug("No more subscribers eapol flows on {}", deviceId);
+                        queue = new LinkedBlockingQueue<>();
+                        break;
                     }
-                } else {
-                    log.info("No pending EAPOLs on {}", port.deviceId());
-                    queue = new LinkedBlockingQueue<>();
+                    log.info("handing pending eapol on {} for {}", fi.getUniPort(), fi);
+                    if (result == null) {
+                        MeterId mId = oltMeterService
+                                .getMeterIdFromBpMapping(port.deviceId(), fi.getUpBpInfo());
+                        MeterId oltMeterId = oltMeterService
+                                .getMeterIdFromBpMapping(port.deviceId(), fi.getUpOltBpInfo());
+                        if (mId != null && oltMeterId != null) {
+                            log.info("Meter installation completed for subscriber on {}, " +
+                                             "handling EAPOL trap flow", port);
+                            fi.setUpMeterId(mId);
+                            fi.setUpOltMeterId(oltMeterId);
+                            handleEapol(filterFuture, install, cp, DefaultFilteringObjective.builder(),
+                                        DefaultTrafficTreatment.builder(), fi,
+                                        mId, oltMeterId);
+                            queue.remove(fi);
+                        } else {
+                            log.debug("Not all meters for {} are yet installed for EAPOL meterID {}, " +
+                                              "oltMeterId {}", fi, meterId, oltMeterId);
+                        }
+                    } else {
+                        log.warn("Meter installation error while sending EAPOL trap flow to {}. " +
+                                         "Result {} and MeterId {}", port, result, meterId);
+                        queue.remove(fi);
+                    }
+                    oltMeterService.removeFromPendingMeters(port.deviceId(), bwpInfo);
                 }
-                return queue;
-            });
+            } else {
+                log.info("No pending EAPOLs on {}", port.deviceId());
+                queue = new LinkedBlockingQueue<>();
+            }
+            pendingEapolForDevice.put(deviceId, queue);
+            pendingEapolForDeviceLock.unlock();
         });
     }
 
@@ -690,9 +707,9 @@ public class OltFlowService implements AccessDeviceFlowService {
                              DefaultFilteringObjective.Builder filterBuilder,
                              TrafficTreatment.Builder treatmentBuilder,
                              SubscriberFlowInfo fi, MeterId mId, MeterId oltMeterId) {
-        log.info("Meter {} for {} on {} exists. {} EAPOL trap flow",
+        log.info("Meter {} for {} on {} exists. {} EAPOL trap flow with vlan {}",
                  mId, fi.getUpBpInfo(), fi.getUniPort(),
-                 (install) ? "Installing" : "Removing");
+                 (install) ? "Installing" : "Removing", fi.getTagInfo().getPonCTag());
         int techProfileId = getDefaultTechProfileId(fi.getUniPort());
         // can happen in case of removal
         if (mId != null) {
@@ -715,8 +732,10 @@ public class OltFlowService implements AccessDeviceFlowService {
                 .add(new ObjectiveContext() {
                     @Override
                     public void onSuccess(Objective objective) {
-                        log.info("Eapol filter {} for {} on {} with meter {}.",
-                                 objective.id(), (install) ? INSTALLED : REMOVED, fi.getUniPort(), mId);
+                        log.info("Eapol filter {} for vlan {}, {} on {} with meter {}.",
+                                 objective.id(), (install) ? INSTALLED : REMOVED,
+                                 fi.getTagInfo().getPonCTag(),
+                                 fi.getUniPort(), mId);
                         if (filterFuture != null) {
                             filterFuture.complete(null);
                         }
@@ -924,7 +943,9 @@ public class OltFlowService implements AccessDeviceFlowService {
 
     @Override
     public void clearDeviceState(DeviceId deviceId) {
+        pendingEapolForDeviceLock.lock();
         pendingEapolForDevice.remove(deviceId);
+        pendingEapolForDeviceLock.unlock();
     }
 
     private DefaultForwardingObjective.Builder createForwardingObjectiveBuilder(TrafficSelector selector,

@@ -246,6 +246,8 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
 
         if (ethType.ethType().equals(EthType.EtherType.EAPOL.ethType())) {
 
+            log.info("TEO processing filtering objective {}", filter);
+
             if (vlanId.isEmpty() || vlanPush.isEmpty()) {
                 log.warn("Missing EAPOL vlan or vlanPush");
                 fail(filter, ObjectiveError.BADPARAMS);
