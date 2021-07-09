@@ -30,6 +30,8 @@ import org.onosproject.cluster.NodeId;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.event.AbstractListenerManager;
+import org.onosproject.mastership.MastershipEvent;
+import org.onosproject.mastership.MastershipListener;
 import org.onosproject.mastership.MastershipService;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.ConnectPoint;
@@ -54,6 +56,7 @@ import org.onosproject.net.host.HostService;
 import org.onosproject.net.meter.MeterId;
 import org.onosproject.store.primitives.DefaultConsistentMap;
 import org.onosproject.store.serializers.KryoNamespaces;
+import org.onosproject.store.service.AsyncDistributedLock;
 import org.onosproject.store.service.ConsistentMultimap;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
@@ -79,22 +82,20 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
+import java.util.Dictionary;
+import java.util.Collection;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -200,6 +201,7 @@ public class Olt
     protected int provisionDelay = PROVISION_DELAY_DEFAULT;
 
     private final DeviceListener deviceListener = new InternalDeviceListener();
+    private final MastershipListener mastershipListener = new InternalMastershipListener();
     private final ClusterEventListener clusterListener = new InternalClusterListener();
     private final HostListener hostListener = new InternalHostListener();
 
@@ -209,8 +211,8 @@ public class Olt
     private BaseInformationService<BandwidthProfileInformation> bpService;
 
     private ExecutorService oltInstallers = Executors.newFixedThreadPool(4,
-                                                                         groupedThreads("onos/olt-service",
-                                                                                        "olt-installer-%d"));
+            groupedThreads("onos/olt-service",
+                    "olt-installer-%d"));
 
     protected ExecutorService eventExecutor;
     protected ExecutorService hostEventExecutor;
@@ -220,13 +222,15 @@ public class Olt
     private ConsistentMultimap<ConnectPoint, UniTagInformation> programmedSubs;
     private ConsistentMultimap<ConnectPoint, UniTagInformation> failedSubs;
 
-    protected Map<DeviceId, BlockingQueue<SubscriberFlowInfo>> pendingSubscribersForDevice;
+    protected Map<DeviceId, LinkedBlockingQueue<SubscriberFlowInfo>> pendingSubscribersForDevice;
     private ConsistentMultimap<ConnectPoint, SubscriberFlowInfo> waitingMacSubscribers;
+
+    private AsyncDistributedLock pendingSubscribersForDeviceLock;
 
     @Activate
     public void activate(ComponentContext context) {
         eventExecutor = newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
-                                                                        "events-%d", log));
+                "events-%d", log));
         hostEventExecutor = Executors.newFixedThreadPool(8, groupedThreads("onos/olt", "mac-events-%d", log));
         retryExecutor = Executors.newCachedThreadPool();
         provisionExecutor = Executors.newSingleThreadScheduledExecutor(groupedThreads("onos/olt",
@@ -274,11 +278,11 @@ public class Olt
         // lock on all objects of the map, while instead obtaining and releasing the lock
         // on a per subscriber basis.
         pendingSubscribersForDevice = new DefaultConsistentMap<>(
-                storageService.<DeviceId, BlockingQueue<SubscriberFlowInfo>>consistentMapBuilder()
-                .withName("volt-pending-subs")
-                .withSerializer(Serializer.using(serializer))
-                .withApplicationId(appId)
-                .buildAsyncMap(), PENDING_SUBS_MAP_TIMEOUT_MILLIS).asJavaMap();
+                storageService.<DeviceId, LinkedBlockingQueue<SubscriberFlowInfo>>consistentMapBuilder()
+                        .withName("volt-pending-subs")
+                        .withSerializer(Serializer.using(serializer))
+                        .withApplicationId(appId)
+                        .buildAsyncMap(), PENDING_SUBS_MAP_TIMEOUT_MILLIS).asJavaMap();
         eventDispatcher.addSink(AccessDeviceEvent.class, listenerRegistry);
 
         if (sadisService != null) {
@@ -300,12 +304,17 @@ public class Olt
         Iterable<Device> devices = deviceService.getDevices();
         for (Device d : devices) {
             if (isLocalLeader(d.id())) {
+                log.warn("TEO calling checkAndCreateDeviceFlows from app.activate");
                 checkAndCreateDeviceFlows(d);
             }
         }
 
         deviceService.addListener(deviceListener);
+        mastershipService.addListener(mastershipListener);
         hostService.addListener(hostListener);
+
+        pendingSubscribersForDeviceLock = storageService.lockBuilder().withName("OLT_pending_subs_for_device").build();
+
         log.info("Started with Application ID {}", appId.id());
     }
 
@@ -339,7 +348,7 @@ public class Olt
                     Integer.parseInt(eapolDeleteRetryNew.trim());
 
             log.debug("OLT properties: DefaultBpId: {}, MulticastServiceName: {}, EapolDeleteRetryMaxAttempts: {}",
-                      defaultBpId, multicastServiceName, eapolDeleteRetryMaxAttempts);
+                    defaultBpId, multicastServiceName, eapolDeleteRetryMaxAttempts);
 
         } catch (Exception e) {
             log.error("Error while modifying the properties", e);
@@ -364,6 +373,7 @@ public class Olt
 
     @Override
     public boolean provisionSubscriber(ConnectPoint connectPoint) {
+//        eventExecutor.submit(() -> {
         log.info("Call to provision subscriber at {}", connectPoint);
         DeviceId deviceId = connectPoint.deviceId();
         Port subscriberPortOnos = deviceService.getPort(deviceId, connectPoint.port());
@@ -395,6 +405,8 @@ public class Olt
         // retry deletion if it fails/times-out
         retryExecutor.execute(new DeleteEapolInstallSub(subscriberPort, uplinkPort, sub, 1));
         return true;
+//        });
+//        return true;
     }
 
     // returns true if subscriber is programmed or in the process of being programmed
@@ -406,19 +418,20 @@ public class Olt
         }
         //Check if the subscriber is already getting provisioned
         // so we do not provision twice
-        AtomicBoolean isPending = new AtomicBoolean(false);
-        pendingSubscribersForDevice.computeIfPresent(connectPoint.deviceId(), (id, infos) -> {
-            for (SubscriberFlowInfo fi : infos) {
-                if (fi.getUniPort().equals(connectPoint.port())) {
+//        AtomicBoolean isPending = new AtomicBoolean(false);
+        pendingSubscribersForDeviceLock.lock();
+        //pendingSubscribersForDevice.computeIfPresent(connectPoint.deviceId(), (id, infos) -> {
+        LinkedBlockingQueue<SubscriberFlowInfo> queue = pendingSubscribersForDevice.get(connectPoint.deviceId());
+        if (queue != null) {
+            for (SubscriberFlowInfo fi : queue) {
+                if (fi.getUniPort().number().equals(connectPoint.port())) {
                     log.debug("Subscriber is already pending, {}", fi);
-                    isPending.set(true);
-                    break;
+                    return true;
                 }
             }
-            return infos;
-        });
-
-        return isPending.get();
+        }
+        pendingSubscribersForDeviceLock.unlock();
+        return false;
     }
 
     private class DeleteEapolInstallSub implements Runnable {
@@ -440,13 +453,13 @@ public class Olt
         public void run() {
             CompletableFuture<ObjectiveError> filterFuture = new CompletableFuture<>();
             oltFlowService.processEapolFilteringObjectives(subscriberPort,
-                                                     defaultBpId, Optional.empty(), filterFuture,
-                                                     VlanId.vlanId(EAPOL_DEFAULT_VLAN),
-                                                     false);
+                    defaultBpId, Optional.empty(), filterFuture,
+                    VlanId.vlanId(EAPOL_DEFAULT_VLAN),
+                    false);
             filterFuture.thenAcceptAsync(filterStatus -> {
                 if (filterStatus == null) {
-                    log.info("Default eapol flow deleted in attempt {} of {}"
-                            + "... provisioning subscriber flows on {}",
+                    log.info("TEO Default eapol flow deleted in attempt {} of {}"
+                                    + "... provisioning subscriber flows on {}",
                             attemptNumber, eapolDeleteRetryMaxAttempts, subscriberPort);
 
                     // FIXME this is needed to prevent that default EAPOL flow removal and
@@ -457,15 +470,15 @@ public class Olt
                 } else {
                     if (attemptNumber <= eapolDeleteRetryMaxAttempts) {
                         log.warn("The filtering future failed {} for subscriber on {}"
-                                + "... retrying {} of {} attempts",
-                                 filterStatus, subscriberPort, attemptNumber, eapolDeleteRetryMaxAttempts);
+                                        + "... retrying {} of {} attempts",
+                                filterStatus, subscriberPort, attemptNumber, eapolDeleteRetryMaxAttempts);
                         retryExecutor.execute(
-                                         new DeleteEapolInstallSub(subscriberPort, uplinkPort, sub,
-                                                                   attemptNumber + 1));
+                                new DeleteEapolInstallSub(subscriberPort, uplinkPort, sub,
+                                        attemptNumber + 1));
                     } else {
                         log.error("The filtering future failed {} for subscriber on {}"
-                                + "after {} attempts. Subscriber provisioning failed",
-                                  filterStatus, subscriberPort, eapolDeleteRetryMaxAttempts);
+                                        + "after {} attempts. Subscriber provisioning failed",
+                                filterStatus, subscriberPort, eapolDeleteRetryMaxAttempts);
                         sub.uniTagList().forEach(ut ->
                                 failedSubs.put(
                                         new ConnectPoint(subscriberPort.deviceId(), subscriberPort.number()), ut));
@@ -497,7 +510,7 @@ public class Olt
         Collection<? extends UniTagInformation> uniTagInformationSet = programmedSubs.get(connectPoint).value();
         if (uniTagInformationSet == null || uniTagInformationSet.isEmpty()) {
             log.warn("Subscriber on connectionPoint {} was not previously programmed, " +
-                             "no need to remove it", connectPoint);
+                    "no need to remove it", connectPoint);
             return true;
         }
 
@@ -520,17 +533,18 @@ public class Olt
             Optional<String> upstreamOltBw = uniTag.getUpstreamOltBandwidthProfile() == null ?
                     Optional.empty() : Optional.of(uniTag.getUpstreamOltBandwidthProfile());
             oltFlowService.processEapolFilteringObjectives(subscriberPort,
-                                                           uniTag.getUpstreamBandwidthProfile(),
-                                                           upstreamOltBw,
-                                                           null, uniTag.getPonCTag(), false);
+                    uniTag.getUpstreamBandwidthProfile(),
+                    upstreamOltBw,
+                    null, uniTag.getPonCTag(), false);
 
             if (subscriberPort.port() != null && subscriberPort.isEnabled()) {
                 // reinstall eapol with default bandwidth profile
+                log.info("Subscriber on {} was removed, reinstalling default eapol", subscriberPort);
                 oltFlowService.processEapolFilteringObjectives(subscriberPort, defaultBpId, Optional.empty(),
                         null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
             } else {
                 log.debug("Port {} is no longer enabled or it's unavailable. Not "
-                                  + "reprogramming default eapol flow", connectPoint);
+                        + "reprogramming default eapol flow", connectPoint);
             }
         }
         return true;
@@ -612,7 +626,7 @@ public class Olt
             return true;
         } else {
             log.warn("Removing subscriber is not possible - please check the provided information" +
-                             "for the subscriber: {}", subscriberId);
+                    "for the subscriber: {}", subscriberId);
             return false;
         }
     }
@@ -790,15 +804,15 @@ public class Olt
                 updateProgrammedSubscriber(subscriberPort, uniTag, false);
             } else if (downStatus != null) {
                 log.error("Subscriber with vlan {} on {} failed downstream uninstallation: {}",
-                          subscriberVlan, subscriberPort, downStatus);
+                        subscriberVlan, subscriberPort, downStatus);
                 type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_UNREGISTRATION_FAILED;
             } else if (upStatus != null) {
                 log.error("Subscriber with vlan {} on {} failed upstream uninstallation: {}",
-                          subscriberVlan, subscriberPort, upStatus);
+                        subscriberVlan, subscriberPort, upStatus);
                 type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_UNREGISTRATION_FAILED;
             }
             post(new AccessDeviceEvent(type, deviceId, subscriberPort.port(), deviceVlan, subscriberVlan,
-                                       uniTag.getTechnologyProfileId()));
+                    uniTag.getTechnologyProfileId()));
         }, oltInstallers);
     }
 
@@ -821,9 +835,9 @@ public class Olt
     /**
      * Adds subscriber vlan flows, dhcp, eapol and igmp trap flows for the related uni port.
      *
-     * @param subPort      the connection point of the subscriber
-     * @param uplinkPort   uplink port of the OLT (the nni port)
-     * @param sub          subscriber information that includes s, c tags, tech profile and bandwidth profile references
+     * @param subPort    the connection point of the subscriber
+     * @param uplinkPort uplink port of the OLT (the nni port)
+     * @param sub        subscriber information that includes s, c tags, tech profile and bandwidth profile references
      */
     private void provisionUniTagList(AccessDevicePort subPort, AccessDevicePort uplinkPort,
                                      SubscriberAndDeviceInformation sub) {
@@ -885,7 +899,7 @@ public class Olt
      */
     private void handleSubscriberFlows(AccessDevicePort uplinkPort, AccessDevicePort subscriberPort,
                                        UniTagInformation tagInfo) {
-        log.debug("Provisioning vlan-based flows for the uniTagInformation {} on {}", tagInfo, subscriberPort);
+        log.info(" TEO Provisioning vlan-based flows for the uniTagInformation {} on {}", tagInfo, subscriberPort);
         DeviceId deviceId = subscriberPort.deviceId();
 
         if (multicastServiceName.equals(tagInfo.getServiceName())) {
@@ -907,15 +921,15 @@ public class Olt
                 getBandwidthProfileInformation(tagInfo.getDownstreamOltBandwidthProfile());
         if (upstreamBpInfo == null) {
             log.warn("No meter installed since no Upstream BW Profile definition found for "
-                             + "ctag {} stag {} tpId {} on {}",
-                     tagInfo.getPonCTag(), tagInfo.getPonSTag(), tagInfo.getTechnologyProfileId(), subscriberPort);
+                            + "ctag {} stag {} tpId {} on {}",
+                    tagInfo.getPonCTag(), tagInfo.getPonSTag(), tagInfo.getTechnologyProfileId(), subscriberPort);
             return;
         }
         if (downstreamBpInfo == null) {
             log.warn("No meter installed since no Downstream BW Profile definition found for "
-                             + "ctag {} stag {} tpId {} on {}",
-                     tagInfo.getPonCTag(), tagInfo.getPonSTag(),
-                     tagInfo.getTechnologyProfileId(), subscriberPort);
+                            + "ctag {} stag {} tpId {} on {}",
+                    tagInfo.getPonCTag(), tagInfo.getPonSTag(),
+                    tagInfo.getTechnologyProfileId(), subscriberPort);
             return;
         }
         if ((upstreamOltBpInfo != null && downstreamOltBpInfo == null) ||
@@ -952,26 +966,39 @@ public class Olt
             downOltMeterId = downMeterId;
         }
         SubscriberFlowInfo fi = new SubscriberFlowInfo(uplinkPort, subscriberPort,
-                                                       tagInfo, downMeterId, upMeterId, downOltMeterId, upOltMeterId,
-                                                       downstreamBpInfo.id(), upstreamBpInfo.id(),
-                                                       downstreamOltBpInfo.id(), upstreamOltBpInfo.id());
+                tagInfo, downMeterId, upMeterId, downOltMeterId, upOltMeterId,
+                downstreamBpInfo.id(), upstreamBpInfo.id(),
+                downstreamOltBpInfo.id(), upstreamOltBpInfo.id());
 
         if (upMeterId != null && downMeterId != null && upOltMeterId != null && downOltMeterId != null) {
             log.debug("Meters are existing for upstream {} and downstream {} on {}",
                     upstreamBpInfo.id(), downstreamBpInfo.id(), subscriberPort);
             handleSubFlowsWithMeters(fi);
         } else {
-            log.debug("Adding {} on {} to pending subs", fi, subscriberPort);
+            log.info("TEO Adding {} on {} to pending subs", fi, subscriberPort);
             // one or both meters are not ready. It's possible they are in the process of being
             // created for other subscribers that share the same bandwidth profile.
-            pendingSubscribersForDevice.compute(deviceId, (id, queue) -> {
-                if (queue == null) {
-                    queue = new LinkedBlockingQueue<>();
-                }
+
+            pendingSubscribersForDeviceLock.lock();
+//            pendingSubscribersForDevice.computeIfAbsent(deviceId, k -> new LinkedBlockingQueue<>()).add(fi);
+
+            // FIXME possibly because of this compute we're adding the subscriber twice
+            LinkedBlockingQueue<SubscriberFlowInfo> queue = pendingSubscribersForDevice.get(deviceId);
+            if (queue == null) {
+                queue = new LinkedBlockingQueue<>();
+            }
+            if (!queue.contains(fi)) {
+                log.info("TEO Added {} to pending subscribers on {}", fi, subscriberPort);
                 queue.add(fi);
-                log.info("Added {} to pending subscribers on {}", fi, subscriberPort);
-                return queue;
-            });
+            } else {
+                log.info("TEO pending subscribers queue contains fi {} on {}", fi, subscriberPort);
+            }
+            pendingSubscribersForDevice.put(deviceId, queue);
+
+            log.warn("TEO queue has length {} on {}",
+                     pendingSubscribersForDevice.get(deviceId).size(), deviceId);
+            pendingSubscribersForDeviceLock.unlock();
+
 
             List<BandwidthProfileInformation> bws = new ArrayList<>();
             // queue up the meters to be created
@@ -1014,73 +1041,76 @@ public class Olt
         CompletableFuture<Object> meterFuture = new CompletableFuture<>();
 
         MeterId meterId = oltMeterService.createMeter(deviceId, bwpInfo,
-                                                      meterFuture);
+                meterFuture);
 
+        // FIXME this meter future completes 2 times
         meterFuture.thenAcceptAsync(result -> {
-            log.info("Meter Future for {} has completed", meterId);
-            pendingSubscribersForDevice.compute(deviceId, (id, queue) -> {
-                // iterate through the subscribers on hold
-                if (queue != null && !queue.isEmpty()) {
-                    while (true) {
-                        //TODO this might return the reference and not the actual object so
-                        // it can be actually swapped underneath us.
-                        SubscriberFlowInfo fi = queue.peek();
-                        if (fi == null) {
-                            log.info("No more subscribers pending on {}", deviceId);
-                            queue = new LinkedBlockingQueue<>();
-                            break;
-                        }
-                        if (result == null) {
-                            // meter install sent to device
-                            log.debug("Meter {} installed for bw {} on {}", meterId, bwpInfo, deviceId);
-
-                            MeterId upMeterId = oltMeterService
-                                    .getMeterIdFromBpMapping(deviceId, fi.getUpBpInfo());
-                            MeterId downMeterId = oltMeterService
-                                    .getMeterIdFromBpMapping(deviceId, fi.getDownBpInfo());
-                            MeterId upOltMeterId = oltMeterService
-                                    .getMeterIdFromBpMapping(deviceId, fi.getUpOltBpInfo());
-                            MeterId downOltMeterId = oltMeterService
-                                    .getMeterIdFromBpMapping(deviceId, fi.getDownOltBpInfo());
-                            if (upMeterId != null && downMeterId != null &&
-                                    upOltMeterId != null && downOltMeterId != null) {
-                                log.debug("Provisioning subscriber after meter {} " +
-                                                  "installation and all meters are present " +
-                                                  "upstream {} , downstream {} , oltUpstream {} " +
-                                                  "and oltDownstream {} on {}",
-                                          meterId, upMeterId, downMeterId, upOltMeterId,
-                                          downOltMeterId, fi.getUniPort());
-                                // put in the meterIds  because when fi was first
-                                // created there may or may not have been a meterId
-                                // depending on whether the meter was created or
-                                // not at that time.
-                                //TODO possibly spawn this in a separate thread.
-                                fi.setUpMeterId(upMeterId);
-                                fi.setDownMeterId(downMeterId);
-                                fi.setUpOltMeterId(upOltMeterId);
-                                fi.setDownOltMeterId(downOltMeterId);
-                                handleSubFlowsWithMeters(fi);
-                                queue.remove(fi);
-                            } else {
-                                log.debug("Not all meters for {} are yet installed up {}, " +
-                                                 "down {}, oltUp {}, oltDown {}", fi, upMeterId,
-                                         downMeterId, upOltMeterId, downOltMeterId);
-                            }
-                            oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
-                        } else {
-                            // meter install failed
-                            log.error("Addition of subscriber {} on {} failed due to meter " +
-                                              "{} with result {}", fi, fi.getUniPort(), meterId, result);
-                            oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
-                            queue.remove(fi);
-                        }
+            log.info("TEO Meter Future for {} has completed", meterId);
+            pendingSubscribersForDeviceLock.lock();
+            LinkedBlockingQueue<SubscriberFlowInfo> queue = pendingSubscribersForDevice.get(deviceId);
+            // iterate through the subscribers on hold
+            if (queue != null && !queue.isEmpty()) {
+                while (true) {
+                    //TODO this might return the reference and not the actual object so
+                    // it can be actually swapped underneath us.
+                    SubscriberFlowInfo fi = queue.peek();
+                    if (fi == null) {
+                        log.info("No more subscribers pending on {}", deviceId);
+                        queue = new LinkedBlockingQueue<>();
+                        break;
                     }
-                } else {
-                    log.info("No pending subscribers on {}", deviceId);
-                    queue = new LinkedBlockingQueue<>();
+                    if (result == null) {
+                        // meter install sent to device
+                        log.debug("Meter {} installed for bw {} on {}", meterId, bwpInfo, deviceId);
+
+                        MeterId upMeterId = oltMeterService
+                                .getMeterIdFromBpMapping(deviceId, fi.getUpBpInfo());
+                        MeterId downMeterId = oltMeterService
+                                .getMeterIdFromBpMapping(deviceId, fi.getDownBpInfo());
+                        MeterId upOltMeterId = oltMeterService
+                                .getMeterIdFromBpMapping(deviceId, fi.getUpOltBpInfo());
+                        MeterId downOltMeterId = oltMeterService
+                                .getMeterIdFromBpMapping(deviceId, fi.getDownOltBpInfo());
+                        if (upMeterId != null && downMeterId != null &&
+                                upOltMeterId != null && downOltMeterId != null) {
+                            log.info(" TEO Provisioning subscriber after meter {} " +
+                                              "installation and all meters are present " +
+                                              "upstream {} , downstream {} , oltUpstream {} " +
+                                              "and oltDownstream {} on {}",
+                                      meterId, upMeterId, downMeterId, upOltMeterId,
+                                      downOltMeterId, fi.getUniPort());
+                            // put in the meterIds  because when fi was first
+                            // created there may or may not have been a meterId
+                            // depending on whether the meter was created or
+                            // not at that time.
+                            //TODO possibly spawn this in a separate thread.
+                            fi.setUpMeterId(upMeterId);
+                            fi.setDownMeterId(downMeterId);
+                            fi.setUpOltMeterId(upOltMeterId);
+                            fi.setDownOltMeterId(downOltMeterId);
+                            handleSubFlowsWithMeters(fi);
+                            queue.remove(fi);
+                        } else {
+                            log.debug("Not all meters for {} are yet installed up {}, " +
+                                              "down {}, oltUp {}, oltDown {}", fi, upMeterId,
+                                      downMeterId, upOltMeterId, downOltMeterId);
+                        }
+                        oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
+                    } else {
+                        // meter install failed
+                        log.error("Addition of subscriber {} on {} failed due to meter " +
+                                          "{} with result {}", fi, fi.getUniPort(), meterId, result);
+                        oltMeterService.removeFromPendingMeters(deviceId, bwpInfo);
+                        queue.remove(fi);
+                    }
                 }
-                return queue;
-            });
+            } else {
+                log.info("No pending subscribers on {}", deviceId);
+                queue = new LinkedBlockingQueue<>();
+            }
+            pendingSubscribersForDevice.put(deviceId, queue);
+            log.info("TEO Unlocking pendingSubscribersForDeviceLock after meter {} has completed", meterId);
+            pendingSubscribersForDeviceLock.unlock();
         });
 
     }
@@ -1190,10 +1220,15 @@ public class Olt
                 type = AccessDeviceEvent.Type.SUBSCRIBER_UNI_TAG_REGISTRATION_FAILED;
             } else {
                 log.debug("Upstream and downstream data plane flows are installed successfully on {}", uniPort);
+                log.info("Installing EAPOL on {} with subscriber VLAN {} after successfull " +
+                        "up/down flows", uniPort, tagInfo.getPonCTag());
                 Optional<String> upstreamOltBw = tagInfo.getUpstreamOltBandwidthProfile() == null ?
                         Optional.empty() : Optional.of(tagInfo.getUpstreamOltBandwidthProfile());
+
+                log.warn("TEO calling processEapolFilteringObjectives from continueProvisioningSubs with VLAN {} on {}",
+                        tagInfo.getPonCTag(), uniPort);
                 oltFlowService.processEapolFilteringObjectives(uniPort, tagInfo.getUpstreamBandwidthProfile(),
-                                                               upstreamOltBw, null,
+                        upstreamOltBw, null,
                         tagInfo.getPonCTag(), true);
 
                 if (!tagInfo.getEnableMacLearning()) {
@@ -1210,16 +1245,16 @@ public class Olt
                 updateProgrammedSubscriber(uniPort, tagInfo, true);
             }
             post(new AccessDeviceEvent(type, subscriberFlowInfo.getDevId(), uniPort.port(),
-                                       tagInfo.getPonSTag(), tagInfo.getPonCTag(),
-                                       tagInfo.getTechnologyProfileId()));
+                    tagInfo.getPonSTag(), tagInfo.getPonCTag(),
+                    tagInfo.getTechnologyProfileId()));
         }, oltInstallers);
     }
 
     /**
      * Gets mac address from tag info if present, else checks the host service.
      *
-     * @param deviceId device ID
-     * @param port uni port
+     * @param deviceId       device ID
+     * @param port           uni port
      * @param tagInformation tag info
      * @return MAC Address of subscriber
      */
@@ -1253,7 +1288,7 @@ public class Olt
      * using the pon c tag, pon s tag and the technology profile id
      * May return Optional<null>
      *
-     * @param port        port of the subscriber
+     * @param port      port of the subscriber
      * @param innerVlan pon c tag
      * @param outerVlan pon s tag
      * @param tpId      the technology profile id
@@ -1286,7 +1321,7 @@ public class Olt
 
         if (service == null) {
             log.warn("SADIS doesn't include the service with ponCtag {} ponStag {} and tpId {} on {}",
-                     innerVlan, outerVlan, tpId, port);
+                    innerVlan, outerVlan, tpId, port);
             return Optional.empty();
         }
 
@@ -1306,7 +1341,7 @@ public class Olt
 
         if (deviceInfo != null) {
             log.debug("Driver for device {} is {}", dev.id(),
-                     driverService.getDriver(dev.id()));
+                    driverService.getDriver(dev.id()));
             for (Port p : deviceService.getPorts(dev.id())) {
                 if (PortNumber.LOCAL.equals(p.number()) || !p.isEnabled()) {
                     continue;
@@ -1314,9 +1349,13 @@ public class Olt
                 if (isUniPort(dev, p)) {
                     AccessDevicePort port = new AccessDevicePort(p, AccessDevicePort.Type.UNI);
                     if (!programmedSubs.containsKey(new ConnectPoint(dev.id(), p.number()))) {
-                        log.info("Creating Eapol on {}", port);
-                        oltFlowService.processEapolFilteringObjectives(port, defaultBpId, Optional.empty(),
-                                null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
+                        //TODO possibly need a "installedEapolMap"
+//                        //Andrea I see a triple processing here
+//                        log.info("Creating Eapol on {}", port);
+//                        log.warn("TEO calling processEapolFilteringObjectives from " +
+//                                "checkAndCreateDeviceFlows with EAPOL_DEFAULT_VLAN on {}", port);
+//                        oltFlowService.processEapolFilteringObjectives(port, defaultBpId, Optional.empty(),
+//                                null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), true);
                     } else {
                         log.debug("Subscriber Eapol on {} is already provisioned, not installing default", port);
                     }
@@ -1344,7 +1383,7 @@ public class Olt
         log.trace("getUplinkPort: deviceInfo {}", deviceInfo);
         if (deviceInfo == null) {
             log.warn("Device {} is not configured in SADIS .. cannot fetch device"
-                             + " info", dev.id());
+                    + " info", dev.id());
             return null;
         }
         // Return the port that has been configured as the uplink port of this OLT in Sadis
@@ -1483,6 +1522,14 @@ public class Olt
         }
     }
 
+    private class InternalMastershipListener implements MastershipListener {
+        @Override
+        public void event(MastershipEvent event) {
+            log.info("Mastership for device {} changed to {}", event.subject(),
+                    event.mastershipInfo().master().orElse(null));
+        }
+    }
+
     private class InternalDeviceListener implements DeviceListener {
         private Set<DeviceId> programmedDevices = Sets.newConcurrentHashSet();
 
@@ -1499,13 +1546,13 @@ public class Olt
                         DeviceEvent.Type.DEVICE_UPDATED.equals(eventType)) {
                     return;
                 }
-
+                log.info("TEO Device Event {}", event);
                 boolean isLocalLeader = isLocalLeader(devId);
                 // Only handle the event if the device belongs to us
                 if (!isLocalLeader && event.type().equals(DeviceEvent.Type.DEVICE_AVAILABILITY_CHANGED)
                         && !deviceService.isAvailable(devId) && deviceService.getPorts(devId).isEmpty()) {
                     log.info("Cleaning local state for non master instance upon " +
-                                     "device disconnection {}", devId);
+                            "device disconnection {}", devId);
                     // Since no mastership of the device is present upon disconnection
                     // the method in the FlowRuleManager only empties the local copy
                     // of the DeviceFlowTable thus this method needs to get called
@@ -1518,7 +1565,7 @@ public class Olt
                     return;
                 }
 
-                log.debug("OLT got {} event for {}/{}", eventType, event.subject(), event.port());
+                log.info("OLT got {} event for {}/{}", eventType, event.subject(), event.port());
 
                 if (getOltInfo(dev) == null) {
                     // it's possible that we got an event for a previously
@@ -1526,7 +1573,7 @@ public class Olt
                     // we let such events go through
                     if (!programmedDevices.contains(devId)) {
                         log.warn("No device info found for {}, this is either "
-                                         + "not an OLT or not known to sadis", dev);
+                                + "not an OLT or not known to sadis", dev);
                         return;
                     }
                 }
@@ -1551,11 +1598,13 @@ public class Olt
                             post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, devId, port.port()));
 
                             if (port.isEnabled() && !port.number().equals(PortNumber.LOCAL)) {
-                                log.info("eapol will be sent for port added {}", port);
-                                oltFlowService.processEapolFilteringObjectives(port, defaultBpId, Optional.empty(),
-                                                                               null,
-                                                                               VlanId.vlanId(EAPOL_DEFAULT_VLAN),
-                                                                               true);
+//                                log.info("eapol will be sent for port added {}", port);
+//                                log.warn("TEO calling processEapolFilteringObjectives" +
+//                                        " from PORT_ADDED with EAPOL_DEFAULT_VLAN on {}", port);
+//                                oltFlowService.processEapolFilteringObjectives(port, defaultBpId, Optional.empty(),
+//                                        null,
+//                                        VlanId.vlanId(EAPOL_DEFAULT_VLAN),
+//                                        true);
                             }
                         } else {
                             SubscriberAndDeviceInformation deviceInfo = getOltInfo(dev);
@@ -1573,7 +1622,7 @@ public class Olt
                                     programmedSubs.get(new ConnectPoint(port.deviceId(), port.number())).value();
                             if (uniTagInformationSet == null || uniTagInformationSet.isEmpty()) {
                                 log.info("No subscriber provisioned on port {} in PORT_REMOVED event, " +
-                                                 "removing default EAPOL flow", port);
+                                        "removing default EAPOL flow", port);
                                 oltFlowService.processEapolFilteringObjectives(port, defaultBpId, Optional.empty(),
                                         null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), false);
                             } else {
@@ -1598,17 +1647,25 @@ public class Olt
                         }
                         ConnectPoint cp = new ConnectPoint(devId, port.number());
                         Collection<? extends UniTagInformation> uniTagInformationSet = programmedSubs.get(cp).value();
+                        // NOTE is it possible that the port bounce up and down and we
+                        // trigger a new EAPOL flow with default VLAN???
+                        //ANDREA i see a double processing here
                         if (uniTagInformationSet == null || uniTagInformationSet.isEmpty()) {
                             if (!port.number().equals(PortNumber.LOCAL)) {
-                                log.info("eapol will be {} updated for {} with default vlan {}",
-                                         (port.isEnabled()) ? "added" : "removed", port, EAPOL_DEFAULT_VLAN);
+                                log.info("eapol will be {} for {} with default vlan {}",
+                                        (port.isEnabled()) ? "added" : "removed", port, EAPOL_DEFAULT_VLAN);
+                                log.warn("TEO calling processEapolFilteringObjectives" +
+                                        " from PORT_UPDATED with EAPOL_DEFAULT_VLAN on {}", port);
                                 oltFlowService.processEapolFilteringObjectives(port, defaultBpId, Optional.empty(),
                                         null, VlanId.vlanId(EAPOL_DEFAULT_VLAN), port.isEnabled());
                             }
                         } else {
-                            log.info("eapol will be {} updated for {}", (port.isEnabled()) ? "added" : "removed",
-                                     port);
+                            log.info("eapol will be {} for {}", (port.isEnabled()) ? "added" : "removed",
+                                    port);
                             for (UniTagInformation uniTag : uniTagInformationSet) {
+                                log.warn("TEO calling processEapolFilteringObjectives from " +
+                                                "PORT_UPDATED with VLAN {} on {}",
+                                        uniTag.getPonCTag(), port);
                                 oltFlowService.processEapolFilteringObjectives(port,
                                         uniTag.getUpstreamBandwidthProfile(),
                                         Optional.of(uniTag.getUpstreamOltBandwidthProfile()),
@@ -1622,24 +1679,27 @@ public class Olt
                         }
                         break;
                     case DEVICE_ADDED:
+                        log.warn("TEO calling handleDeviceConnection from DEVICE_ADDED");
                         handleDeviceConnection(dev, true);
                         break;
                     case DEVICE_REMOVED:
                         handleDeviceDisconnection(dev, true, true);
                         break;
                     case DEVICE_AVAILABILITY_CHANGED:
+                        log.info("Device availability changed for {}", devId);
                         if (deviceService.isAvailable(devId)) {
                             log.info("Handling available device: {}", dev.id());
+                            log.warn("TEO calling handleDeviceConnection from DEVICE_AVAILABILITY_CHANGED");
                             handleDeviceConnection(dev, false);
                         } else {
                             if (deviceService.getPorts(devId).isEmpty()) {
                                 log.info("Handling controlled device disconnection .. "
-                                                 + "flushing all state for dev:{}", devId);
+                                        + "flushing all state for dev:{}", devId);
                                 handleDeviceDisconnection(dev, true, false);
                             } else {
                                 log.info("Disconnected device has available ports .. "
-                                                 + "assuming temporary disconnection, "
-                                                 + "retaining state for device {}", devId);
+                                        + "assuming temporary disconnection, "
+                                        + "retaining state for device {}", devId);
                             }
                         }
                         break;
@@ -1662,7 +1722,9 @@ public class Olt
             removeAllSubscribers(device.id());
             removeWaitingMacSubs(device.id());
             //Handle case where OLT disconnects during subscriber provisioning
+            pendingSubscribersForDeviceLock.lock();
             pendingSubscribersForDevice.remove(device.id());
+            pendingSubscribersForDeviceLock.unlock();
             oltFlowService.clearDeviceState(device.id());
 
             //Complete meter and flow purge
@@ -1683,6 +1745,7 @@ public class Olt
                     AccessDeviceEvent.Type.DEVICE_CONNECTED, dev.id(),
                     null, null, null));
             programmedDevices.add(dev.id());
+            log.warn("TEO calling checkAndCreateDeviceFlows from handleDeviceConnection");
             checkAndCreateDeviceFlows(dev);
             if (sendUniEvent) {
                 sendUniEvent(dev, AccessDeviceEvent.Type.UNI_ADDED);
