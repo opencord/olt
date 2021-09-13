@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-present Open Networking Foundation
+ * Copyright 2021-present Open Networking Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,153 +15,143 @@
  */
 package org.opencord.olt.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Set;
-
-import com.google.common.collect.Maps;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.onlab.packet.ChassisId;
+import org.onosproject.cfg.ComponentConfigAdapter;
 import org.onosproject.net.AnnotationKeys;
-import org.onosproject.net.Annotations;
-import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DefaultAnnotations;
 import org.onosproject.net.DefaultDevice;
 import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
-import org.onosproject.net.Element;
 import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
-import org.onosproject.net.device.DeviceServiceAdapter;
+import org.onosproject.net.device.DeviceService;
 import org.onosproject.net.provider.ProviderId;
+import org.opencord.sadis.SadisService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
+import org.opencord.sadis.UniTagInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OltTest extends TestBase {
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.onlab.util.Tools.groupedThreads;
+import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID_DEFAULT;
+
+/**
+ * Set of tests of the ONOS application component.
+ */
+
+@RunWith(MockitoJUnitRunner.class)
+public class OltTest extends OltTestHelpers {
+
+    private Olt component;
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private Olt olt;
 
 
-    private static final String SCHEME_NAME = "olt";
-    private static final DefaultAnnotations DEVICE_ANNOTATIONS = DefaultAnnotations.builder()
-            .set(AnnotationKeys.PROTOCOL, SCHEME_NAME.toUpperCase()).build();
+    private DeviceId deviceId = DeviceId.deviceId("test-device");
+    private Device testDevice = new DefaultDevice(ProviderId.NONE, deviceId, Device.Type.OLT,
+            "testManufacturer", "1.0", "1.0", "SN", new ChassisId(1));
+    private Port uniUpdateEnabled = new OltPort(true, PortNumber.portNumber(16),
+                                                DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "uni-1")
+                                                        .build());
+
+    private DiscoveredSubscriber sub;
 
     @Before
     public void setUp() {
-        olt = new Olt();
-        olt.deviceService = new MockDeviceService();
-        olt.sadisService = new MockSadisService();
-        olt.subsService = olt.sadisService.getSubscriberInfoService();
-        olt.pendingSubscribersForDevice = Maps.newConcurrentMap();
+        component = new Olt();
+        component.requeueDelay = 0; // avoid delays in the queue add to make things easier in testing
+        component.cfgService = new ComponentConfigAdapter();
+        component.deviceService = Mockito.mock(DeviceService.class);
+        component.eventsQueue = new LinkedBlockingQueue<DiscoveredSubscriber>();
+        component.discoveredSubscriberExecutor =
+                Executors.newSingleThreadScheduledExecutor(
+                        groupedThreads("onos/olt",
+                "discovered-cp-%d", log));
+        component.oltFlowService = Mockito.mock(OltFlowService.class);
+        component.sadisService = Mockito.mock(SadisService.class);
+
+        // reset the spy on oltFlowService
+        reset(component.oltFlowService);
+        component.eventsQueue.clear();
+
+        component.activate(null);
+        // create empty service for testing
+        List<UniTagInformation> uniTagInformationList = new LinkedList<>();
+        UniTagInformation empty = new UniTagInformation.Builder().build();
+        uniTagInformationList.add(empty);
+        SubscriberAndDeviceInformation si = new SubscriberAndDeviceInformation();
+        si.setUniTagList(uniTagInformationList);
+        sub = new DiscoveredSubscriber(testDevice,
+                                         uniUpdateEnabled, DiscoveredSubscriber.Status.ADDED,
+                                         false, si);
     }
 
-    /**
-     * Tests that the getSubscriber method does throw a NullPointerException with a meaningful message.
-     */
+    @After
+    public void tearDown() {
+        component.deactivate(null);
+    }
+
     @Test
-    public void testGetSubscriberError() {
-        ConnectPoint cp = ConnectPoint.deviceConnectPoint(OLT_DEV_ID + "/" + 1);
-        try {
-            olt.getSubscriber(cp);
-        } catch (NullPointerException e) {
-            assertEquals(e.getMessage(), "Invalid connect point");
-        }
+    public void testProcessDiscoveredSubscribersBasicPortSuccess() throws Exception {
+        doReturn(true).when(component.deviceService).isAvailable(any());
+        doReturn(sub.port).when(component.deviceService).getPort(any(), any());
+        doReturn(true).when(component.oltFlowService).handleBasicPortFlows(eq(sub), eq(DEFAULT_BP_ID_DEFAULT),
+                eq(DEFAULT_BP_ID_DEFAULT));
+
+        // adding the discovered subscriber to the queue
+        component.eventsQueue.add(sub);
+
+        // check that we're calling the correct method
+        TimeUnit.SECONDS.sleep(1);
+        verify(component.oltFlowService, times(1)).handleBasicPortFlows(eq(sub), eq(DEFAULT_BP_ID_DEFAULT),
+                eq(DEFAULT_BP_ID_DEFAULT));
+
+        // check if the method doesn't throw an exception we're removing the subscriber from the queue
+        assert component.eventsQueue.isEmpty();
     }
 
-    /**
-     * Tests that the getSubscriber method returns Subscriber informations.
-     */
     @Test
-    public void testGetSubscriber() {
-        ConnectPoint cp = ConnectPoint.deviceConnectPoint(OLT_DEV_ID + "/" + 2);
+    public void testProcessDiscoveredSubscribersBasicPortException() throws Exception {
+        doReturn(true).when(component.deviceService).isAvailable(any());
+        doReturn(sub.port).when(component.deviceService).getPort(any(), any());
+        doReturn(false).when(component.oltFlowService).handleBasicPortFlows(any(), eq(DEFAULT_BP_ID_DEFAULT),
+                eq(DEFAULT_BP_ID_DEFAULT));
+        // replace the queue with a spy
+        BlockingQueue<DiscoveredSubscriber> spiedQueue = spy(component.eventsQueue);
+        component.eventsQueue = spiedQueue;
 
-        SubscriberAndDeviceInformation s = olt.getSubscriber(cp);
+        // adding the discovered subscriber to the queue
+        component.eventsQueue.add(sub);
+        TimeUnit.MILLISECONDS.sleep(100);
 
-        assertEquals(s.circuitId(), CLIENT_CIRCUIT_ID);
-        assertEquals(s.nasPortId(), CLIENT_NAS_PORT_ID);
+        // check that we're calling the correct method,
+        // since the subscriber is not removed from the queue we're calling the method multiple times
+        verify(component.oltFlowService, atLeastOnce()).handleBasicPortFlows(eq(sub), eq(DEFAULT_BP_ID_DEFAULT),
+                eq(DEFAULT_BP_ID_DEFAULT));
+
+        // check if the method throws an exception we are adding the subscriber back in the queue
+        verify(component.eventsQueue, atLeast(2)).add(sub);
     }
-
-    private class MockDevice extends DefaultDevice {
-
-        public MockDevice(ProviderId providerId, DeviceId id, Type type,
-                          String manufacturer, String hwVersion, String swVersion,
-                          String serialNumber, ChassisId chassisId, Annotations... annotations) {
-            super(providerId, id, type, manufacturer, hwVersion, swVersion, serialNumber,
-                    chassisId, annotations);
-        }
-    }
-
-    private class MockDeviceService extends DeviceServiceAdapter {
-
-        private ProviderId providerId = new ProviderId("of", "foo");
-        private final Device device1 = new MockDevice(providerId, DEVICE_ID_1, Device.Type.SWITCH,
-                "foo.inc", "0", "0", OLT_DEV_ID, new ChassisId(),
-                DEVICE_ANNOTATIONS);
-
-        @Override
-        public Device getDevice(DeviceId devId) {
-            return device1;
-
-        }
-
-        @Override
-        public Port getPort(ConnectPoint cp) {
-            log.info("Looking up port {}", cp.port().toString());
-            if (cp.port().toString().equals("1")) {
-                return null;
-            }
-            return new MockPort();
-        }
-    }
-
-    private class MockPort implements Port {
-
-        @Override
-        public boolean isEnabled() {
-            return true;
-        }
-
-        @Override
-        public long portSpeed() {
-            return 1000;
-        }
-
-        @Override
-        public Element element() {
-            return null;
-        }
-
-        @Override
-        public PortNumber number() {
-            return null;
-        }
-
-        @Override
-        public Annotations annotations() {
-            return new MockAnnotations();
-        }
-
-        @Override
-        public Type type() {
-            return Port.Type.FIBER;
-        }
-
-        private class MockAnnotations implements Annotations {
-
-            @Override
-            public String value(String val) {
-                return "BRCM12345678";
-            }
-
-            @Override
-            public Set<String> keys() {
-                return null;
-            }
-        }
-    }
-
 
 }
