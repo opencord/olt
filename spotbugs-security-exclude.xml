@@ -14,4 +14,7 @@
   ~ limitations under the License.
   -->
 <FindBugsFilter>
+    <Match>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
 </FindBugsFilter>
