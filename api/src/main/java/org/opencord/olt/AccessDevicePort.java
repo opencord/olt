@@ -16,94 +16,79 @@
 package org.opencord.olt;
 
 import org.onosproject.net.AnnotationKeys;
-import org.onosproject.net.DeviceId;
+import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.Port;
-import org.onosproject.net.PortNumber;
+
+import java.util.Objects;
 
 /**
  * OLT device port.
  */
 public class AccessDevicePort {
 
-    Port port;
-    Type type;
+    private ConnectPoint cp;
+    private String name;
 
     /**
-     * OLT Port Type.
-     */
-    public enum Type {
-        NNI,
-        UNI,
-    }
-
-    /**
-     * Creates an AccessDevicePort with given ONOS port object and OLT port type.
+     * Creates an AccessDevicePort with given ONOS port.
      *
      * @param port ONOS port
-     * @param type OLT port type
      */
-    public AccessDevicePort(Port port, Type type) {
-        this.port = port;
-        this.type = type;
+    public AccessDevicePort(Port port) {
+        this.cp = ConnectPoint.deviceConnectPoint(port.element().id() + "/" + port.number().toLong());
+        String nameInt = port.annotations().value(AnnotationKeys.PORT_NAME);
+        this.name = nameInt == null ? "" : nameInt;
     }
 
     /**
-     * Get ONOS Port object.
+     * Creates an AccessDevicePort with given ONOS connectPoint and name.
      *
-     * @return ONOS port
+     * @param cp ONOS connect point
+     * @param name OLT port name
      */
-    public Port port() {
-        return this.port;
+    public AccessDevicePort(ConnectPoint cp, String name) {
+        this.cp = cp;
+        this.name = name;
     }
 
     /**
-     * Get OLT port Type.
+     * Get ONOS ConnectPoint object.
      *
-     * @return OLT port type
+     * @return ONOS connect point
      */
-    public Type type() {
-        return this.type;
+    public ConnectPoint connectPoint() {
+        return this.cp;
     }
 
     /**
-     * Check port is enabled state on ONOS.
+     * Get OLT port name which is combination of serial number and uni index.
      *
-     * @return is Access Device Port enabled
-     */
-    public boolean isEnabled() {
-        return this.port.isEnabled();
-    }
-
-    /**
-     * Get Device ID of OLT which the port is connected.
-     *
-     * @return OLT Device ID
-     */
-    public DeviceId deviceId() {
-        return (DeviceId) this.port.element().id();
-    }
-
-    /**
-     * Get port number.
-     *
-     * @return port number
-     */
-    public PortNumber number() {
-        return this.port.number();
-    }
-
-    /**
-     * Get port name which is combination of serial number and uni index.
-     *
-     * @return port name (ex: BBSM00010001-1)
+     * @return OLT port name (ex: BBSM00010001-1)
      */
     public String name() {
-        return this.port.annotations().value(AnnotationKeys.PORT_NAME);
+        return this.name;
     }
 
     @Override
     public String toString() {
-        return deviceId().toString() + '/' + number() + '[' + name() + ']';
+        return cp.toString() + '[' + name + ']';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AccessDevicePort that = (AccessDevicePort) o;
+        return Objects.equals(cp, that.cp) &&
+                Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cp, name);
+    }
 }
