@@ -1152,7 +1152,9 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
     // Builds the batch using the accumulated flow rules
     private void sendFilters(List<Pair<FilteringObjective, FlowRule>> pairs) {
         FlowRuleOperations.Builder flowOpsBuilder = FlowRuleOperations.builder();
-        log.debug("Sending batch of {} filter-objs", pairs.size());
+        if (log.isDebugEnabled()) {
+            log.debug("Sending batch of {} filter-objs", pairs.size());
+        }
         List<Objective> filterObjs = Lists.newArrayList();
         // Iterates over all accumulated flow rules and then build an unique batch
         pairs.forEach(pair -> {
@@ -1161,12 +1163,16 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
             switch (filter.type()) {
                 case PERMIT:
                     flowOpsBuilder.add(rule);
-                    log.debug("Applying add filter-obj {} to device: {}", filter.id(), deviceId);
+                    if (log.isTraceEnabled()) {
+                        log.trace("Applying add filter-obj {} to device: {}", filter.id(), deviceId);
+                    }
                     filterObjs.add(filter);
                     break;
                 case DENY:
                     flowOpsBuilder.remove(rule);
-                    log.debug("Deleting flow rule {} to device: {}", rule, deviceId);
+                    if (log.isTraceEnabled()) {
+                        log.trace("Deleting flow rule {} from device: {}", rule, deviceId);
+                    }
                     filterObjs.add(filter);
                     break;
                 default:

@@ -26,19 +26,19 @@ import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
 import org.opencord.olt.impl.OltFlowServiceInterface;
 import org.opencord.olt.impl.ServiceKey;
-import org.opencord.sadis.UniTagInformation;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Shows programmed subscribers.
+ * Shows requested subscribers.
  */
 @Service
-@Command(scope = "onos", name = "volt-programmed-subscribers",
-        description = "Shows subscribers programmed in the dataplane")
-public class ShowProgrammedSubscribersCommand extends AbstractShellCommand {
+@Command(scope = "onos", name = "volt-requested-subscribers",
+        description = "Shows subscribers programmed by the operator. " +
+                "Their data-plane status depends on the ONU status.")
+public class ShowRequestedSubscribersCommand extends AbstractShellCommand {
 
     @Argument(index = 0, name = "deviceId", description = "Access device ID",
             required = false, multiValued = false)
@@ -53,8 +53,8 @@ public class ShowProgrammedSubscribersCommand extends AbstractShellCommand {
     @Override
     protected void doExecute() {
         OltFlowServiceInterface service = AbstractShellCommand.get(OltFlowServiceInterface.class);
-        Map<ServiceKey, UniTagInformation> info = service.getProgrammedSubscribers();
-        Set<Map.Entry<ServiceKey, UniTagInformation>> entries = info.entrySet();
+        Map<ServiceKey, Boolean> info = service.getRequestedSubscribers();
+        Set<Map.Entry<ServiceKey, Boolean>> entries = info.entrySet();
         if (strDeviceId != null && !strDeviceId.isEmpty()) {
             entries = entries.stream().filter(entry -> entry.getKey().getPort().connectPoint().deviceId()
                     .equals(DeviceId.deviceId(strDeviceId))).collect(Collectors.toSet());
@@ -69,7 +69,7 @@ public class ShowProgrammedSubscribersCommand extends AbstractShellCommand {
         entries.forEach(entry -> display(entry.getKey(), entry.getValue()));
     }
 
-    private void display(ServiceKey sk, UniTagInformation uniTag) {
-        print("location=%s tagInformation=%s", sk.getPort().connectPoint(), uniTag);
+    private void display(ServiceKey sk, Boolean status) {
+        print("location=%s service=%s provisioned=%s", sk.getPort(), sk.getService().getServiceName(), status);
     }
 }

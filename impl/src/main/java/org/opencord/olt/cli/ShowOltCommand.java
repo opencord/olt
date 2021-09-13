@@ -40,9 +40,9 @@ public class ShowOltCommand extends AbstractShellCommand {
     protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
         if (outputJson()) {
-            print("%s", json(service.fetchOlts()));
+            print("%s", json(service.getConnectedOlts()));
         } else {
-            service.fetchOlts().forEach(did -> print("OLT %s", did));
+            service.getConnectedOlts().forEach(did -> print("OLT %s", did));
         }
 
     }

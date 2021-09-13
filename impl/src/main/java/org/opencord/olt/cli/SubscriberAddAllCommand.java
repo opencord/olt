@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-present Open Networking Foundation
+ * Copyright 2021-present Open Networking Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,33 +25,34 @@ import org.onosproject.cli.net.DeviceIdCompleter;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
+import org.onosproject.net.device.DeviceService;
 import org.opencord.olt.AccessDeviceService;
 
 /**
- * Adds all possible subscribers to an access device.
+ * Adds a subscriber to an access device.
  */
 @Service
-@Command(scope = "onos", name = "volt-add-subscriber-access",
+@Command(scope = "onos", name = "volt-add-all-subscriber-access",
         description = "Adds a subscriber to an access device")
-public class SubscriberAddCommand extends AbstractShellCommand {
+public class SubscriberAddAllCommand extends AbstractShellCommand {
 
     @Argument(index = 0, name = "deviceId", description = "Access device ID",
             required = true, multiValued = false)
     @Completion(DeviceIdCompleter.class)
     private String strDeviceId = null;
 
-    @Argument(index = 1, name = "port", description = "Subscriber port number",
-            required = true, multiValued = false)
-    @Completion(OltUniPortCompleter.class)
-    private String strPort = null;
-
     @Override
     protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
+        DeviceService deviceService = AbstractShellCommand.get(DeviceService.class);
         DeviceId deviceId = DeviceId.deviceId(strDeviceId);
-        PortNumber port = PortNumber.portNumber(strPort);
-        ConnectPoint connectPoint = new ConnectPoint(deviceId, port);
 
-        service.provisionSubscriber(connectPoint);
+        deviceService.getPorts(deviceId).forEach(p -> {
+            if (p.isEnabled()) {
+                PortNumber port = p.number();
+                ConnectPoint connectPoint = new ConnectPoint(deviceId, port);
+                service.provisionSubscriber(connectPoint);
+            }
+        });
     }
 }

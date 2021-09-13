@@ -22,18 +22,17 @@ import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.net.DeviceIdCompleter;
-import org.onosproject.cli.net.PortNumberCompleter;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
 import org.opencord.olt.AccessDeviceService;
 
 /**
- * Adds a subscriber to an access device.
+ * Removes a subscriber to an access device.
  */
 @Service
 @Command(scope = "onos", name = "volt-remove-subscriber-access",
-        description = "Removes a subscriber to an access device")
+        description = "Remove a subscriber from an access device")
 public class SubscriberRemoveCommand extends AbstractShellCommand {
 
     @Argument(index = 0, name = "deviceId", description = "Access device ID",
@@ -43,18 +42,16 @@ public class SubscriberRemoveCommand extends AbstractShellCommand {
 
     @Argument(index = 1, name = "port", description = "Subscriber port number",
             required = true, multiValued = false)
-    @Completion(PortNumberCompleter.class)
+    @Completion(OltUniPortCompleter.class)
     private String strPort = null;
 
     @Override
     protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-
         DeviceId deviceId = DeviceId.deviceId(strDeviceId);
         PortNumber port = PortNumber.portNumber(strPort);
         ConnectPoint connectPoint = new ConnectPoint(deviceId, port);
 
         service.removeSubscriber(connectPoint);
-
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2016-present Open Networking Foundation
+  ~ Copyright 2021 Open Networking Foundation
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,32 +17,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <artifactId>olt</artifactId>
         <groupId>org.opencord</groupId>
-        <version>4.6.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <version>5.0.0-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
     <version>${olt.api.version}</version>
     <artifactId>olt-api</artifactId>
     <packaging>bundle</packaging>
 
-    <url>http://opencord.org</url>
-
-    <description>OLT application API</description>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.opencord</groupId>
-            <artifactId>sadis-api</artifactId>
-            <version>${sadis.api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
     <build>
         <plugins>
             <plugin>

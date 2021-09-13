@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-present Open Networking Foundation
+ * Copyright 2021-present Open Networking Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,19 @@ import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
 import org.onosproject.rest.AbstractWebResource;
 import org.opencord.olt.AccessDeviceService;
-import org.opencord.olt.AccessSubscriberId;
 import org.slf4j.Logger;
 
-import java.util.Optional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.Optional;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -43,10 +44,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Path("oltapp")
 public class OltWebResource extends AbstractWebResource {
-
     private final Logger log = getLogger(getClass());
 
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("status")
+    public Response status() {
+        return Response.ok().build();
+    }
     /**
      * Provision a subscriber.
      *
@@ -64,6 +70,7 @@ public class OltWebResource extends AbstractWebResource {
         DeviceId deviceId = DeviceId.deviceId(device);
         PortNumber portNumber = PortNumber.portNumber(port);
         ConnectPoint connectPoint = new ConnectPoint(deviceId, portNumber);
+
         try {
             service.provisionSubscriber(connectPoint);
         } catch (Exception e) {
@@ -113,7 +120,39 @@ public class OltWebResource extends AbstractWebResource {
 
         Optional<VlanId> emptyVlan = Optional.empty();
         Optional<Integer> emptyTpId = Optional.empty();
-        if (service.provisionSubscriber(new AccessSubscriberId(portName), emptyVlan, emptyVlan, emptyTpId)) {
+        // Check if we can find the connect point to which this subscriber is connected
+        ConnectPoint cp = service.findSubscriberConnectPoint(portName);
+        if (cp == null) {
+            log.warn("ConnectPoint not found for {}", portName);
+            return Response.status(INTERNAL_SERVER_ERROR)
+                    .entity("ConnectPoint not found for " + portName).build();
+        }
+        if (service.provisionSubscriber(cp)) {
+            return ok("").build();
+        }
+        return Response.noContent().build();
+    }
+
+    /**
+     * Removes services for a subscriber.
+     *
+     * @param portName Name of the port on which the subscriber is connected
+     * @return 200 OK or 204 NO CONTENT
+     */
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("services/{portName}")
+    public Response deleteServices(
+            @PathParam("portName") String portName) {
+        AccessDeviceService service = get(AccessDeviceService.class);
+
+        ConnectPoint cp = service.findSubscriberConnectPoint(portName);
+        if (cp == null) {
+            log.warn("ConnectPoint not found for {}", portName);
+            return Response.status(INTERNAL_SERVER_ERROR)
+                    .entity("ConnectPoint not found for " + portName).build();
+        }
+        if (service.removeSubscriber(cp)) {
             return ok("").build();
         }
         return Response.noContent().build();
@@ -141,30 +180,16 @@ public class OltWebResource extends AbstractWebResource {
         VlanId cTag = VlanId.vlanId(cTagVal);
         VlanId sTag = VlanId.vlanId(sTagVal);
         Integer tpId = Integer.valueOf(tpIdVal);
-
-        if (service.provisionSubscriber(new AccessSubscriberId(portName), Optional.of(sTag),
-                Optional.of(cTag), Optional.of(tpId))) {
-            return ok("").build();
+        // TODO this is not optimal, because we call device service 2 times here and
+        // 2 times in the provisionSubscriber call, optimize byu having 2 more methods
+        // in the OltService that allow provisioning with portName.
+        ConnectPoint cp = service.findSubscriberConnectPoint(portName);
+        if (cp == null) {
+            log.warn("ConnectPoint not found for {}", portName);
+            return Response.status(INTERNAL_SERVER_ERROR)
+                    .entity("ConnectPoint not found for " + portName).build();
         }
-        return Response.noContent().build();
-    }
-
-    /**
-     * Removes services for a subscriber.
-     *
-     * @param portName Name of the port on which the subscriber is connected
-     * @return 200 OK or 204 NO CONTENT
-     */
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("services/{portName}")
-    public Response deleteServices(
-            @PathParam("portName") String portName) {
-        AccessDeviceService service = get(AccessDeviceService.class);
-
-        Optional<VlanId> emptyVlan = Optional.empty();
-        Optional<Integer> emptyTpId = Optional.empty();
-        if (service.removeSubscriber(new AccessSubscriberId(portName), emptyVlan, emptyVlan, emptyTpId)) {
+        if (service.provisionSubscriber(cp, cTag, sTag, tpId)) {
             return ok("").build();
         }
         return Response.noContent().build();
@@ -192,12 +217,18 @@ public class OltWebResource extends AbstractWebResource {
         VlanId cTag = VlanId.vlanId(cTagVal);
         VlanId sTag = VlanId.vlanId(sTagVal);
         Integer tpId = Integer.valueOf(tpIdVal);
-
-        if (service.removeSubscriber(new AccessSubscriberId(portName), Optional.of(sTag),
-                Optional.of(cTag), Optional.of(tpId))) {
+        // TODO this is not optimal, because we call device service 2 times here and
+        // 2 times in the provisionSubscriber call, optimize byu having 2 more methods
+        // in the OltService that allow provisioning with portName.
+        ConnectPoint cp = service.findSubscriberConnectPoint(portName);
+        if (cp == null) {
+            log.warn("ConnectPoint not found for {}", portName);
+            return Response.status(INTERNAL_SERVER_ERROR)
+                    .entity("ConnectPoint not found for " + portName).build();
+        }
+        if (service.removeSubscriber(cp, cTag, sTag, tpId)) {
             return ok("").build();
         }
         return Response.noContent().build();
     }
-
 }

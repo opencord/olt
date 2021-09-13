@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2016-present Open Networking Foundation
+  ~ Copyright 2021 Open Networking Foundation
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -18,17 +18,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.opencord</groupId>
         <artifactId>olt</artifactId>
-        <version>4.6.0-SNAPSHOT</version>
+        <groupId>org.opencord</groupId>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opencord</groupId>
     <artifactId>olt-app</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>OLT application for CORD</description>
-
     <properties>
         <onos.app.name>org.opencord.olt</onos.app.name>
         <onos.app.title>OLT Access Management</onos.app.title>
@@ -39,7 +39,6 @@
             CORD OLT Access management application
         </onos.app.readme>
     </properties>
-
     <build>
         <plugins>
             <plugin>

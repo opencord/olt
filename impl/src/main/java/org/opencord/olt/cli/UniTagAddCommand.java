@@ -22,10 +22,10 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onlab.packet.VlanId;
 import org.onosproject.cli.AbstractShellCommand;
+import org.onosproject.net.ConnectPoint;
 import org.opencord.olt.AccessDeviceService;
-import org.opencord.olt.AccessSubscriberId;
 
-import java.util.Optional;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * Adds a subscriber uni tag.
@@ -37,29 +37,39 @@ public class UniTagAddCommand extends AbstractShellCommand {
 
     @Argument(index = 0, name = "portName", description = "Port name",
             required = true, multiValued = false)
-    private String strPortName = null;
+    private String portName = null;
 
     @Option(name = "--cTag", description = "Inner vlan id",
-            required = false, multiValued = false)
+            required = true, multiValued = false)
     private String strCtag = null;
 
     @Option(name = "--sTag", description = "Outer vlan id",
-            required = false, multiValued = false)
+            required = true, multiValued = false)
     private String strStag = null;
 
     @Option(name = "--tpId", description = "Technology profile id",
-            required = false, multiValued = false)
+            required = true, multiValued = false)
     private String strTpId = null;
 
     @Override
     protected void doExecute() {
 
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        AccessSubscriberId portName = new AccessSubscriberId(strPortName);
+        ConnectPoint cp = service.findSubscriberConnectPoint(portName);
+        if (cp == null) {
+            log.warn("ConnectPoint not found for {}", portName);
+            print("ConnectPoint not found for %s", portName);
+            return;
+        }
+        if (isNullOrEmpty(strCtag) || isNullOrEmpty(strStag) || isNullOrEmpty(strTpId)) {
+            print("Values for c-tag (%s), s-tag (%s) and technology profile Id (%s) " +
+                          "are required", strCtag, strStag, strTpId);
+            return;
+        }
 
-        Optional<VlanId> cTag = strCtag == null ? Optional.empty() : Optional.of(VlanId.vlanId(strCtag));
-        Optional<VlanId> sTag = strStag == null ? Optional.empty() : Optional.of(VlanId.vlanId(strStag));
-        Optional<Integer> tpId = strTpId == null ? Optional.empty() : Optional.of(Integer.parseInt(strTpId));
-        service.provisionSubscriber(portName, sTag, cTag, tpId);
+        VlanId cTag = VlanId.vlanId(strCtag);
+        VlanId sTag = VlanId.vlanId(strStag);
+        Integer tpId = Integer.valueOf(strTpId);
+        service.provisionSubscriber(cp, cTag, sTag, tpId);
     }
 }

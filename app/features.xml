@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
-  ~ Copyright 2018-present Open Networking Foundation
+  ~ Copyright 2021-present Open Networking Foundation
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
     <feature name="${project.artifactId}" version="${project.version}"
              description="${project.description}">
         <feature>onos-api</feature>
-        <bundle>mvn:${project.groupId}/olt-api/${olt.api.version}</bundle>
         <bundle>mvn:${project.groupId}/olt-impl/${project.version}</bundle>
         <bundle>mvn:${project.groupId}/olt-web/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/olt-api/${project.version}</bundle>
         <bundle>mvn:${project.groupId}/sadis-api/${sadis.api.version}</bundle>
     </feature>
 </features>

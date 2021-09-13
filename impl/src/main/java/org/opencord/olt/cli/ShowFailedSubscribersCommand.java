@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-present Open Networking Foundation
+ * Copyright 2021-present Open Networking Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,31 +19,20 @@ package org.opencord.olt.cli;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
-import org.onosproject.net.ConnectPoint;
-import org.opencord.olt.AccessDeviceService;
-import org.opencord.sadis.UniTagInformation;
-
-import java.util.Map;
-import java.util.Set;
-
 /**
- * Shows subscriber information for those subscriber which have been programmed
- * in the data-plane.
+ * Shows failed subscribers on an OLTs.
  */
 @Service
 @Command(scope = "onos", name = "volt-failed-subscribers",
-        description = "Shows subscribers awaiting for programming in the dataplane")
+        description = "Shows subscribers that failed provisioning")
 public class ShowFailedSubscribersCommand extends AbstractShellCommand {
 
     @Override
     protected void doExecute() {
-        AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        Map<ConnectPoint, Set<UniTagInformation>> info = service.getFailedSubs();
-        info.forEach(this::display);
+        // NOTE
+        // this command is still available purely for backward compatibility but whilst the old implementation
+        // had a limited number of retries available the new implementation will keep retrying.
+        print("Unimplemented");
     }
 
-    private void display(ConnectPoint cp, Set<UniTagInformation> uniTagInformation) {
-        uniTagInformation.forEach(uniTag ->
-                                          print("location=%s tagInformation=%s", cp, uniTag));
-    }
 }

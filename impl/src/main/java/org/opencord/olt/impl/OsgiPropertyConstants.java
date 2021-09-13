@@ -58,14 +58,20 @@ public final class OsgiPropertyConstants {
     public static final String ENABLE_PPPOE = "enablePppoe";
     public static final boolean ENABLE_PPPOE_DEFAULT = false;
 
-    public static final String EAPOL_DELETE_RETRY_MAX_ATTEMPS = "eapolDeleteRetryMaxAttempts";
-    public static final int EAPOL_DELETE_RETRY_MAX_ATTEMPS_DEFAULT = 3;
-
-    public static final String PROVISION_DELAY = "provisionDelay";
-    public static final int PROVISION_DELAY_DEFAULT = 100;
+    public static final String WAIT_FOR_REMOVAL = "waitForRemoval";
+    public static final boolean WAIT_FOR_REMOVAL_DEFAULT = true;
 
     public static final String REQUIRED_DRIVERS_PROPERTY_DELAY = "requiredDriversPropertyDelay";
     public static final int REQUIRED_DRIVERS_PROPERTY_DELAY_DEFAULT = 5;
+
+    public static final String FLOW_PROCESSING_THREADS = "flowProcessingThreads";
+    public static final int FLOW_PROCESSING_THREADS_DEFAULT = 8;
+
+    public static final String SUBSCRIBER_PROCESSING_THREADS = "subscriberProcessingThreads";
+    public static final int SUBSCRIBER_PROCESSING_THREADS_DEFAULT = 8;
+
+    public static final String REQUEUE_DELAY = "requeueDelay";
+    public static final int REQUEUE_DELAY_DEFAULT = 500;
 
     public static final String UPSTREAM_ONU = "upstreamOnu";
     public static final String UPSTREAM_OLT = "upstreamOlt";

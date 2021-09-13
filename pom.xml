@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2015-present Open Networking Foundation
+  ~ Copyright 2021 Open Networking Foundation
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,34 +14,30 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <groupId>org.onosproject</groupId>
-        <artifactId>onos-dependencies</artifactId>
-        <version>2.5.2</version>
-    </parent>
-
-    <groupId>org.opencord</groupId>
-    <artifactId>olt</artifactId>
-    <version>4.6.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
-    <properties>
-        <sadis.api.version>5.4.0</sadis.api.version>
-        <olt.api.version>4.6.0-SNAPSHOT</olt.api.version>
-    </properties>
-
     <modules>
         <module>api</module>
         <module>impl</module>
         <module>web</module>
         <module>app</module>
     </modules>
-
+    <parent>
+        <groupId>org.onosproject</groupId>
+        <artifactId>onos-dependencies</artifactId>
+        <version>2.5.2</version>
+    </parent>
+    <groupId>org.opencord</groupId>
+    <artifactId>olt</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <description>OLT Application</description>
+    <url>http://onosproject.org</url>
+    <properties>
+        <sadis.api.version>5.5.0-SNAPSHOT</sadis.api.version>
+        <olt.api.version>5.0.0-SNAPSHOT</olt.api.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.onosproject</groupId>
@@ -56,9 +52,7 @@
             <version>${onos.version}</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -90,7 +84,6 @@
             </plugin>
         </plugins>
     </build>
-
     <repositories>
         <repository>
             <id>central</id>
