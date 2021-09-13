@@ -24,7 +24,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.DeviceId;
-import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.OltService;
 
 import java.util.List;
 
@@ -38,11 +38,11 @@ public class ShowOltCommand extends AbstractShellCommand {
 
     @Override
     protected void doExecute() {
-        AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
+        OltService service = AbstractShellCommand.get(OltService.class);
         if (outputJson()) {
-            print("%s", json(service.fetchOlts()));
+            print("%s", json(service.getConnectedOlts()));
         } else {
-            service.fetchOlts().forEach(did -> print("OLT %s", did));
+            service.getConnectedOlts().forEach(did -> print("OLT %s", did));
         }
 
     }
