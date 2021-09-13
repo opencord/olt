@@ -28,7 +28,7 @@ import org.onosproject.net.PortNumber;
 import org.opencord.olt.AccessDeviceService;
 
 /**
- * Adds a subscriber to an access device.
+ * Adds all possible subscribers to an access device.
  */
 @Service
 @Command(scope = "onos", name = "volt-add-subscriber-access",
@@ -48,7 +48,6 @@ public class SubscriberAddCommand extends AbstractShellCommand {
     @Override
     protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-
         DeviceId deviceId = DeviceId.deviceId(strDeviceId);
         PortNumber port = PortNumber.portNumber(strPort);
         ConnectPoint connectPoint = new ConnectPoint(deviceId, port);
