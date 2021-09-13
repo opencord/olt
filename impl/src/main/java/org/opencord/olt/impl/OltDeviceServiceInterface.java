@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-present Open Networking Foundation
+ * Copyright 2021-present Open Networking Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-/**
- * Internal APIs for the OLT application.
- */
-package org.opencord.olt.internalapi;
+package org.opencord.olt.impl;
+
+import org.onosproject.net.Device;
+import org.onosproject.net.DeviceId;
+import org.onosproject.net.Port;
+
+import java.util.Optional;
+
+public interface OltDeviceServiceInterface {
+    boolean isOlt(Device device);
+    boolean isNniPort(Device device, Port port);
+    Optional<Port> getNniPort(Device device);
+
+    boolean isLocalLeader(DeviceId deviceId);
+}
