@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-present Open Networking Foundation
+ * Copyright 2021-present Open Networking Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,34 +16,58 @@
 
 package org.opencord.olt.cli;
 
+import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
+import org.onosproject.cli.net.DeviceIdCompleter;
 import org.onosproject.net.ConnectPoint;
-import org.opencord.olt.AccessDeviceService;
+import org.onosproject.net.DeviceId;
+import org.onosproject.net.PortNumber;
+import org.opencord.olt.impl.OltFlowServiceInterface;
 import org.opencord.sadis.UniTagInformation;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-/**
- * Shows subscriber information for those subscriber which have been programmed
- * in the data-plane.
- */
 @Service
 @Command(scope = "onos", name = "volt-programmed-subscribers",
         description = "Shows subscribers programmed in the dataplane")
 public class ShowProgrammedSubscribersCommand extends AbstractShellCommand {
 
+    @Argument(index = 0, name = "deviceId", description = "Access device ID",
+            required = false, multiValued = false)
+    @Completion(DeviceIdCompleter.class)
+    private String strDeviceId = null;
+
+    @Argument(index = 1, name = "port", description = "Subscriber port number",
+            required = false, multiValued = false)
+    @Completion(OltUniPortCompleter.class)
+    private String strPort = null;
+
     @Override
     protected void doExecute() {
-        AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
-        Map<ConnectPoint, Set<UniTagInformation>> info = service.getProgSubs();
-        info.forEach(this::display);
+        OltFlowServiceInterface service = AbstractShellCommand.get(OltFlowServiceInterface.class);
+        Map<ConnectPoint, Set<UniTagInformation>> info = service.getProgrammedSubscribers();
+        Set<Map.Entry<ConnectPoint, Set<UniTagInformation>>> entries = info.entrySet();
+        if (strDeviceId != null && !strDeviceId.equals("")) {
+            entries = entries.stream().filter(entry -> entry.getKey().deviceId()
+                    .equals(DeviceId.deviceId(strDeviceId))).collect(Collectors.toSet());
+        }
+
+        if (strPort != null && !strPort.equals("")) {
+            PortNumber portNumber = PortNumber.portNumber(strPort);
+            entries = entries.stream().filter(entry -> entry.getKey().port()
+                    .equals(portNumber)).collect(Collectors.toSet());
+        }
+
+        entries.forEach(entry -> display(entry.getKey(), entry.getValue()));
     }
 
     private void display(ConnectPoint cp, Set<UniTagInformation> uniTagInformation) {
         uniTagInformation.forEach(uniTag ->
-                                          print("location=%s tagInformation=%s", cp, uniTag));
+                print("location=%s tagInformation=%s", cp, uniTag));
     }
 }
