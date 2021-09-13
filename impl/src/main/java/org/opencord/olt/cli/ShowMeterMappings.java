@@ -19,28 +19,31 @@ package org.opencord.olt.cli;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
-import org.onosproject.net.meter.MeterKey;
-import org.opencord.olt.internalapi.AccessDeviceMeterService;
+import org.onosproject.net.DeviceId;
+import org.opencord.olt.impl.MeterData;
+import org.opencord.olt.impl.OltMeterServiceInterface;
 
-import java.util.Collection;
 import java.util.Map;
 
 @Service
 @Command(scope = "onos", name = "volt-bpmeter-mappings",
-        description = "Shows information about bandwidthProfile-meterKey (device / meter) mappings")
-public class ShowBpMeterMappingsCommand extends AbstractShellCommand {
+        description = "Shows information about programmed meters, including the relation with the Bandwidth Profile")
+public class ShowMeterMappings extends AbstractShellCommand {
 
     @Override
     protected void doExecute() {
-        AccessDeviceMeterService service = AbstractShellCommand.get(AccessDeviceMeterService.class);
-        Map<String, Collection<MeterKey>> bpMeterMappings = service.getBpMeterMappings();
-        bpMeterMappings.forEach(this::display);
+        OltMeterServiceInterface service = AbstractShellCommand.get(OltMeterServiceInterface.class);
+        Map<DeviceId, Map<String, MeterData>> meters = service.getProgrammedMeters();
+        if (meters.isEmpty()) {
+            print("No meters programmed by the org.opencord.olt app");
+        }
+        meters.forEach(this::display);
     }
 
-    private void display(String bpInfo, Collection<MeterKey> meterKeyList) {
-        meterKeyList.forEach(meterKey ->
-                print("bpInfo=%s deviceId=%s meterId=%s",
-                        bpInfo, meterKey.deviceId(), meterKey.meterId()));
+    private void display(DeviceId deviceId, Map<String, MeterData> data) {
+        data.forEach((bp, md) ->
+                print("\tbpInfo=%s deviceId=%s meterId=%s",
+                        deviceId, bp, md.meterId));
 
     }
 }
