@@ -35,6 +35,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "467c365e_ed9033bf",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "Not on the READMEs",
+      "parentUuid": "7808f834_3160aee8",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0398f3f_e476ad23",
@@ -48,6 +66,30 @@
       "writtenOn": "2021-09-16T15:47:55Z",
       "side": 1,
       "message": "why there is time ? Also below",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 137
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "97ac823b_f5186aad",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "copied from the ONOS cli, it prints the time with every command, let me remove it",
+      "parentUuid": "b0398f3f_e476ad23",
       "range": {
         "startLine": 12,
         "startChar": 0,
@@ -75,6 +117,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6754b33f_962fdf92",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0198c4da_cbeb0075",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "89cf0be5_f992448f",
@@ -88,6 +148,30 @@
       "writtenOn": "2021-09-16T15:47:55Z",
       "side": 1,
       "message": "make sure you don\u0027t have other code belonging to this package in the other folders (from a first check, it does not seem so)",
+      "range": {
+        "startLine": 17,
+        "startChar": 8,
+        "endLine": 17,
+        "endChar": 24
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc759e72_8a61d43f",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "89cf0be5_f992448f",
       "range": {
         "startLine": 17,
         "startChar": 8,
@@ -117,6 +201,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "18b45fed_91915ff0",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "yes I believe we will have to, but it\u0027s not yet implemented.\n\nThe old app was posting events and implementing it\u0027s own event type: https://github.com/opencord/olt/blob/5111823d4d462d8bcef32190441e2a949da24499/api/src/main/java/org/opencord/olt/AccessDeviceEvent.java#L28\n\nThat will have to be ported here (most likely in a subsequent patch)",
+      "parentUuid": "1631d204_9a029d73",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ea840809_f029183a",
         "filename": "api/src/main/java/org/opencord/olt/OltService.java",
         "patchSetId": 5
@@ -128,6 +230,47 @@
       "writtenOn": "2021-09-16T15:47:55Z",
       "side": 1,
       "message": "several java docs are missing. Please fix them",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ff8c442_99c4afd7",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ea840809_f029183a",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "047d06a4_3c774d4c",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "@andrea does this need to be a public method?",
+      "range": {
+        "startLine": 47,
+        "startChar": 17,
+        "endLine": 47,
+        "endChar": 43
+      },
       "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -145,6 +288,30 @@
       "writtenOn": "2021-09-16T15:47:55Z",
       "side": 1,
       "message": "date",
+      "range": {
+        "startLine": 3,
+        "startChar": 14,
+        "endLine": 3,
+        "endChar": 18
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a0e578f_5500d9e6",
+        "filename": "app/app.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "253054f0_5fdbe9ba",
       "range": {
         "startLine": 3,
         "startChar": 14,
@@ -178,6 +345,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "773c39ee_fd5b7688",
+        "filename": "app/features.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7832a529_500c9d29",
+      "range": {
+        "startLine": 3,
+        "startChar": 17,
+        "endLine": 3,
+        "endChar": 18
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c557306b_c0c690eb",
@@ -191,6 +382,24 @@
       "writtenOn": "2021-09-16T15:47:55Z",
       "side": 1,
       "message": "date",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "828c01ba_be03f2bd",
+        "filename": "spotbugs-security-exclude.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-09-16T18:26:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c557306b_c0c690eb",
       "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
