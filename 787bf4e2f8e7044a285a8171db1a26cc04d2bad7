@@ -1,0 +1,198 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f790a6c_5316b042",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "Still reviewing - these are initial comments",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7808f834_3160aee8",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "Do we need copyright ?",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0398f3f_e476ad23",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "why there is time ? Also below",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 137
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0198c4da_cbeb0075",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "seems broken",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89cf0be5_f992448f",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "make sure you don\u0027t have other code belonging to this package in the other folders (from a first check, it does not seem so)",
+      "range": {
+        "startLine": 17,
+        "startChar": 8,
+        "endLine": 17,
+        "endChar": 24
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1631d204_9a029d73",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "Do we plan to deliver events to listeners ?",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea840809_f029183a",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "several java docs are missing. Please fix them",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "253054f0_5fdbe9ba",
+        "filename": "app/app.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "date",
+      "range": {
+        "startLine": 3,
+        "startChar": 14,
+        "endLine": 3,
+        "endChar": 18
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7832a529_500c9d29",
+        "filename": "app/features.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "date is not updated here",
+      "range": {
+        "startLine": 3,
+        "startChar": 17,
+        "endLine": 3,
+        "endChar": 18
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c557306b_c0c690eb",
+        "filename": "spotbugs-security-exclude.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-16T15:47:55Z",
+      "side": 1,
+      "message": "date",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
