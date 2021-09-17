@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4ae2361_ef1d90c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-17T14:36:48Z",
+      "side": 1,
+      "message": "I\u0027m still reviewing.",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "595d5fa3_ccbdf7b5",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-17T14:36:48Z",
+      "side": 1,
+      "message": "Sadis should not be mandatory for single app update purposes.",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1afc3bb2_53e5f375",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-17T14:36:48Z",
+      "side": 1,
+      "message": "Shouldn\u0027t the executors have to be recreated at this stage? Is it enough to update thread pool count?",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb175a1b_b92373b6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-17T14:36:48Z",
+      "side": 1,
+      "message": "It might be good to add device and port parameters.",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "339e55d5_855b70fd",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-17T14:36:48Z",
+      "side": 1,
+      "message": "Logging with portName is easy to identify user. In OLT reboot scenerio, portNumbers could be change, but portName never changes. So logging with portName is very important. I saw there are some mixed logging, some with portName some with only portNumber. Looking at it from this angle, could you take another look at the logging parts if possible?",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f265556_8e10cce8",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-17T14:36:48Z",
+      "side": 1,
+      "message": "There are too much logging like this. DiscoveredSubscriber object can have object like AccessDevicePort as previous to logging easily and clean.",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a837cab_98d3423a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-17T14:36:48Z",
+      "side": 1,
+      "message": "Sadis should not be mandatory for single app update purposes.",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
