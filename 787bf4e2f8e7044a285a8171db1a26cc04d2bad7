@@ -219,6 +219,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "66c0f47d_77aada7b",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-17T07:39:36Z",
+      "side": 1,
+      "message": "I think we can\u0027t really put it into master without support for the events and the Kafka integration, those are key for operators.",
+      "parentUuid": "18b45fed_91915ff0",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ea840809_f029183a",
         "filename": "api/src/main/java/org/opencord/olt/OltService.java",
         "patchSetId": 5
@@ -265,6 +283,30 @@
       "writtenOn": "2021-09-16T18:26:26Z",
       "side": 1,
       "message": "@andrea does this need to be a public method?",
+      "range": {
+        "startLine": 47,
+        "startChar": 17,
+        "endLine": 47,
+        "endChar": 43
+      },
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a23a6a8_3dfb9b74",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-17T07:39:36Z",
+      "side": 1,
+      "message": "I use it in the web APIs and the CLI, I think it\u0027s ok to have it public",
+      "parentUuid": "047d06a4_3c774d4c",
       "range": {
         "startLine": 47,
         "startChar": 17,
