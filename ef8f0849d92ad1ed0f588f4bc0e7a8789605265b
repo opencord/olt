@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "251a5efd_3741c790",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-17T16:09:31Z",
+      "side": 1,
+      "message": "indeed, that is a TODO that we still need to fix, thanks for pointing it out.",
+      "parentUuid": "595d5fa3_ccbdf7b5",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1afc3bb2_53e5f375",
         "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 6
@@ -48,6 +66,24 @@
       "writtenOn": "2021-09-17T14:36:48Z",
       "side": 1,
       "message": "Shouldn\u0027t the executors have to be recreated at this stage? Is it enough to update thread pool count?",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f8a3a40_0be7666e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-17T16:09:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1afc3bb2_53e5f375",
       "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -65,6 +101,24 @@
       "writtenOn": "2021-09-17T14:36:48Z",
       "side": 1,
       "message": "It might be good to add device and port parameters.",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "058cb066_762cf3f7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-17T16:09:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb175a1b_b92373b6",
       "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -88,6 +142,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "acd9cb0e_056f1542",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-17T16:09:31Z",
+      "side": 1,
+      "message": "all logs of olt.java now have the portname",
+      "parentUuid": "339e55d5_855b70fd",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3f265556_8e10cce8",
         "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 6
@@ -105,6 +177,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1f93dc59_4470252e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-17T16:09:31Z",
+      "side": 1,
+      "message": "all the information is already present and it\u0027s only a matter of formatting, I\u0027ve changed the subscribe to include the port name in the to string as well and created a static method to always print the port name. Adding an object just for logging it\u0027s a bit excessive.",
+      "parentUuid": "3f265556_8e10cce8",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4a837cab_98d3423a",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 6
@@ -116,6 +206,24 @@
       "writtenOn": "2021-09-17T14:36:48Z",
       "side": 1,
       "message": "Sadis should not be mandatory for single app update purposes.",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d7dccbf_1591b919",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-17T16:09:31Z",
+      "side": 1,
+      "message": "added to do the TODO list",
+      "parentUuid": "4a837cab_98d3423a",
       "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
