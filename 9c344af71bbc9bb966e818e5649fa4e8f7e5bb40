@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f201543_6617f185",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1173,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "Not at the same level as log.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81d5f6c2_b6be7504",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "No need to import DeviceStore too. DeviceService already has getPort API with ConnectPoint.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbba1d95_6b73a3d4",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "Unnecessary conversion, cp.deviceId() is usable directly.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27bd3176_4142f5ed",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "Not at the same level as log.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12d77e52_456fbd47",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceServiceInterface.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "javadocs needed.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cdb09b1a_2385a21e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 534,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "For dynamic mac learning scenerio, this is needed. After dhcp flow installation, MAC should be checked. If it is not present, sub should be put on a waiting map and host event should be waited.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4f1df40_6f86a214",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1228,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "Log level shoud be error. portName is not logged. I don\u0027t know is it on purpose in onSuccess case, port is logged directly which will be print too much parameter. Same as well other process flow objective methods.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d1336dd_c0f5fc77",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1409,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "After unprovision, host is not deleted. So if provision again, no need to wait host event again, mac learnable from hostService directly. Hosts are deleted only with PORT_REMOVE events.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80f0743d_8db5c1d9",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowServiceInterface.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "javadoc needed.",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3699672a_e5ac5cbf",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "Why it is volatile?",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}

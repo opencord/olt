@@ -176,6 +176,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f38d2b40_a863d066",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "acd9cb0e_056f1542",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3f265556_8e10cce8",
@@ -207,6 +225,24 @@
       "side": 1,
       "message": "all the information is already present and it\u0027s only a matter of formatting, I\u0027ve changed the subscribe to include the port name in the to string as well and created a static method to always print the port name. Adding an object just for logging it\u0027s a bit excessive.",
       "parentUuid": "3f265556_8e10cce8",
+      "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88436870_64e21a4e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-20T08:41:10Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1f93dc59_4470252e",
       "revId": "ef8f0849d92ad1ed0f588f4bc0e7a8789605265b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
