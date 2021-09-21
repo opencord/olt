@@ -237,6 +237,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "17835e5d_23866901",
+        "filename": "api/src/main/java/org/opencord/olt/OltService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-21T15:34:51Z",
+      "side": 1,
+      "message": "So, is this a todo for this patch ?",
+      "parentUuid": "66c0f47d_77aada7b",
+      "revId": "787bf4e2f8e7044a285a8171db1a26cc04d2bad7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ea840809_f029183a",
         "filename": "api/src/main/java/org/opencord/olt/OltService.java",
         "patchSetId": 5
