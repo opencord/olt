@@ -45,6 +45,10 @@ public final class OsgiPropertyConstants {
     public static final String DEFAULT_TP_ID = "defaultTechProfileId";
     public static final int DEFAULT_TP_ID_DEFAULT = 64;
 
+    public static final String ZERO_REFERENCE_METER_COUNT = "zeroReferenceMeterCount";
+    public static final int ZERO_REFERENCE_METER_COUNT_DEFAULT = 3;
+
+
     public static final String DEFAULT_BP_ID = "defaultBpId";
     public static final String DEFAULT_BP_ID_DEFAULT = "Default";
 
