@@ -213,6 +213,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9c0a8b5a_2c01abd2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 534,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-22T06:20:39Z",
+      "side": 1,
+      "message": "I\u0027m not sure, I have to test it for different scenarios.",
+      "parentUuid": "3d5108e5_b2385c21",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d4f1df40_6f86a214",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 7
@@ -242,6 +260,24 @@
       "side": 1,
       "message": "updated, but kept info for onSuccess. why do you think it\u0027s too much ?",
       "parentUuid": "d4f1df40_6f86a214",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06f0bf28_2d05822a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1228,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-22T06:20:39Z",
+      "side": 1,
+      "message": "Most of the logs contains only deviceId+portNumber+portName combination and thats enough. Why we need to log whole port object parameters?",
+      "parentUuid": "7c215aa3_a5798ac5",
       "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
