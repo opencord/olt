@@ -18,6 +18,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "33796e0e_ef11762b",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "682292e9_b61e7d9f",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9c490dc1_c2ab479e",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-09-23T07:09:42Z",
       "side": 1,
       "message": "nothing typo mistake",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe575beb_2200ffb7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 492,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c490dc1_c2ab479e",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -54,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "398ce777_e5eb4b93",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "the subscriber handling is only done by the master of the device so this lock is sufficient.",
+      "parentUuid": "044073c8_cad48eac",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7350e722_ca447b55",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 10
@@ -65,6 +119,24 @@
       "writtenOn": "2021-09-23T07:09:42Z",
       "side": 1,
       "message": "this TODO could be removed. provisionedSubscribers map created as distributed map at line 284.",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ab46b633_2631fa30",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7350e722_ca447b55",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -86,6 +158,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "23a439ee_e64de635",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "346a7a62_08664c6f",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "514ae2e9_886c6bcd",
@@ -99,6 +189,24 @@
       "writtenOn": "2021-09-23T07:09:42Z",
       "side": 1,
       "message": "Possible NPE for printing port.",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "da9223a6_8975d614",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 377,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "514ae2e9_886c6bcd",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -120,6 +228,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2749189c_66afcc0d",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f825f7a3_78d0de5d",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "31b380bb_9822130e",
@@ -133,6 +259,24 @@
       "writtenOn": "2021-09-23T07:09:42Z",
       "side": 1,
       "message": "Subscribers typo mistake.",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e9d0366_039833bf",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "31b380bb_9822130e",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -156,6 +300,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0c0656ff_271b9fd5",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "I did not get this comment. can you please elaborate ? what is not clear ?",
+      "parentUuid": "e616dc27_200eaac9",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b9ed5457_f2dda4fc",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 10
@@ -167,6 +329,24 @@
       "writtenOn": "2021-09-23T07:09:42Z",
       "side": 1,
       "message": "same, not clear parameter name.",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e037478_17c92685",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 463,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "do you mean that you want upstreamBandwidthProfile and upstreamOltbandwidthProfile ?",
+      "parentUuid": "b9ed5457_f2dda4fc",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -190,6 +370,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "673fcb1b_1714e9d7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 464,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "I removed a couple of double empty lines, some single empty lines were left for clarity/readability.",
+      "parentUuid": "a1cf0f8c_1e63e9ea",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a3f1c97d_ff9fbb06",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 10
@@ -201,6 +399,24 @@
       "writtenOn": "2021-09-23T07:09:42Z",
       "side": 1,
       "message": "same, not clear parameter name.",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e77f5b52_8843a348",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 480,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "see before",
+      "parentUuid": "a3f1c97d_ff9fbb06",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -224,6 +440,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "584eb0b3_f35ddd73",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 487,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "see before",
+      "parentUuid": "f8c805ca_af20915b",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "aaceb326_1a21f037",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 10
@@ -235,6 +469,24 @@
       "writtenOn": "2021-09-23T07:09:42Z",
       "side": 1,
       "message": "Getting portName from port object has been used in many times. It could be convert a method in OltUtils.",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e8d581f_a9443df2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 866,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aaceb326_1a21f037",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -273,6 +525,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c39813d_3f692d4c",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 1390,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "393d15f2_19cc6491",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4dd45d14_4dac1ff3",
@@ -290,6 +560,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "af11ccf5_34fe4146",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 1407,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4dd45d14_4dac1ff3",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0b79e5c4_e1771a26",
@@ -303,6 +591,24 @@
       "writtenOn": "2021-09-23T07:09:42Z",
       "side": 1,
       "message": "need a \"break\" after this line.",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "949142b8_acfbdf89",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 1483,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-23T08:46:31Z",
+      "side": 1,
+      "message": "added return. not key because the default case and the case after are still returning immediately, but yes, avoiding further bugs in the future.",
+      "parentUuid": "0b79e5c4_e1771a26",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
