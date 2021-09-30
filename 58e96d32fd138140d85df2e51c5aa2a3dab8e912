@@ -107,6 +107,125 @@
       },
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33eff2aa_4579a258",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 523,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T08:53:16Z",
+      "side": 1,
+      "message": "No need to use raw type, BlockingQueue\u003cDiscoveredSubscriber\u003e would be better.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8d0fb57_6b305a6a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T08:53:16Z",
+      "side": 1,
+      "message": "No need to volatile.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f719c6b6_3c8cd896",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T08:53:16Z",
+      "side": 1,
+      "message": "No need to volatile.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c5994c2_62d53452",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T08:53:16Z",
+      "side": 1,
+      "message": "No need to volatile.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dcc1c983_9a988bbf",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T08:53:16Z",
+      "side": 1,
+      "message": "Need to check deviceInfo is null, like method above.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c98dd339_02c0b486",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowServiceInterface.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T08:53:16Z",
+      "side": 1,
+      "message": "return boolean could be primitive.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b900b670_feac91e8",
+        "filename": "web/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T08:53:16Z",
+      "side": 1,
+      "message": "While finding connect point, already the device and port is obtained from deviceService. Then, we\u0027re calling provisionSubscriber and removeSubscriber methods with connect point and then getting device and port objects again from deviceService in these methods. Why we don\u0027t calling the APIs with device and port objects directly and calling device service twice for them?",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
