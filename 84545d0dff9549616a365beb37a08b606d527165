@@ -1,0 +1,318 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "231f14a0_55ed858a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/DiscoveredSubscriber.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "what if is this annotation is not present ?",
+      "range": {
+        "startLine": 67,
+        "startChar": 40,
+        "endLine": 67,
+        "endChar": 64
+      },
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8d5564d3_1d10bf77",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "this method has two problems:\n1) You are doing potential blocking operations inline to the core event dispatcher\n2) order of the events can be messed up by the portExecutor.",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba4324e8_65986fcf",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "and there are no ports in the device service",
+      "range": {
+        "startLine": 121,
+        "startChar": 64,
+        "endLine": 121,
+        "endChar": 69
+      },
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2bf6b82_fd3a1b09",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "is the same for device suspended ?",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e969340_480c9796",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "why are you checking it again ? You can just initialize with ADD",
+      "range": {
+        "startLine": 149,
+        "startChar": 54,
+        "endLine": 149,
+        "endChar": 68
+      },
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "812eabf5_fdc03221",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "all these NOTE comments are quite misleading you are not actually checking provisionSubscriber. See also the error case.",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a52c06c_dc69dea5",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "this throws an exception if there is no space. do we care of space limits ?",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cefc586_8d98ebf9",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "this return here is quite annoying. do we exceed the limit ?",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e204772_695bd178",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "it looks like that from line 203 to 216 is a common logic. Can we restructure this code ?",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0fef44e3_abf36087",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "OltDeviceManager - javadoc also for the implementation",
+      "range": {
+        "startLine": 42,
+        "startChar": 13,
+        "endLine": 42,
+        "endChar": 29
+      },
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "825640a6_56a95d7b",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "isSadisReady ?",
+      "range": {
+        "startLine": 70,
+        "startChar": 20,
+        "endLine": 70,
+        "endChar": 37
+      },
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f92fa020_a5d43afb",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "Can we merge these 2 methods ?",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "140a4ede_8243dfdd",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "simplify",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23891b94_0defe77f",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "merge with previous method",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d9b777b_1e2b3cd2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceServiceInterface.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "Service ?",
+      "range": {
+        "startLine": 26,
+        "startChar": 3,
+        "endLine": 26,
+        "endChar": 12
+      },
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "91f4b213_3840c1c5",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceServiceInterface.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "This name does not respect our best practices. This should be OltDeviceService and the actual implementation OltDeviceManager",
+      "range": {
+        "startLine": 28,
+        "startChar": 17,
+        "endLine": 28,
+        "endChar": 42
+      },
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}

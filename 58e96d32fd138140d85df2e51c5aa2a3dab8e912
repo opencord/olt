@@ -141,6 +141,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8f06612_c612eef6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/MeterData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a62cecba_3f6b487c",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "917cae0f_c152f1ca",
@@ -154,6 +172,24 @@
       "writtenOn": "2021-09-29T21:01:08Z",
       "side": 1,
       "message": "You need just MeterCellId. Cast where it is necessary or provide getters that do the job for you.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "261f7138_d9119e16",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/MeterData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "917cae0f_c152f1ca",
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -236,6 +272,46 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "33eff2aa_4579a258",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68fa69fc_fb4f6210",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "javadoc",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7134f6a4_aed70dd6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2021-09-30T16:58:24Z",
+      "side": 1,
+      "message": "is this something you want to be configurable ? Also define a static constants will be more visibile",
+      "range": {
+        "startLine": 80,
+        "startChar": 57,
+        "endLine": 80,
+        "endChar": 58
+      },
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
