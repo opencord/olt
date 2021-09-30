@@ -18,6 +18,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6da2628_1747a7b6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/DiscoveredSubscriber.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0842cc6b_51a23669",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "45303beb_caae7492",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-09-29T21:01:08Z",
       "side": 1,
       "message": "should we mention the potential NPE ?",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec82bb3e_df34ec34",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/DiscoveredSubscriber.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45303beb_caae7492",
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -54,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "13887644_727385d4",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/DiscoveredSubscriber.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "done with empty",
+      "parentUuid": "c29b5a86_24824929",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fb6603d7_16de5d97",
         "filename": "impl/src/main/java/org/opencord/olt/impl/MeterData.java",
         "patchSetId": 11
@@ -65,6 +119,24 @@
       "writtenOn": "2021-09-29T21:01:08Z",
       "side": 1,
       "message": "I am quite confused by this class. What\u0027s the value ? Can we not reuse the abstractions we have in ONOS ?",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a62cecba_3f6b487c",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/MeterData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "it\u0027s to hold all things together in a map, more convenient.",
+      "parentUuid": "fb6603d7_16de5d97",
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -111,6 +183,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3f4004c0_93273944",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/MeterData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "the bandwidths profile name, I will address",
+      "parentUuid": "f751ff4b_e08f6ca7",
+      "range": {
+        "startLine": 32,
+        "startChar": 18,
+        "endLine": 32,
+        "endChar": 34
+      },
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "33eff2aa_4579a258",
         "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 11
@@ -122,6 +218,24 @@
       "writtenOn": "2021-09-30T08:53:16Z",
       "side": 1,
       "message": "No need to use raw type, BlockingQueue\u003cDiscoveredSubscriber\u003e would be better.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "00220d40_c64a6eb8",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 523,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "33eff2aa_4579a258",
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -143,6 +257,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9da846da_61650824",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8d0fb57_6b305a6a",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f719c6b6_3c8cd896",
@@ -156,6 +288,24 @@
       "writtenOn": "2021-09-30T08:53:16Z",
       "side": 1,
       "message": "No need to volatile.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27b9dc30_35a14257",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f719c6b6_3c8cd896",
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -177,6 +327,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "099ef64f_35e01377",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c5994c2_62d53452",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dcc1c983_9a988bbf",
@@ -190,6 +358,24 @@
       "writtenOn": "2021-09-30T08:53:16Z",
       "side": 1,
       "message": "Need to check deviceInfo is null, like method above.",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a4457cb_2fcb40e6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dcc1c983_9a988bbf",
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -211,6 +397,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "50aef9f2_55d9746b",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowServiceInterface.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c98dd339_02c0b486",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b900b670_feac91e8",
@@ -224,6 +428,24 @@
       "writtenOn": "2021-09-30T08:53:16Z",
       "side": 1,
       "message": "While finding connect point, already the device and port is obtained from deviceService. Then, we\u0027re calling provisionSubscriber and removeSubscriber methods with connect point and then getting device and port objects again from deviceService in these methods. Why we don\u0027t calling the APIs with device and port objects directly and calling device service twice for them?",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4228793_a2dce2ff",
+        "filename": "web/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "agreed, added a TODO, later patch.",
+      "parentUuid": "b900b670_feac91e8",
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }

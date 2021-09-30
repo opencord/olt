@@ -352,6 +352,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a9e5792_116656d4",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e65d0072_ce112bac",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b9ed5457_f2dda4fc",
@@ -401,6 +419,24 @@
       "side": 1,
       "message": "bandwidthProfileId and oltBandwidthProfileId would be better.",
       "parentUuid": "5e037478_17c92685",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "825a6f25_8b230f2e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 463,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-09-30T13:34:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61e39a4f_487076a0",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
