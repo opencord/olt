@@ -106,6 +106,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a1e5426_a5922c19",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T07:09:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "398ce777_e5eb4b93",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7350e722_ca447b55",
@@ -318,6 +336,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e65d0072_ce112bac",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T07:09:31Z",
+      "side": 1,
+      "message": "bandwidthProfileId and oltBandwidthProfileId would be better.",
+      "parentUuid": "0c0656ff_271b9fd5",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b9ed5457_f2dda4fc",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 10
@@ -347,6 +383,24 @@
       "side": 1,
       "message": "do you mean that you want upstreamBandwidthProfile and upstreamOltbandwidthProfile ?",
       "parentUuid": "b9ed5457_f2dda4fc",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61e39a4f_487076a0",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 463,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T07:09:31Z",
+      "side": 1,
+      "message": "bandwidthProfileId and oltBandwidthProfileId would be better.",
+      "parentUuid": "5e037478_17c92685",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -386,6 +440,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2311f7c_44a29814",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 464,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T07:09:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "673fcb1b_1714e9d7",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a3f1c97d_ff9fbb06",
@@ -421,6 +493,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "69142e72_17a6e2f1",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 480,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T07:09:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e77f5b52_8843a348",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f8c805ca_af20915b",
@@ -452,6 +542,24 @@
       "side": 1,
       "message": "see before",
       "parentUuid": "f8c805ca_af20915b",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd7663d8_345a74c0",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 487,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T07:09:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "584eb0b3_f35ddd73",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -609,6 +717,24 @@
       "side": 1,
       "message": "added return. not key because the default case and the case after are still returning immediately, but yes, avoiding further bugs in the future.",
       "parentUuid": "0b79e5c4_e1771a26",
+      "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c749518_8a831db2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 1483,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-09-30T07:09:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "949142b8_acfbdf89",
       "revId": "d1e04776e9574255faea2abdbfac6f395baf3e7b",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
