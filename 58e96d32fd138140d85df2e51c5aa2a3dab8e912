@@ -293,6 +293,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "51c30529_ad856856",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-01T15:39:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68fa69fc_fb4f6210",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7134f6a4_aed70dd6",
@@ -306,6 +324,30 @@
       "writtenOn": "2021-09-30T16:58:24Z",
       "side": 1,
       "message": "is this something you want to be configurable ? Also define a static constants will be more visibile",
+      "range": {
+        "startLine": 80,
+        "startChar": 57,
+        "endLine": 80,
+        "endChar": 58
+      },
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98a22e2f_5dc2bdf7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-01T15:39:03Z",
+      "side": 1,
+      "message": "extracted and made a TODO",
+      "parentUuid": "7134f6a4_aed70dd6",
       "range": {
         "startLine": 80,
         "startChar": 57,
