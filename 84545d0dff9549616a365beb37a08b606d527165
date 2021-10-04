@@ -3,6 +3,74 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e382f65e_dbb54a96",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/OltUniPortCompleter.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-04T09:23:50Z",
+      "side": 1,
+      "message": "unused parameter",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a24d4ef6_5e856e24",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowMeterMappings.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-04T09:23:50Z",
+      "side": 1,
+      "message": "hardcoded package name",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8d4cc20_a4833528",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowRequestedSubscribersCommand.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-04T09:23:50Z",
+      "side": 1,
+      "message": "strDeviceId and strPort parameters not implemented in logic.",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b761d99_d2e876df",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/DiscoveredSubscriber.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-04T09:23:50Z",
+      "side": 1,
+      "message": "getPortName method at OltUtils could be used here and null checks can be moved to this method.",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "231f14a0_55ed858a",
         "filename": "impl/src/main/java/org/opencord/olt/impl/DiscoveredSubscriber.java",
         "patchSetId": 12
@@ -79,6 +147,23 @@
       "side": 1,
       "message": "agreed, will have to do this, will upload patch",
       "parentUuid": "8d5564d3_1d10bf77",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd884f4e_c1df92c6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-04T09:23:50Z",
+      "side": 1,
+      "message": "There is a hardcoded package naming. A debug level log with details could be good before return.",
       "revId": "84545d0dff9549616a365beb37a08b606d527165",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -284,6 +369,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9b9eef5b_1e821879",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-04T09:23:50Z",
+      "side": 1,
+      "message": "portWithName method can be used.",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2cefc586_8d98ebf9",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
         "patchSetId": 12
@@ -348,6 +450,23 @@
       "side": 1,
       "message": "It\u0027s the same code but wi will still have to have a check to return, so I think give or take extracting this code will not yield any great improvement",
       "parentUuid": "2e204772_695bd178",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "13ef8604_49f896d1",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-04T09:23:50Z",
+      "side": 1,
+      "message": "portWithName method can be used.",
       "revId": "84545d0dff9549616a365beb37a08b606d527165",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -641,6 +760,23 @@
         "endLine": 28,
         "endChar": 42
       },
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e3a58d0_a3bb42ff",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-04T09:23:50Z",
+      "side": 1,
+      "message": "I think we need to keep ports with portName can be more safe instead of connectPoint. We ran into a lot of problems with this in the \"Olt Reboot\" scenario. portName never changes. I think we need to eliminate connect point usages as much as possible.",
       "revId": "84545d0dff9549616a365beb37a08b606d527165",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
