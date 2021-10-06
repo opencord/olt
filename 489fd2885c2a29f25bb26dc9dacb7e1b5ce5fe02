@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "685a7feb_f125ae0c",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-06T09:38:28Z",
+      "side": 1,
+      "message": "having it paired with the name and the port itself and having it build out of the port object we are fine, it\u0027s kept because it\u0027s needed in conversions to and from the port for ease of use.",
+      "parentUuid": "9f76a8c2_87a38617",
+      "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "43648b47_182d2c62",
         "filename": "impl/src/main/java/org/opencord/olt/cli/ShowFailedSubscribersCommand.java",
         "patchSetId": 14
@@ -31,6 +49,24 @@
       "writtenOn": "2021-10-06T07:36:26Z",
       "side": 1,
       "message": "Some cli command classes have javadoc, some not. Can you check them all?",
+      "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1af79b1e_07269587",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowFailedSubscribersCommand.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-06T09:38:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43648b47_182d2c62",
       "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -69,6 +105,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "abe29aa3_540c391f",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterServiceInterface.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-06T09:38:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0258f9ee_99338c05",
+      "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "11c2d44e_5f2b8661",
@@ -82,6 +136,24 @@
       "writtenOn": "2021-10-06T08:23:42Z",
       "side": 1,
       "message": "unused constant",
+      "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "143a7cc4_6f79b31f",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OsgiPropertyConstants.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-06T09:38:28Z",
+      "side": 1,
+      "message": "good catch, actually meant to use it. done.",
+      "parentUuid": "11c2d44e_5f2b8661",
       "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
