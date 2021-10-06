@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f76a8c2_87a38617",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-06T07:36:26Z",
+      "side": 1,
+      "message": "Why we need to keep connect point? I think the problem about portNumber change will still goes on if we keep it.",
+      "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43648b47_182d2c62",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowFailedSubscribersCommand.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-06T07:36:26Z",
+      "side": 1,
+      "message": "Some cli command classes have javadoc, some not. Can you check them all?",
+      "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
