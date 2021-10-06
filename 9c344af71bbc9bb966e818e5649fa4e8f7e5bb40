@@ -36,6 +36,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "29879005_06e9599b",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 1173,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-06T21:27:04Z",
+      "side": 1,
+      "message": "I think this should be Trace, logs from the driver are definitely low level",
+      "parentUuid": "8a580736_d8189793",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "81d5f6c2_b6be7504",
@@ -225,6 +243,24 @@
       "side": 1,
       "message": "I\u0027m not sure, I have to test it for different scenarios.",
       "parentUuid": "3d5108e5_b2385c21",
+      "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4dc50de_70862a3e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 534,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-06T21:27:04Z",
+      "side": 1,
+      "message": "@Tunahan the idea is exactly what you noted.\n\nsee line 538: (if isMacLearningEnabled \u0026\u0026 !isMacAddressAvailable) return false\nthat means the condition will be checked at the next iteration, meanwhile we proceed installing DHCP flows for other subscribers",
+      "parentUuid": "9c0a8b5a_2c01abd2",
       "revId": "9c344af71bbc9bb966e818e5649fa4e8f7e5bb40",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },

@@ -55,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0326bc70_2a006cc2",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowFailedSubscribersCommand.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-06T21:27:04Z",
+      "side": 1,
+      "message": "The command is there only for backward compatibility as some Jenkins jobs use it to collect logs.\n\nBecause of the way the app is implemented it\u0027s tricky to add a max number of attempt, as how many time a subscriber tries is depending on a number of factors (eg: how many subscribers are in the queue? is the meter already present?)",
+      "parentUuid": "79471cef_d97d9811",
+      "revId": "751451d0ea05d8715c92ada0a1e08b8bfe8ca62b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2192fb02_4b5b06fe",
         "filename": "impl/src/main/java/org/opencord/olt/cli/ShowMeterMappings.java",
         "patchSetId": 9
