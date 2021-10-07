@@ -73,6 +73,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9f857676_b9f283ba",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowFailedSubscribersCommand.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-07T14:29:50Z",
+      "side": 1,
+      "message": "is there a way we can compute and average maybe, give it like 10 more tries and that\u0027s it ?",
+      "parentUuid": "0326bc70_2a006cc2",
+      "revId": "751451d0ea05d8715c92ada0a1e08b8bfe8ca62b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2192fb02_4b5b06fe",
         "filename": "impl/src/main/java/org/opencord/olt/cli/ShowMeterMappings.java",
         "patchSetId": 9

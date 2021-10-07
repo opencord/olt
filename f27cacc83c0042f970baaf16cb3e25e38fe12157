@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e98afbb6_eeef3c9c",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-07T14:29:50Z",
+      "side": 1,
+      "message": "unfortunately that was my way to share it across CLI, REST and IMPL",
+      "parentUuid": "9227f66f_07807a33",
+      "revId": "f27cacc83c0042f970baaf16cb3e25e38fe12157",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e7a6da8b_48b6144c",
         "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
         "patchSetId": 15
@@ -31,6 +49,30 @@
       "writtenOn": "2021-10-06T21:27:04Z",
       "side": 1,
       "message": "this can get very verbose, I\u0027d leave it at trace level",
+      "range": {
+        "startLine": 472,
+        "startChar": 24,
+        "endLine": 472,
+        "endChar": 38
+      },
+      "revId": "f27cacc83c0042f970baaf16cb3e25e38fe12157",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a070d4d3_1ed0d084",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 472,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-07T14:29:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e7a6da8b_48b6144c",
       "range": {
         "startLine": 472,
         "startChar": 24,
@@ -66,6 +108,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "764b594b_697a7ee5",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-07T14:29:50Z",
+      "side": 1,
+      "message": "an instance of AccessDevicePort is more costly then just a string, I\u0027d say we keep this.",
+      "parentUuid": "82e41bc5_e8123796",
+      "range": {
+        "startLine": 474,
+        "startChar": 30,
+        "endLine": 474,
+        "endChar": 42
+      },
+      "revId": "f27cacc83c0042f970baaf16cb3e25e38fe12157",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4bcd9739_f7b251c7",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 15
@@ -77,6 +143,30 @@
       "writtenOn": "2021-10-06T21:27:04Z",
       "side": 1,
       "message": "we should make a decision whether to use the ONOS Port object or the AccessDevicePort across the board",
+      "range": {
+        "startLine": 628,
+        "startChar": 32,
+        "endLine": 628,
+        "endChar": 36
+      },
+      "revId": "f27cacc83c0042f970baaf16cb3e25e38fe12157",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0048963_bf624342",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-07T14:29:50Z",
+      "side": 1,
+      "message": "I see your point, the AceessDevicePort is build out of this port in the getOltPortStatus, I\u0027m ok having the AccessDevicePort here. what do you think ?",
+      "parentUuid": "4bcd9739_f7b251c7",
       "range": {
         "startLine": 628,
         "startChar": 32,
