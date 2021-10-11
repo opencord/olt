@@ -16,6 +16,23 @@
       "message": "Added events. A small update to kafka-onos was required as well: https://gerrit.opencord.org/c/kafka-onos/+/27937",
       "revId": "3d73e09ac3bcb87674aa0e21bc3179638934716a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1236e82b_8df8c722",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-11T06:51:41Z",
+      "side": 1,
+      "message": "mcast service has no meter for TT workflow. There is no check for mcast service before meter checks. So, waitingOnMeter is always true for it.",
+      "revId": "3d73e09ac3bcb87674aa0e21bc3179638934716a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }

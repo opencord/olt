@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "999b1c48_72bcb5de",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-11T06:51:41Z",
+      "side": 1,
+      "message": "There is a problem here. We can\u0027t provision new service, if there is one at this port. provisionedSubscribers map has key only uni-port. We need service parameters like cTag, sTag at key.",
+      "revId": "bdee6fa422ec91c28d9cd5671127dce822149fd9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2bcb685_eab6383c",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-11T06:51:41Z",
+      "side": 1,
+      "message": "There is a conflict with previous implementation. If UpstreamOltBandwidthProfile or DownstreamOltBandwidthProfile are not defined, proviosining keeps failing. UpstreamBandwidthProfile and DownstreamBandwidthProfile must be used for OLT bps according to previous implementation.\n\nAnother question, why we need to wait all of meters? We can move on service by service.",
+      "revId": "bdee6fa422ec91c28d9cd5671127dce822149fd9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
