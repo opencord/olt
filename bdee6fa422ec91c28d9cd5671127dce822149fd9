@@ -33,6 +33,24 @@
       "message": "There is a conflict with previous implementation. If UpstreamOltBandwidthProfile or DownstreamOltBandwidthProfile are not defined, proviosining keeps failing. UpstreamBandwidthProfile and DownstreamBandwidthProfile must be used for OLT bps according to previous implementation.\n\nAnother question, why we need to wait all of meters? We can move on service by service.",
       "revId": "bdee6fa422ec91c28d9cd5671127dce822149fd9",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50f0e4e8_397af8dd",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-11T12:20:38Z",
+      "side": 1,
+      "message": "Sorry, i made a mistake while checking olt bandwidth profiles. You can ignore the first part of comment.",
+      "parentUuid": "c2bcb685_eab6383c",
+      "revId": "bdee6fa422ec91c28d9cd5671127dce822149fd9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
