@@ -376,6 +376,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c0c7519_2a32e74e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-11T08:50:19Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a6cb9c14_2b2a7930",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5e969340_480c9796",
@@ -458,6 +476,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "33f7a509_e0d61f23",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-11T08:50:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c640b5c_2d10e97c",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5a52c06c_dc69dea5",
@@ -489,6 +525,24 @@
       "side": 1,
       "message": "we do not put a limit and the upper bound is 2147483647 I don\u0027t think this is an issue.",
       "parentUuid": "5a52c06c_dc69dea5",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ae1243c_207da868",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-11T08:50:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8471117d_17549e73",
       "revId": "84545d0dff9549616a365beb37a08b606d527165",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -594,6 +648,24 @@
       "side": 1,
       "message": "It\u0027s the same code but wi will still have to have a check to return, so I think give or take extracting this code will not yield any great improvement",
       "parentUuid": "2e204772_695bd178",
+      "revId": "84545d0dff9549616a365beb37a08b606d527165",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "62939b53_929a2cf7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-11T08:50:19Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7847cf33_d1374aab",
       "revId": "84545d0dff9549616a365beb37a08b606d527165",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },

@@ -358,6 +358,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9eec3883_8b8d64b7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-11T08:50:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "98a22e2f_5dc2bdf7",
+      "range": {
+        "startLine": 80,
+        "startChar": 57,
+        "endLine": 80,
+        "endChar": 58
+      },
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e8d0fb57_6b305a6a",
@@ -564,6 +588,24 @@
       "side": 1,
       "message": "agreed, added a TODO, later patch.",
       "parentUuid": "b900b670_feac91e8",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6aaa30c_c2952bfa",
+        "filename": "web/src/main/java/org/opencord/olt/rest/OltWebResource.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-11T08:50:19Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b4228793_a2dce2ff",
       "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
