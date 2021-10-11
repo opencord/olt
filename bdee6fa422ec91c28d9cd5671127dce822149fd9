@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fc5f6124_8c3308af",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-11T13:00:39Z",
+      "side": 1,
+      "message": "Yes, exactly.",
+      "parentUuid": "190bdd71_9c33af09",
+      "revId": "bdee6fa422ec91c28d9cd5671127dce822149fd9",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c2bcb685_eab6383c",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
         "patchSetId": 16

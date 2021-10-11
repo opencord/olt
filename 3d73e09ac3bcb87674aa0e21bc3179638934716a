@@ -55,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "567d922d_28d2b977",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-11T13:00:39Z",
+      "side": 1,
+      "message": "not redundant. In previous implementation, there is a mcast service check before meter checks, so it skips meter control for it, we can give it without bandwidth profile definitions. My netcfg at line 166. https://github.com/opencord/voltha-system-tests/blob/master/tests/data/flex-ocp-cord-sadis-TT.json#L166",
+      "parentUuid": "33fcbdcd_5ab9de9e",
+      "revId": "3d73e09ac3bcb87674aa0e21bc3179638934716a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7dcf435d_6394ad10",
         "filename": "impl/src/test/java/org/opencord/olt/impl/OltTest.java",
         "patchSetId": 17
