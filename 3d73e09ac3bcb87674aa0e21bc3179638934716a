@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "33fcbdcd_5ab9de9e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-11T12:37:24Z",
+      "side": 1,
+      "message": "you mean that the check here is redundant ? if it\u0027s just that I\u0027d leave it instead of making a special case.",
+      "parentUuid": "1236e82b_8df8c722",
+      "revId": "3d73e09ac3bcb87674aa0e21bc3179638934716a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7dcf435d_6394ad10",
         "filename": "impl/src/test/java/org/opencord/olt/impl/OltTest.java",
         "patchSetId": 17
