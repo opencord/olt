@@ -136,30 +136,30 @@ public class OltFlowServiceTest extends OltTestHelpers {
         ConnectPoint cp2 = new ConnectPoint(DeviceId.deviceId("test1"), PortNumber.portNumber(2));
         ConnectPoint cp3 = new ConnectPoint(DeviceId.deviceId("test1"), PortNumber.portNumber(3));
 
-        AccessDevicePort ac1 = new AccessDevicePort(cp1, "name-1");
-        AccessDevicePort ac2 = new AccessDevicePort(cp2, "name-2");
-        AccessDevicePort ac3 = new AccessDevicePort(cp3, "name-3");
+        ServiceKey sk1 = new ServiceKey(new AccessDevicePort(cp1, "name-1"), new UniTagInformation());
+        ServiceKey sk2 = new ServiceKey(new AccessDevicePort(cp2, "name-2"), new UniTagInformation());
+        ServiceKey sk3 = new ServiceKey(new AccessDevicePort(cp3, "name-3"), new UniTagInformation());
 
         // cpStatus map for the test
         oltFlowService.cpStatus = oltFlowService.storageService.
-                <AccessDevicePort, OltPortStatus>consistentMapBuilder().build().asJavaMap();
+                <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
         OltPortStatus cp1Status = new OltPortStatus(PENDING_ADD, NONE, NONE);
-        oltFlowService.cpStatus.put(ac1, cp1Status);
+        oltFlowService.cpStatus.put(sk1, cp1Status);
 
         //check that we only update the provided value
-        oltFlowService.updateConnectPointStatus(ac1, ADDED, null, null);
-        OltPortStatus updated = oltFlowService.cpStatus.get(ac1);
+        oltFlowService.updateConnectPointStatus(sk1, ADDED, null, null);
+        OltPortStatus updated = oltFlowService.cpStatus.get(sk1);
         Assert.assertEquals(ADDED, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
         Assert.assertEquals(NONE, updated.dhcpStatus);
 
         // check that it creates an entry if it does not exist
-        oltFlowService.updateConnectPointStatus(ac2, PENDING_ADD, NONE, NONE);
-        Assert.assertNotNull(oltFlowService.cpStatus.get(ac2));
+        oltFlowService.updateConnectPointStatus(sk2, PENDING_ADD, NONE, NONE);
+        Assert.assertNotNull(oltFlowService.cpStatus.get(sk2));
 
         // check that if we create a new entry with null values they're converted to NONE
-        oltFlowService.updateConnectPointStatus(ac3, null, null, null);
-        updated = oltFlowService.cpStatus.get(ac3);
+        oltFlowService.updateConnectPointStatus(sk3, null, null, null);
+        updated = oltFlowService.cpStatus.get(sk3);
         Assert.assertEquals(NONE, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
         Assert.assertEquals(NONE, updated.dhcpStatus);
@@ -173,7 +173,8 @@ public class OltFlowServiceTest extends OltTestHelpers {
         Device device =
                 new DefaultDevice(pid, deviceId, Device.Type.OLT, "", "", "", "", null);
         ConnectPoint cpWithStatus = new ConnectPoint(deviceId, PortNumber.portNumber(16));
-        AccessDevicePort acWithStatus = new AccessDevicePort(cpWithStatus, "name-1");
+        ServiceKey skWithStatus = new ServiceKey(new AccessDevicePort(cpWithStatus, "name-1"),
+                oltFlowService.defaultEapolUniTag);
         Port port = new DefaultPort(device, PortNumber.portNumber(16), true,
                                     DefaultAnnotations.builder().set(PORT_NAME, "name-1").build());
 
@@ -192,23 +193,26 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 null
         );
 
-        oltFlowService.cpStatus.put(acWithStatus, portStatusAdded);
+        oltFlowService.cpStatus.put(skWithStatus, portStatusAdded);
         Assert.assertTrue(oltFlowService.hasDefaultEapol(port));
 
-        oltFlowService.cpStatus.put(acWithStatus, portStatusRemoved);
+        oltFlowService.cpStatus.put(skWithStatus, portStatusRemoved);
 
         Assert.assertFalse(oltFlowService.hasDefaultEapol(port17));
     }
 
     @Test
     public void testHasSubscriberFlows() {
+        // TODO test with multiple services
         DeviceId deviceId = DeviceId.deviceId("test-device");
         ProviderId pid = new ProviderId("of", "foo");
 
         Device device =
                 new DefaultDevice(pid, deviceId, Device.Type.OLT, "", "", "", "", null);
         ConnectPoint cpWithStatus = new ConnectPoint(deviceId, PortNumber.portNumber(16));
-        AccessDevicePort acWithStatus = new AccessDevicePort(cpWithStatus, "name-1");
+        UniTagInformation uti = new UniTagInformation.Builder().setServiceName("test").build();
+        ServiceKey skWithStatus = new ServiceKey(new AccessDevicePort(cpWithStatus, "name-1"),
+                uti);
         Port port = new DefaultPort(device, PortNumber.portNumber(16), true,
                                     DefaultAnnotations.builder().set(PORT_NAME, "name-1").build());
 
@@ -230,14 +234,14 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 ADDED
         );
 
-        oltFlowService.cpStatus.put(acWithStatus, withDefaultEapol);
-        Assert.assertFalse(oltFlowService.hasSubscriberFlows(port));
+        oltFlowService.cpStatus.put(skWithStatus, withDefaultEapol);
+        Assert.assertFalse(oltFlowService.hasSubscriberFlows(port, uti));
 
-        oltFlowService.cpStatus.put(acWithStatus, withDhcp);
-        Assert.assertTrue(oltFlowService.hasDhcpFlows(port));
+        oltFlowService.cpStatus.put(skWithStatus, withDhcp);
+        Assert.assertTrue(oltFlowService.hasDhcpFlows(port, uti));
 
-        oltFlowService.cpStatus.put(acWithStatus, withSubFlow);
-        Assert.assertTrue(oltFlowService.hasSubscriberFlows(port));
+        oltFlowService.cpStatus.put(skWithStatus, withSubFlow);
+        Assert.assertTrue(oltFlowService.hasSubscriberFlows(port, uti));
     }
 
     @Test

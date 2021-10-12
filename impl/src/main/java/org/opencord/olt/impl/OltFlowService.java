@@ -51,6 +51,7 @@ import org.onosproject.net.flow.criteria.EthTypeCriterion;
 import org.onosproject.net.flow.criteria.IPProtocolCriterion;
 import org.onosproject.net.flow.criteria.PortCriterion;
 import org.onosproject.net.flow.criteria.UdpPortCriterion;
+import org.onosproject.net.flow.criteria.VlanIdCriterion;
 import org.onosproject.net.flow.instructions.L2ModificationInstruction;
 import org.onosproject.net.flowobjective.DefaultFilteringObjective;
 import org.onosproject.net.flowobjective.DefaultForwardingObjective;
@@ -84,12 +85,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -179,11 +178,20 @@ public class OltFlowService implements OltFlowServiceInterface {
     private static final String V6 = "V6";
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    protected UniTagInformation defaultEapolUniTag = new UniTagInformation.Builder().setServiceName("default").build();
+    protected UniTagInformation nniUniTag = new UniTagInformation.Builder()
+            .setServiceName("nni")
+            .setTechnologyProfileId(NONE_TP_ID)
+            .setPonCTag(VlanId.NONE)
+            .setUniTagMatch(VlanId.ANY)
+            .setUsPonCTagPriority(-1)
+            .build();
+
     /**
      * Connect Point status map.
      * Used to keep track of which cp has flows that needs to be removed when the status changes.
      */
-    protected Map<AccessDevicePort, OltPortStatus> cpStatus;
+    protected Map<ServiceKey, OltPortStatus> cpStatus;
     private final ReentrantReadWriteLock cpStatusLock = new ReentrantReadWriteLock();
     private final Lock cpStatusWriteLock = cpStatusLock.writeLock();
     private final Lock cpStatusReadLock = cpStatusLock.readLock();
@@ -193,7 +201,7 @@ public class OltFlowService implements OltFlowServiceInterface {
      * They may or may not have flows, depending on the port status.
      * The map is used to define whether flows need to be provisioned when a port comes up.
      */
-    protected Map<AccessDevicePort, Boolean> provisionedSubscribers;
+    protected Map<ServiceKey, Boolean> provisionedSubscribers;
     private final ReentrantReadWriteLock provisionedSubscribersLock = new ReentrantReadWriteLock();
     private final Lock provisionedSubscribersWriteLock = provisionedSubscribersLock.writeLock();
     private final Lock provisionedSubscribersReadLock = provisionedSubscribersLock.readLock();
@@ -271,15 +279,17 @@ public class OltFlowService implements OltFlowServiceInterface {
                 .register(OltPortStatus.class)
                 .register(OltFlowsStatus.class)
                 .register(AccessDevicePort.class)
+                .register(ServiceKey.class)
+                .register(UniTagInformation.class)
                 .build();
 
-        cpStatus = storageService.<AccessDevicePort, OltPortStatus>consistentMapBuilder()
+        cpStatus = storageService.<ServiceKey, OltPortStatus>consistentMapBuilder()
                 .withName("volt-cp-status")
                 .withApplicationId(appId)
                 .withSerializer(Serializer.using(serializer))
                 .build().asJavaMap();
 
-        provisionedSubscribers = storageService.<AccessDevicePort, Boolean>consistentMapBuilder()
+        provisionedSubscribers = storageService.<ServiceKey, Boolean>consistentMapBuilder()
                 .withName("volt-provisioned-subscriber")
                 .withApplicationId(appId)
                 .withSerializer(Serializer.using(serializer))
@@ -351,7 +361,7 @@ public class OltFlowService implements OltFlowServiceInterface {
     }
 
     @Override
-    public ImmutableMap<AccessDevicePort, OltPortStatus> getConnectPointStatus() {
+    public ImmutableMap<ServiceKey, OltPortStatus> getConnectPointStatus() {
         try {
             cpStatusReadLock.lock();
             return ImmutableMap.copyOf(cpStatus);
@@ -361,32 +371,21 @@ public class OltFlowService implements OltFlowServiceInterface {
     }
 
     @Override
-    public ImmutableMap<AccessDevicePort, Set<UniTagInformation>> getProgrammedSubscribers() {
-
-        Map<AccessDevicePort, Set<UniTagInformation>> subscribers =
+    public ImmutableMap<ServiceKey, UniTagInformation> getProgrammedSubscribers() {
+        // NOTE we might want to remove this conversion and directly use cpStatus as it contains
+        // all the required information about suscribers
+        Map<ServiceKey, UniTagInformation> subscribers =
                 new HashMap<>();
         try {
             cpStatusReadLock.lock();
-            cpStatus.forEach((accessPort, status) -> {
-                Set<UniTagInformation> uniTags = subscribers.getOrDefault(accessPort, new HashSet<>());
-                if (hasSubscriberFlows(accessPort.getPort())) {
-                    Port port = deviceService.getPort(accessPort.connectPoint());
-                    if (port == null) {
-                        log.warn("Cannot find port for cp {} on device {}", accessPort.connectPoint(),
-                                 accessPort.connectPoint().deviceId());
-                        return;
-                    }
-                    String portName = accessPort.name();
-                    SubscriberAndDeviceInformation info = subsService.get(portName);
-                    if (info == null) {
-                        log.error("Cannot find information for port {}", portWithName(port));
-                        return;
-                    }
-                    uniTags.addAll(info.uniTagList());
-//                    info.uniTagList().addAll(uniTags);
+
+            cpStatus.forEach((sk, status) -> {
+                if (!oltDeviceService.isNniPort(deviceService.getDevice(sk.getPort().connectPoint().deviceId()),
+                        sk.getPort().getPort())) {
+                    subscribers.put(sk, sk.getService());
                 }
-                subscribers.put(accessPort, uniTags);
             });
+
             return ImmutableMap.copyOf(subscribers);
         } finally {
             cpStatusReadLock.unlock();
@@ -394,7 +393,7 @@ public class OltFlowService implements OltFlowServiceInterface {
     }
 
     @Override
-    public Map<AccessDevicePort, Boolean> getRequestedSubscribers() {
+    public Map<ServiceKey, Boolean> getRequestedSubscribers() {
         try {
             provisionedSubscribersReadLock.lock();
             return ImmutableMap.copyOf(provisionedSubscribers);
@@ -414,13 +413,13 @@ public class OltFlowService implements OltFlowServiceInterface {
                 log.debug("Installing DHCPv4 trap flow on NNI {} for device {}", portWithName(port), device.id());
                 processDhcpFilteringObjectives(device.id(), port, action, FlowDirection.DOWNSTREAM,
                         67, 68, EthType.EtherType.IPV4.ethType(), IPv4.PROTOCOL_UDP,
-                        null, null, NONE_TP_ID, VlanId.NONE, VlanId.ANY, null);
+                        null, null, nniUniTag);
             }
             if (enableDhcpV6) {
                 log.debug("Installing DHCPv6 trap flow on NNI {} for device {}", portWithName(port), device.id());
                 processDhcpFilteringObjectives(device.id(), port, action, FlowDirection.DOWNSTREAM,
                         546, 547, EthType.EtherType.IPV6.ethType(), IPv6.PROTOCOL_UDP,
-                        null, null, NONE_TP_ID, VlanId.NONE, VlanId.ANY, null);
+                        null, null, nniUniTag);
             }
         } else {
             log.info("DHCP is not required on NNI {} for device {}", portWithName(port), device.id());
@@ -471,7 +470,7 @@ public class OltFlowService implements OltFlowServiceInterface {
             return true;
         }
         return handleEapolFlow(sub, bandwidthProfileId,
-                               oltBandwidthProfileId, FlowOperation.ADD, VlanId.vlanId(EAPOL_DEFAULT_VLAN));
+                oltBandwidthProfileId, FlowOperation.ADD, VlanId.vlanId(EAPOL_DEFAULT_VLAN));
 
     }
 
@@ -526,11 +525,8 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         // NOTE we need to add the DHCP flow regardless so that the host can be discovered and the MacAddress added
-        // but we need to add them only once, if they're pending continue with the next operation
-        if (!hasDhcpFlows(sub.port)) {
-            handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.ADD,
-                    sub.subscriberAndDeviceInformation);
-        }
+        handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.ADD,
+                sub.subscriberAndDeviceInformation);
 
         if (isMacLearningEnabled(sub.subscriberAndDeviceInformation)
                 && !isMacAddressAvailable(sub.device.id(), sub.port,
@@ -555,36 +551,34 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         if (log.isTraceEnabled()) {
             log.trace("Removal of subscriber on {} started",
-                      portWithName(sub.port));
+                    portWithName(sub.port));
         }
         SubscriberAndDeviceInformation si = subsService.get(sub.portName());
         if (si == null) {
             log.error("Subscriber information not found in sadis for port {} during subscriber removal",
-                      portWithName(sub.port));
+                    portWithName(sub.port));
             // NOTE that we are returning true so that the subscriber is removed from the queue
             // and we can move on provisioning others
             return true;
         }
 
-        if (hasDhcpFlows(sub.port)) {
-            handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.REMOVE, si);
-        }
+        handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.REMOVE, si);
 
-        if (hasSubscriberFlows(sub.port)) {
-            if (enableEapol) {
-                // remove the tagged eapol
-                handleSubscriberEapolFlows(sub, FlowOperation.REMOVE, si);
 
-                // and add the default one back
-                if (sub.port.isEnabled()) {
-                    // NOTE we remove the subscriber when the port goes down
-                    // but in that case we don't need to add default eapol
-                    handleEapolFlow(sub, defaultBandwithProfile, defaultBandwithProfile,
-                            FlowOperation.ADD, VlanId.vlanId(EAPOL_DEFAULT_VLAN));
-                }
+        if (enableEapol) {
+            // remove the tagged eapol
+            handleSubscriberEapolFlows(sub, FlowOperation.REMOVE, si);
+
+            // and add the default one back
+            if (sub.port.isEnabled()) {
+                // NOTE we remove the subscriber when the port goes down
+                // but in that case we don't need to add default eapol
+                handleEapolFlow(sub, defaultBandwithProfile, defaultBandwithProfile,
+                        FlowOperation.ADD, VlanId.vlanId(EAPOL_DEFAULT_VLAN));
             }
-            handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.REMOVE, si, multicastServiceName);
         }
+        handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.REMOVE, si, multicastServiceName);
+
 
         handleSubscriberIgmpFlows(sub, FlowOperation.REMOVE);
 
@@ -594,65 +588,52 @@ public class OltFlowService implements OltFlowServiceInterface {
 
     @Override
     public boolean hasDefaultEapol(Port port) {
+        OltPortStatus status = getOltPortStatus(port, defaultEapolUniTag);
+        // NOTE we consider ERROR as a present EAPOL flow as ONOS
+        // will keep trying to add it
+        return status != null && (status.defaultEapolStatus == OltFlowsStatus.ADDED ||
+                status.defaultEapolStatus == OltFlowsStatus.PENDING_ADD ||
+                status.defaultEapolStatus == OltFlowsStatus.ERROR);
+    }
+
+    private OltPortStatus getOltPortStatus(Port port, UniTagInformation uniTagInformation) {
         try {
             cpStatusReadLock.lock();
-            OltPortStatus status = getOltPortStatus(port);
-            // NOTE we consider ERROR as a present EAPOL flow as ONOS
-            // will keep trying to add it
-            return status != null && (status.defaultEapolStatus == OltFlowsStatus.ADDED ||
-                    status.defaultEapolStatus == OltFlowsStatus.PENDING_ADD ||
-                    status.defaultEapolStatus == OltFlowsStatus.ERROR);
+            ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uniTagInformation);
+            return cpStatus.get(sk);
         } finally {
             cpStatusReadLock.unlock();
         }
-    }
-
-    private OltPortStatus getOltPortStatus(Port port) {
-        return cpStatus.get(new AccessDevicePort(port));
     }
 
     public boolean isDefaultEapolPendingRemoval(Port port) {
-        try {
-            cpStatusReadLock.lock();
-            OltPortStatus status = getOltPortStatus(port);
-            if (log.isTraceEnabled()) {
-                log.trace("Status during EAPOL flow check {}", status);
-            }
-            return status != null && status.defaultEapolStatus == OltFlowsStatus.PENDING_REMOVE;
-        } finally {
-            cpStatusReadLock.unlock();
+        OltPortStatus status = getOltPortStatus(port, defaultEapolUniTag);
+        if (log.isTraceEnabled()) {
+            log.trace("Status during EAPOL flow check {}", status);
         }
+        return status != null && status.defaultEapolStatus == OltFlowsStatus.PENDING_REMOVE;
     }
 
     @Override
-    public boolean hasDhcpFlows(Port port) {
-        try {
-            cpStatusReadLock.lock();
-            OltPortStatus status = getOltPortStatus(port);
-            if (log.isTraceEnabled()) {
-                log.trace("Status during DHCP flow check {}", status);
-            }
-            return status != null &&
-                    (status.dhcpStatus == OltFlowsStatus.ADDED ||
-                            status.dhcpStatus == OltFlowsStatus.PENDING_ADD);
-        } finally {
-            cpStatusReadLock.unlock();
+    public boolean hasDhcpFlows(Port port, UniTagInformation uti) {
+        OltPortStatus status = getOltPortStatus(port, uti);
+        if (log.isTraceEnabled()) {
+            log.trace("Status during DHCP flow check {}", status);
         }
+        return status != null &&
+                (status.dhcpStatus == OltFlowsStatus.ADDED ||
+                        status.dhcpStatus == OltFlowsStatus.PENDING_ADD);
     }
 
     @Override
-    public boolean hasSubscriberFlows(Port port) {
-        try {
-            cpStatusReadLock.lock();
-            OltPortStatus status = getOltPortStatus(port);
-            if (log.isTraceEnabled()) {
-                log.trace("Status during subscriber flow check {}", status);
-            }
-            return status != null && (status.subscriberFlowsStatus == OltFlowsStatus.ADDED ||
-                    status.subscriberFlowsStatus == OltFlowsStatus.PENDING_ADD);
-        } finally {
-            cpStatusReadLock.unlock();
+    public boolean hasSubscriberFlows(Port port, UniTagInformation uti) {
+
+        OltPortStatus status = getOltPortStatus(port, uti);
+        if (log.isTraceEnabled()) {
+            log.trace("Status during subscriber flow check {}", status);
         }
+        return status != null && (status.subscriberFlowsStatus == OltFlowsStatus.ADDED ||
+                status.subscriberFlowsStatus == OltFlowsStatus.PENDING_ADD);
     }
 
     @Override
@@ -663,10 +644,10 @@ public class OltFlowService implements OltFlowServiceInterface {
         // removing the status from the cpStatus map
         try {
             cpStatusWriteLock.lock();
-            Iterator<Map.Entry<AccessDevicePort, OltPortStatus>> iter = cpStatus.entrySet().iterator();
+            Iterator<Map.Entry<ServiceKey, OltPortStatus>> iter = cpStatus.entrySet().iterator();
             while (iter.hasNext()) {
-                Map.Entry<AccessDevicePort, OltPortStatus> entry = iter.next();
-                if (entry.getKey().connectPoint().deviceId().equals(deviceId)) {
+                Map.Entry<ServiceKey, OltPortStatus> entry = iter.next();
+                if (entry.getKey().getPort().connectPoint().deviceId().equals(deviceId)) {
                     cpStatus.remove(entry.getKey());
                 }
             }
@@ -677,10 +658,10 @@ public class OltFlowService implements OltFlowServiceInterface {
         // removing subscribers from the provisioned map
         try {
             provisionedSubscribersWriteLock.lock();
-            Iterator<Map.Entry<AccessDevicePort, Boolean>> iter = provisionedSubscribers.entrySet().iterator();
+            Iterator<Map.Entry<ServiceKey, Boolean>> iter = provisionedSubscribers.entrySet().iterator();
             while (iter.hasNext()) {
-                Map.Entry<AccessDevicePort, Boolean> entry = iter.next();
-                if (entry.getKey().connectPoint().deviceId().equals(deviceId)) {
+                Map.Entry<ServiceKey, Boolean> entry = iter.next();
+                if (entry.getKey().getPort().connectPoint().deviceId().equals(deviceId)) {
                     log.info("processing subscriber {} for removal for device {}", entry.getKey(), deviceId);
                     provisionedSubscribers.remove(entry.getKey());
                 }
@@ -691,10 +672,28 @@ public class OltFlowService implements OltFlowServiceInterface {
     }
 
     @Override
-    public boolean isSubscriberProvisioned(AccessDevicePort cp) {
+    public boolean isSubscriberServiceProvisioned(AccessDevicePort cp) {
+        // if any service is programmed on this port, returns true
+        AtomicBoolean provisioned = new AtomicBoolean(false);
         try {
             provisionedSubscribersReadLock.lock();
-            Boolean provisioned = provisionedSubscribers.get(cp);
+            for (Map.Entry<ServiceKey, Boolean> entry : provisionedSubscribers.entrySet()) {
+                if (entry.getKey().getPort().equals(cp) && entry.getValue()) {
+                    provisioned.set(true);
+                    break;
+                }
+            }
+        } finally {
+            provisionedSubscribersReadLock.unlock();
+        }
+        return provisioned.get();
+    }
+
+    @Override
+    public boolean isSubscriberServiceProvisioned(ServiceKey sk) {
+        try {
+            provisionedSubscribersReadLock.lock();
+            Boolean provisioned = provisionedSubscribers.get(sk);
             if (provisioned == null || !provisioned) {
                 return false;
             }
@@ -705,10 +704,10 @@ public class OltFlowService implements OltFlowServiceInterface {
     }
 
     @Override
-    public void updateProvisionedSubscriberStatus(AccessDevicePort cp, Boolean status) {
+    public void updateProvisionedSubscriberStatus(ServiceKey sk, Boolean status) {
         try {
             provisionedSubscribersWriteLock.lock();
-            provisionedSubscribers.put(cp, status);
+            provisionedSubscribers.put(sk, status);
         } finally {
             provisionedSubscribersWriteLock.unlock();
         }
@@ -717,12 +716,15 @@ public class OltFlowService implements OltFlowServiceInterface {
     private boolean handleEapolFlow(DiscoveredSubscriber sub, String bandwidthProfile,
                                     String oltBandwidthProfile, FlowOperation action, VlanId vlanId) {
 
+        // create a subscriberKey for the EAPOL flow
+        ServiceKey sk = new ServiceKey(new AccessDevicePort(sub.port), defaultEapolUniTag);
+
         // NOTE we only need to keep track of the default EAPOL flow in the
         // connectpoint status map
         if (vlanId.id().equals(EAPOL_DEFAULT_VLAN)) {
             OltFlowsStatus status = action == FlowOperation.ADD ?
                     OltFlowsStatus.PENDING_ADD : OltFlowsStatus.PENDING_REMOVE;
-            updateConnectPointStatus(new AccessDevicePort(sub.port), status, OltFlowsStatus.NONE, OltFlowsStatus.NONE);
+            updateConnectPointStatus(sk, status, OltFlowsStatus.NONE, OltFlowsStatus.NONE);
 
         }
 
@@ -794,11 +796,11 @@ public class OltFlowService implements OltFlowServiceInterface {
                     @Override
                     public void onError(Objective objective, ObjectiveError error) {
                         log.error("Cannot {} eapol flow for {} : {}", action,
-                                  portWithName(sub.port), error);
+                                portWithName(sub.port), error);
 
                         if (vlanId.id().equals(EAPOL_DEFAULT_VLAN)) {
-                            updateConnectPointStatus(new AccessDevicePort(sub.port),
-                                                     OltFlowsStatus.ERROR, null, null);
+                            updateConnectPointStatus(sk,
+                                    OltFlowsStatus.ERROR, null, null);
                         }
                     }
                 });
@@ -818,11 +820,17 @@ public class OltFlowService implements OltFlowServiceInterface {
         // TODO verify we need an EAPOL flow for EACH service
         AtomicBoolean success = new AtomicBoolean(true);
         si.uniTagList().forEach(u -> {
+            // we assume that if subscriber flows are installed, tagged EAPOL is installed as well
+            boolean hasFlows = hasSubscriberFlows(sub.port, u);
+            if (action == FlowOperation.ADD && hasFlows ||
+                    action == FlowOperation.REMOVE && !hasFlows) {
+                return;
+            }
             if (!handleEapolFlow(sub, u.getUpstreamBandwidthProfile(),
                     u.getUpstreamOltBandwidthProfile(),
                     action, u.getPonCTag())) {
                 //
-                log.error("Failed to install EAPOL with suscriber tags");
+                log.error("Failed to {} EAPOL with suscriber tags", action);
                 //TODO this sets it for all services, maybe some services succeeded.
                 success.set(false);
             }
@@ -918,6 +926,14 @@ public class OltFlowService implements OltFlowServiceInterface {
                 return;
             }
 
+            // if it's an ADD skip if flows are there,
+            // if it's a DELETE skip if flows are not there
+            boolean hasFlows = hasDhcpFlows(port, uti);
+            if (action == FlowOperation.ADD && hasFlows ||
+                    action == FlowOperation.REMOVE && !hasFlows) {
+                return;
+            }
+
             log.info("{} DHCP flows for subscriber {} on {} and service {}",
                     action, si.id(), portWithName(port), uti.getServiceName());
 
@@ -930,8 +946,7 @@ public class OltFlowService implements OltFlowServiceInterface {
             if (enableDhcpV4) {
                 processDhcpFilteringObjectives(deviceId, port, action, FlowDirection.UPSTREAM, 68, 67,
                         EthType.EtherType.IPV4.ethType(), IPv4.PROTOCOL_UDP, meterId, oltMeterId,
-                        uti.getTechnologyProfileId(), uti.getPonCTag(), uti.getUniTagMatch(),
-                        (byte) uti.getUsPonCTagPriority());
+                        uti);
             }
             if (enableDhcpV6) {
                 log.error("DHCP V6 not supported for subscribers");
@@ -951,6 +966,12 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
         si.uniTagList().forEach(uti -> {
 
+            boolean hasFlows = hasSubscriberFlows(port, uti);
+            if (action == FlowOperation.ADD && hasFlows ||
+                    action == FlowOperation.REMOVE && !hasFlows) {
+                return;
+            }
+
             if (multicastServiceName.equals(uti.getServiceName())) {
                 log.debug("This is the multicast service ({}) for subscriber {} on {}, " +
                                 "dataplane flows are not needed",
@@ -967,8 +988,7 @@ public class OltFlowService implements OltFlowServiceInterface {
             MeterId oltUsMeterId = oltMeterService
                     .getMeterIdForBandwidthProfile(device.id(), uti.getUpstreamOltBandwidthProfile());
             processUpstreamDataFilteringObjects(device.id(), port, nniPort.get(), action, usMeterId,
-                    oltUsMeterId, uti.getTechnologyProfileId(), uti.getPonSTag(), uti.getPonCTag(),
-                    uti.getUniTagMatch(), uti.getUsPonCTagPriority(), uti.getUsPonSTagPriority());
+                    oltUsMeterId, uti);
 
             // downstream flows
             MeterId dsMeterId = oltMeterService
@@ -976,22 +996,21 @@ public class OltFlowService implements OltFlowServiceInterface {
             MeterId oltDsMeterId = oltMeterService
                     .getMeterIdForBandwidthProfile(device.id(), uti.getDownstreamOltBandwidthProfile());
             processDownstreamDataFilteringObjects(device.id(), port, nniPort.get(), action, dsMeterId,
-                    oltDsMeterId, uti.getTechnologyProfileId(), uti.getPonSTag(), uti.getPonCTag(),
-                    uti.getUniTagMatch(), uti.getDsPonCTagPriority(), uti.getUsPonCTagPriority(),
-                    getMacAddress(device.id(), port, uti));
+                    oltDsMeterId, uti, getMacAddress(device.id(), port, uti));
         });
     }
 
     private void processDhcpFilteringObjectives(DeviceId deviceId, Port port,
                                                 FlowOperation action, FlowDirection direction,
                                                 int udpSrc, int udpDst, EthType ethType, byte protocol,
-                                                MeterId meterId, MeterId oltMeterId, int techProfileId,
-                                                VlanId cTag, VlanId unitagMatch, Byte vlanPcp) {
-        log.debug("{} DHCP filtering objectives on {}", action, portWithName(port));
+                                                MeterId meterId, MeterId oltMeterId, UniTagInformation uti) {
+        ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
+        log.debug("{} DHCP filtering objectives on {}", action, sk);
+
 
         OltFlowsStatus status = action.equals(FlowOperation.ADD) ?
                 OltFlowsStatus.PENDING_ADD : OltFlowsStatus.PENDING_REMOVE;
-        updateConnectPointStatus(new AccessDevicePort(port), null, null, status);
+        updateConnectPointStatus(sk, null, null, status);
 
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
@@ -1000,9 +1019,10 @@ public class OltFlowService implements OltFlowServiceInterface {
             treatmentBuilder.meter(meterId);
         }
 
-        if (techProfileId != NONE_TP_ID) {
+        if (uti.getTechnologyProfileId() != NONE_TP_ID) {
             treatmentBuilder.writeMetadata(
-                    createTechProfValueForWriteMetadata(unitagMatch, techProfileId, oltMeterId), 0);
+                    createTechProfValueForWriteMetadata(uti.getUniTagMatch(),
+                            uti.getTechnologyProfileId(), oltMeterId), 0);
         }
 
         FilteringObjective.Builder dhcpBuilder = (action == FlowOperation.ADD ? builder.permit() : builder.deny())
@@ -1016,12 +1036,12 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         //VLAN changes and PCP matching need to happen only in the upstream directions
         if (direction == FlowDirection.UPSTREAM) {
-            treatmentBuilder.setVlanId(cTag);
-            if (!VlanId.vlanId(VlanId.NO_VID).equals(unitagMatch)) {
-                dhcpBuilder.addCondition(Criteria.matchVlanId(unitagMatch));
+            treatmentBuilder.setVlanId(uti.getPonCTag());
+            if (!VlanId.vlanId(VlanId.NO_VID).equals(uti.getUniTagMatch())) {
+                dhcpBuilder.addCondition(Criteria.matchVlanId(uti.getUniTagMatch()));
             }
-            if (vlanPcp != null) {
-                treatmentBuilder.setVlanPcp(vlanPcp);
+            if (uti.getUsPonCTagPriority() != -1) {
+                treatmentBuilder.setVlanPcp((byte) uti.getUsPonCTagPriority());
             }
         }
 
@@ -1034,7 +1054,7 @@ public class OltFlowService implements OltFlowServiceInterface {
             public void onSuccess(Objective objective) {
                 log.info("DHCP {} filter for {} {}.",
                         (ethType.equals(EthType.EtherType.IPV4.ethType())) ? V4 : V6,
-                         portWithName(port),
+                        portWithName(port),
                         action);
             }
 
@@ -1042,10 +1062,10 @@ public class OltFlowService implements OltFlowServiceInterface {
             public void onError(Objective objective, ObjectiveError error) {
                 log.error("DHCP {} filter for {} failed {} because {}",
                         (ethType.equals(EthType.EtherType.IPV4.ethType())) ? V4 : V6,
-                          portWithName(port),
+                        portWithName(port),
                         action,
                         error);
-                updateConnectPointStatus(new AccessDevicePort(port), null, null, OltFlowsStatus.ERROR);
+                updateConnectPointStatus(sk, null, null, OltFlowsStatus.ERROR);
             }
         });
         flowObjectiveService.filter(deviceId, dhcpUpstream);
@@ -1164,35 +1184,34 @@ public class OltFlowService implements OltFlowServiceInterface {
                                                      FlowOperation action,
                                                      MeterId upstreamMeterId,
                                                      MeterId upstreamOltMeterId,
-                                                     int techProfileId, VlanId sTag,
-                                                     VlanId cTag, VlanId unitagMatch, int cTagPcp, int sTagPcp) {
-
+                                                     UniTagInformation uti) {
+        ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
         TrafficSelector selector = DefaultTrafficSelector.builder()
                 .matchInPort(port.number())
-                .matchVlanId(unitagMatch)
+                .matchVlanId(uti.getUniTagMatch())
                 .build();
 
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
         //if the subscriberVlan (cTag) is different than ANY it needs to set.
-        if (cTag.toShort() != VlanId.ANY_VALUE) {
+        if (uti.getPonCTag().toShort() != VlanId.ANY_VALUE) {
             treatmentBuilder.pushVlan()
-                    .setVlanId(cTag);
+                    .setVlanId(uti.getPonCTag());
         }
 
-        if (cTagPcp != -1) {
-            treatmentBuilder.setVlanPcp((byte) cTagPcp);
+        if (uti.getUsPonCTagPriority() != -1) {
+            treatmentBuilder.setVlanPcp((byte) uti.getUsPonCTagPriority());
         }
 
         treatmentBuilder.pushVlan()
-                .setVlanId(sTag);
+                .setVlanId(uti.getPonSTag());
 
-        if (sTagPcp != -1) {
-            treatmentBuilder.setVlanPcp((byte) sTagPcp);
+        if (uti.getUsPonSTagPriority() != -1) {
+            treatmentBuilder.setVlanPcp((byte) uti.getUsPonSTagPriority());
         }
 
         treatmentBuilder.setOutput(nniPort.number())
-                .writeMetadata(createMetadata(cTag,
-                        techProfileId, nniPort.number()), 0L);
+                .writeMetadata(createMetadata(uti.getPonCTag(),
+                        uti.getTechnologyProfileId(), nniPort.number()), 0L);
 
         DefaultAnnotations.Builder annotationBuilder = DefaultAnnotations.builder();
 
@@ -1213,14 +1232,14 @@ public class OltFlowService implements OltFlowServiceInterface {
             @Override
             public void onSuccess(Objective objective) {
                 log.info("Upstream Data plane filter installed for {} {}.",
-                         portWithName(port), action);
+                        sk, action);
             }
 
             @Override
             public void onError(Objective objective, ObjectiveError error) {
                 log.error("Upstream Data plane filter for {} failed {} because {}.",
-                         portWithName(port), action, error);
-                updateConnectPointStatus(new AccessDevicePort(port), null, OltFlowsStatus.ERROR, null);
+                        sk, action, error);
+                updateConnectPointStatus(sk, null, OltFlowsStatus.ERROR, null);
             }
         };
 
@@ -1242,21 +1261,21 @@ public class OltFlowService implements OltFlowServiceInterface {
                                                        FlowOperation action,
                                                        MeterId downstreamMeterId,
                                                        MeterId downstreamOltMeterId,
-                                                       int techProfileId, VlanId sTag,
-                                                       VlanId cTag, VlanId unitagMatch, int vlanPcpDs, int vlanPcpUs,
+                                                       UniTagInformation uti,
                                                        MacAddress macAddress) {
+        ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
         //subscriberVlan can be any valid Vlan here including ANY to make sure the packet is tagged
         TrafficSelector.Builder selectorBuilder = DefaultTrafficSelector.builder()
-                .matchVlanId(sTag)
+                .matchVlanId(uti.getPonSTag())
                 .matchInPort(nniPort.number())
-                .matchInnerVlanId(cTag);
+                .matchInnerVlanId(uti.getPonCTag());
 
-        if (cTag.toShort() != VlanId.ANY_VALUE) {
-            selectorBuilder.matchMetadata(cTag.toShort());
+        if (uti.getPonCTag().toShort() != VlanId.ANY_VALUE) {
+            selectorBuilder.matchMetadata(uti.getPonCTag().toShort());
         }
 
-        if (vlanPcpDs != -1) {
-            selectorBuilder.matchVlanPcp((byte) vlanPcpDs);
+        if (uti.getDsPonCTagPriority() != -1) {
+            selectorBuilder.matchVlanPcp((byte) uti.getDsPonCTagPriority());
         }
 
         if (macAddress != null) {
@@ -1267,8 +1286,8 @@ public class OltFlowService implements OltFlowServiceInterface {
                 .popVlan()
                 .setOutput(port.number());
 
-        treatmentBuilder.writeMetadata(createMetadata(cTag,
-                techProfileId,
+        treatmentBuilder.writeMetadata(createMetadata(uti.getPonCTag(),
+                uti.getTechnologyProfileId(),
                 port.number()), 0);
 
         // Upstream pbit is used to remark inner vlan pbit.
@@ -1276,13 +1295,13 @@ public class OltFlowService implements OltFlowServiceInterface {
         // this is done because ds mode 0 is used because ds mode 3 or 6 that allow for
         // all pbit acceptance are not widely supported by vendors even though present in
         // the OMCI spec.
-        if (vlanPcpUs != -1) {
-            treatmentBuilder.setVlanPcp((byte) vlanPcpUs);
+        if (uti.getUsPonCTagPriority() != -1) {
+            treatmentBuilder.setVlanPcp((byte) uti.getUsPonCTagPriority());
         }
 
-        if (!VlanId.NONE.equals(unitagMatch) &&
-                cTag.toShort() != VlanId.ANY_VALUE) {
-            treatmentBuilder.setVlanId(unitagMatch);
+        if (!VlanId.NONE.equals(uti.getUniTagMatch()) &&
+                uti.getPonCTag().toShort() != VlanId.ANY_VALUE) {
+            treatmentBuilder.setVlanId(uti.getUniTagMatch());
         }
 
         DefaultAnnotations.Builder annotationBuilder = DefaultAnnotations.builder();
@@ -1304,14 +1323,14 @@ public class OltFlowService implements OltFlowServiceInterface {
             @Override
             public void onSuccess(Objective objective) {
                 log.info("Downstream Data plane filter for {} {}.",
-                         portWithName(port), action);
+                        sk, action);
             }
 
             @Override
             public void onError(Objective objective, ObjectiveError error) {
                 log.info("Downstream Data plane filter for {} failed {} because {}.",
-                         portWithName(port), action, error);
-                updateConnectPointStatus(new AccessDevicePort(port), null, OltFlowsStatus.ERROR, null);
+                        sk, action, error);
+                updateConnectPointStatus(sk, null, OltFlowsStatus.ERROR, null);
             }
         };
 
@@ -1418,11 +1437,11 @@ public class OltFlowService implements OltFlowServiceInterface {
                 !MacAddress.NONE.equals(MacAddress.valueOf(tagInformation.getConfiguredMacAddress()));
     }
 
-    protected void updateConnectPointStatus(AccessDevicePort cp, OltFlowsStatus eapolStatus,
+    protected void updateConnectPointStatus(ServiceKey key, OltFlowsStatus eapolStatus,
                                             OltFlowsStatus subscriberFlowsStatus, OltFlowsStatus dhcpStatus) {
         try {
             cpStatusWriteLock.lock();
-            OltPortStatus status = cpStatus.get(cp);
+            OltPortStatus status = cpStatus.get(key);
 
             if (status == null) {
                 status = new OltPortStatus(
@@ -1442,7 +1461,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                 }
             }
 
-            cpStatus.put(cp, status);
+            cpStatus.put(key, status);
         } finally {
             cpStatusWriteLock.unlock();
         }
@@ -1473,7 +1492,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                     }
                     if (log.isTraceEnabled()) {
                         log.trace("flow event {} on cp {}: {}", event.type(),
-                                  portWithName(port), event.subject());
+                                portWithName(port), event.subject());
                     }
                     updateCpStatus(event.type(), port, event.subject());
                     return;
@@ -1490,20 +1509,24 @@ public class OltFlowService implements OltFlowServiceInterface {
             ConnectPoint cp = new ConnectPoint(port.element().id(), port.number());
             OltFlowsStatus status = flowRuleStatusToOltFlowStatus(type);
             if (isDefaultEapolFlow(flowRule)) {
+                ServiceKey sk = new ServiceKey(new AccessDevicePort(port),
+                        defaultEapolUniTag);
                 if (log.isTraceEnabled()) {
-                    log.trace("update defaultEapolStatus {} on {}", status, portWithName(port));
+                    log.trace("update defaultEapolStatus {} on {}", status, sk);
                 }
-                updateConnectPointStatus(new AccessDevicePort(port), status, null, null);
+                updateConnectPointStatus(sk, status, null, null);
             } else if (isDhcpFlow(flowRule)) {
+                ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule);
                 if (log.isTraceEnabled()) {
                     log.trace("update dhcpStatus {} on {}", status, portWithName(port));
                 }
-                updateConnectPointStatus(new AccessDevicePort(port), null, null, status);
+                updateConnectPointStatus(sk, null, null, status);
             } else if (isDataFlow(flowRule)) {
+                ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule);
                 if (log.isTraceEnabled()) {
                     log.trace("update dataplaneStatus {} on {}", status, portWithName(port));
                 }
-                updateConnectPointStatus(new AccessDevicePort(port), null, status, null);
+                updateConnectPointStatus(sk, null, status, null);
             }
         }
 
@@ -1535,6 +1558,7 @@ public class OltFlowService implements OltFlowServiceInterface {
         /**
          * Returns true if the flow is a DHCP flow.
          * Matches both upstream and downstream flows.
+         *
          * @param flowRule The FlowRule to evaluate
          * @return boolean
          */
@@ -1574,6 +1598,37 @@ public class OltFlowService implements OltFlowServiceInterface {
                 return deviceService.getPort(deviceId, port);
             }
             return null;
+        }
+
+        private ServiceKey getSubscriberKeyFromFlowRule(FlowRule flowRule) {
+            Port flowPort = getCpFromFlowRule(flowRule);
+            SubscriberAndDeviceInformation si = subsService.get(getPortName(flowPort));
+
+            if (oltDeviceService.isNniPort(deviceService.getDevice(flowRule.deviceId()), flowPort)) {
+                return new ServiceKey(new AccessDevicePort(flowPort), nniUniTag);
+            }
+
+            VlanIdCriterion vlanIdCriterion =
+                    (VlanIdCriterion) flowRule.selector().getCriterion(Criterion.Type.VLAN_VID);
+            if (vlanIdCriterion == null) {
+                log.warn("cannot match the flow to a subscriber service as it does not carry vlans");
+                return null;
+            }
+            VlanId flowVlan = vlanIdCriterion.vlanId();
+
+            if (si == null) {
+                log.error("Subscriber information not found in sadis for port {}", portWithName(flowPort));
+                return null;
+            }
+
+            Optional<UniTagInformation> found = si.uniTagList().stream().filter(uti ->
+                    uti.getPonCTag().equals(flowVlan) ||
+                            uti.getPonSTag().equals(flowVlan) ||
+                            uti.getUniTagMatch().equals(flowVlan)
+            ).findFirst();
+
+            return found.isPresent() ? new ServiceKey(new AccessDevicePort(flowPort), found.get()) : null;
+
         }
 
         private OltFlowsStatus flowRuleStatusToOltFlowStatus(FlowRuleEvent.Type type) {

@@ -182,7 +182,7 @@ public class OltDeviceListener
                 post.accept(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_ADDED, device.id(), port));
                 // NOTE if the subscriber was previously provisioned,
                 // then add it back to the queue to be re-provisioned
-                boolean provisionSubscriber = oltFlowService.isSubscriberProvisioned(new AccessDevicePort(port));
+                boolean provisionSubscriber = oltFlowService.isSubscriberServiceProvisioned(new AccessDevicePort(port));
                 SubscriberAndDeviceInformation si = subsService.get(getPortName(port));
                 if (si == null) {
                     //NOTE this should not happen given that the subscriber was provisioned before
@@ -224,8 +224,7 @@ public class OltDeviceListener
                                 portWithName(sub.port), sub.status);
                         discoveredSubscribersQueue.add(sub);
                     }
-                } else if (oltFlowService.hasSubscriberFlows(port) ||
-                                oltFlowService.hasDhcpFlows(port)) {
+                } else if (oltFlowService.isSubscriberServiceProvisioned(new AccessDevicePort(port))) {
                     SubscriberAndDeviceInformation si = subsService.get(getPortName(port));
                     if (si == null) {
                         //NOTE this should not happen given that the subscriber was provisioned before

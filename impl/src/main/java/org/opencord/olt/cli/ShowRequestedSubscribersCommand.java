@@ -24,8 +24,8 @@ import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.net.DeviceIdCompleter;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
-import org.opencord.olt.AccessDevicePort;
 import org.opencord.olt.impl.OltFlowServiceInterface;
+import org.opencord.olt.impl.ServiceKey;
 
 import java.util.Map;
 import java.util.Set;
@@ -53,23 +53,23 @@ public class ShowRequestedSubscribersCommand extends AbstractShellCommand {
     @Override
     protected void doExecute() {
         OltFlowServiceInterface service = AbstractShellCommand.get(OltFlowServiceInterface.class);
-        Map<AccessDevicePort, Boolean> info = service.getRequestedSubscribers();
-        Set<Map.Entry<AccessDevicePort, Boolean>> entries = info.entrySet();
+        Map<ServiceKey, Boolean> info = service.getRequestedSubscribers();
+        Set<Map.Entry<ServiceKey, Boolean>> entries = info.entrySet();
         if (strDeviceId != null && !strDeviceId.equals("")) {
-            entries = entries.stream().filter(entry -> entry.getKey().connectPoint().deviceId()
+            entries = entries.stream().filter(entry -> entry.getKey().getPort().connectPoint().deviceId()
                     .equals(DeviceId.deviceId(strDeviceId))).collect(Collectors.toSet());
         }
 
         if (strPort != null && !strPort.equals("")) {
             PortNumber portNumber = PortNumber.portNumber(strPort);
-            entries = entries.stream().filter(entry -> entry.getKey().connectPoint().port()
+            entries = entries.stream().filter(entry -> entry.getKey().getPort().connectPoint().port()
                     .equals(portNumber)).collect(Collectors.toSet());
         }
 
         entries.forEach(entry -> display(entry.getKey(), entry.getValue()));
     }
 
-    private void display(AccessDevicePort cp, Boolean status) {
-        print("location=%s provisioned=%s", cp, status);
+    private void display(ServiceKey sk, Boolean status) {
+        print("location=%s service=%s provisioned=%s", sk.getPort(), sk.getService().getServiceName(), status);
     }
 }

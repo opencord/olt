@@ -23,7 +23,6 @@ import org.opencord.olt.AccessDevicePort;
 import org.opencord.sadis.UniTagInformation;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Interface for flow installation/removal methods for different types of traffic.
@@ -66,16 +65,18 @@ public interface OltFlowServiceInterface {
     /**
      * Checks if the dhcp flows are installed.
      * @param port the port
+     * @param uti the UniTagInformation to check for
      * @return true if installed, false otherwise.
      */
-    boolean hasDhcpFlows(Port port);
+    boolean hasDhcpFlows(Port port, UniTagInformation uti);
 
     /**
      * Checks if the subscriber flows are installed.
      * @param port the port
+     * @param uti the UniTagInformation to check for
      * @return true if installed, false otherwise.
      */
-    boolean hasSubscriberFlows(Port port);
+    boolean hasSubscriberFlows(Port port, UniTagInformation uti);
 
     /**
      * Removes all device flows.
@@ -87,31 +88,38 @@ public interface OltFlowServiceInterface {
      * Return the status of installation on the connect points.
      * @return the status map
      */
-    Map<AccessDevicePort, OltPortStatus> getConnectPointStatus();
+    Map<ServiceKey, OltPortStatus> getConnectPointStatus();
 
     /**
      * Returns all the programmed subscribers.
      * @return the subscribers
      */
-    Map<AccessDevicePort, Set<UniTagInformation>> getProgrammedSubscribers();
+    Map<ServiceKey, UniTagInformation> getProgrammedSubscribers();
 
     /**
      * Returns the list of requested subscribers to be installed with status.
      * @return the list
      */
-    Map<AccessDevicePort, Boolean> getRequestedSubscribers();
+    Map<ServiceKey, Boolean> getRequestedSubscribers();
 
     /**
      * Returns if a subscriber on a port is provisioned or not.
      * @param cp the port
+     * @return true if any service on that port is provisioned, false otherwise
+     */
+    boolean isSubscriberServiceProvisioned(AccessDevicePort cp);
+
+    /**
+     * Returns if a subscriber on a port is provisioned or not.
+     * @param sk the SubscriberKey
      * @return true if provisioned, false otherwise
      */
-    boolean isSubscriberProvisioned(AccessDevicePort cp);
+    boolean isSubscriberServiceProvisioned(ServiceKey sk);
 
     /**
      * Updates the subscriber provisioning status.
-     * @param cp the port
+     * @param sk the SubscriberKey
      * @param status the next status
      */
-    void updateProvisionedSubscriberStatus(AccessDevicePort cp, Boolean status);
+    void updateProvisionedSubscriberStatus(ServiceKey sk, Boolean status);
 }

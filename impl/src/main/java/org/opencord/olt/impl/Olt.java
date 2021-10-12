@@ -254,7 +254,7 @@ public class Olt
                 return false;
             }
 
-            if (oltFlowService.isSubscriberProvisioned(accessDevicePort)) {
+            if (oltFlowService.isSubscriberServiceProvisioned(accessDevicePort)) {
                 log.error("Subscriber on {} is already provisioned", portWithName(port));
                 return false;
             }
@@ -269,7 +269,10 @@ public class Olt
 
             // NOTE we need to keep a list of the subscribers that are provisioned on a port,
             // regardless of the flow status
-            oltFlowService.updateProvisionedSubscriberStatus(accessDevicePort, true);
+            si.uniTagList().forEach(uti -> {
+                ServiceKey sk = new ServiceKey(accessDevicePort, uti);
+                oltFlowService.updateProvisionedSubscriberStatus(sk, true);
+            });
 
             if (!eventsQueue.contains(sub)) {
                 log.info("Adding subscriber to queue: {} with status {} for provisioning",
@@ -300,7 +303,7 @@ public class Olt
                 return false;
             }
 
-            if (!oltFlowService.isSubscriberProvisioned(accessDevicePort)) {
+            if (!oltFlowService.isSubscriberServiceProvisioned(accessDevicePort)) {
                 log.error("Subscriber on {} is not provisioned", portWithName(port));
                 return false;
             }
@@ -318,7 +321,10 @@ public class Olt
 
             // NOTE we need to keep a list of the subscribers that are provisioned on a port,
             // regardless of the flow status
-            oltFlowService.updateProvisionedSubscriberStatus(accessDevicePort, false);
+            si.uniTagList().forEach(uti -> {
+                ServiceKey sk = new ServiceKey(accessDevicePort, uti);
+                oltFlowService.updateProvisionedSubscriberStatus(sk, false);
+            });
 
             if (!eventsQueue.contains(sub)) {
                 log.info("Adding subscriber to queue: {} with status {} for removal",
@@ -348,11 +354,6 @@ public class Olt
             return false;
         }
 
-        if (oltFlowService.isSubscriberProvisioned(accessDevicePort)) {
-            log.error("Subscriber on {} is already provisioned", portWithName(port));
-            return false;
-        }
-
         SubscriberAndDeviceInformation si = new SubscriberAndDeviceInformation();
         UniTagInformation specificService = getUniTagInformation(getPortName(port), cTag, sTag, tpId);
         if (specificService == null) {
@@ -368,7 +369,12 @@ public class Olt
 
         // NOTE we need to keep a list of the subscribers that are provisioned on a port,
         // regardless of the flow status
-        oltFlowService.updateProvisionedSubscriberStatus(accessDevicePort, true);
+        ServiceKey sk = new ServiceKey(accessDevicePort, specificService);
+        if (oltFlowService.isSubscriberServiceProvisioned(sk)) {
+            log.error("Subscriber on {} is already provisioned", sk);
+            return false;
+        }
+        oltFlowService.updateProvisionedSubscriberStatus(sk, true);
 
         if (!eventsQueue.contains(sub)) {
             log.info("Adding subscriber to queue: {} with status {} for provisioning",
@@ -396,11 +402,6 @@ public class Olt
             return false;
         }
 
-        if (!oltFlowService.isSubscriberProvisioned(accessDevicePort)) {
-            log.error("Subscriber on {} is not provisioned", portWithName(port));
-            return false;
-        }
-
         SubscriberAndDeviceInformation si = new SubscriberAndDeviceInformation();
         UniTagInformation specificService = getUniTagInformation(getPortName(port), cTag, sTag, tpId);
         if (specificService == null) {
@@ -416,7 +417,12 @@ public class Olt
 
         // NOTE we need to keep a list of the subscribers that are provisioned on a port,
         // regardless of the flow status
-        oltFlowService.updateProvisionedSubscriberStatus(accessDevicePort, false);
+        ServiceKey sk = new ServiceKey(accessDevicePort, specificService);
+        if (!oltFlowService.isSubscriberServiceProvisioned(sk)) {
+            log.error("Subscriber on {} is not provisioned", sk);
+            return false;
+        }
+        oltFlowService.updateProvisionedSubscriberStatus(sk, false);
 
         if (!eventsQueue.contains(sub)) {
             log.info("Adding subscriber to queue: {} with status {} for removal",

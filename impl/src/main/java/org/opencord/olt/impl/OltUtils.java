@@ -41,6 +41,7 @@ final class OltUtils {
      * Returns a port printed as a connect point and with the name appended.
      * @param port the port
      * @return the formatted string
+     * @deprecated
      */
     static String portWithName(Port port) {
         return port.element().id().toString() + '/' +
