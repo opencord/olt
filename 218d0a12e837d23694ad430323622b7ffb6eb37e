@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b09e1b8a_c2829617",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-12T08:48:02Z",
+      "side": 1,
+      "message": "OltUtils.getPortName method should be used.",
+      "revId": "218d0a12e837d23694ad430323622b7ffb6eb37e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}

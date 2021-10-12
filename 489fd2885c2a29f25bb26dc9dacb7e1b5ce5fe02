@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8264411c_e4e578a8",
+        "filename": "api/src/main/java/org/opencord/olt/AccessDevicePort.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-12T08:48:02Z",
+      "side": 1,
+      "message": "Understand your goal, but equals method has cp parameter as well. \"name\" should be enough and more safe for our purposes.",
+      "parentUuid": "685a7feb_f125ae0c",
+      "revId": "489fd2885c2a29f25bb26dc9dacb7e1b5ce5fe02",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "43648b47_182d2c62",
         "filename": "impl/src/main/java/org/opencord/olt/cli/ShowFailedSubscribersCommand.java",
         "patchSetId": 14
