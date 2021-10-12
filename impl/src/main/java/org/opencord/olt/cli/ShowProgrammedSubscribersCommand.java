@@ -24,8 +24,8 @@ import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.net.DeviceIdCompleter;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
-import org.opencord.olt.AccessDevicePort;
 import org.opencord.olt.impl.OltFlowServiceInterface;
+import org.opencord.olt.impl.SubscriberKey;
 import org.opencord.sadis.UniTagInformation;
 
 import java.util.Map;
@@ -53,24 +53,23 @@ public class ShowProgrammedSubscribersCommand extends AbstractShellCommand {
     @Override
     protected void doExecute() {
         OltFlowServiceInterface service = AbstractShellCommand.get(OltFlowServiceInterface.class);
-        Map<AccessDevicePort, Set<UniTagInformation>> info = service.getProgrammedSubscribers();
-        Set<Map.Entry<AccessDevicePort, Set<UniTagInformation>>> entries = info.entrySet();
+        Map<SubscriberKey, UniTagInformation> info = service.getProgrammedSubscribers();
+        Set<Map.Entry<SubscriberKey, UniTagInformation>> entries = info.entrySet();
         if (strDeviceId != null && !strDeviceId.equals("")) {
-            entries = entries.stream().filter(entry -> entry.getKey().connectPoint().deviceId()
+            entries = entries.stream().filter(entry -> entry.getKey().getPort().connectPoint().deviceId()
                     .equals(DeviceId.deviceId(strDeviceId))).collect(Collectors.toSet());
         }
 
         if (strPort != null && !strPort.equals("")) {
             PortNumber portNumber = PortNumber.portNumber(strPort);
-            entries = entries.stream().filter(entry -> entry.getKey().connectPoint().port()
+            entries = entries.stream().filter(entry -> entry.getKey().getPort().connectPoint().port()
                     .equals(portNumber)).collect(Collectors.toSet());
         }
 
         entries.forEach(entry -> display(entry.getKey(), entry.getValue()));
     }
 
-    private void display(AccessDevicePort cp, Set<UniTagInformation> uniTagInformation) {
-        uniTagInformation.forEach(uniTag ->
-                print("location=%s tagInformation=%s", cp, uniTag));
+    private void display(SubscriberKey sk, UniTagInformation uniTag) {
+        print("location=%s tagInformation=%s", sk.getPort().connectPoint(), uniTag);
     }
 }

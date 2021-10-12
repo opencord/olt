@@ -158,7 +158,7 @@ public class OltTest extends OltTestHelpers {
 
         // adding the discovered subscriber to the queue
         component.eventsQueue.add(sub);
-        TimeUnit.MILLISECONDS.sleep(100);
+        TimeUnit.MILLISECONDS.sleep(600);
 
         // check that we're calling the correct method,
         // since the subscriber is not removed from the queue we're calling the method multiple times

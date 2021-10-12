@@ -25,12 +25,14 @@ import org.onosproject.cli.net.DeviceIdCompleter;
 import org.onosproject.cli.net.PortNumberCompleter;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
-import org.opencord.olt.AccessDevicePort;
 import org.opencord.olt.impl.OltFlowServiceInterface;
 import org.opencord.olt.impl.OltPortStatus;
+import org.opencord.olt.impl.SubscriberKey;
+import org.opencord.sadis.UniTagInformation;
 
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * Shows ports' status of an OLT.
  */
@@ -53,29 +55,35 @@ public class ShowPortStatus extends AbstractShellCommand {
     protected void doExecute() {
 
         OltFlowServiceInterface service = AbstractShellCommand.get(OltFlowServiceInterface.class);
-        Map<AccessDevicePort, OltPortStatus> connectPointStatus = service.getConnectPointStatus();
+        Map<SubscriberKey, OltPortStatus> connectPointStatus = service.getConnectPointStatus();
         if (connectPointStatus.isEmpty()) {
             print("No ports handled by the olt app");
         }
 
-        Map<DeviceId, Map<PortNumber, OltPortStatus>> sortedStatus = new HashMap<>();
+        Map<DeviceId, Map<PortNumber, Map<UniTagInformation, OltPortStatus>>> sortedStatus = new HashMap<>();
 
         DeviceId deviceId = strDeviceId != null ? DeviceId.deviceId(strDeviceId) : null;
         PortNumber portNumber = strPort != null ? PortNumber.portNumber(strPort) : null;
 
-        connectPointStatus.forEach((accessDevicePort, fs) -> {
-            if (deviceId != null && !deviceId.equals(accessDevicePort.connectPoint()
-                                                             .deviceId())) {
+        connectPointStatus.forEach((sk, fs) -> {
+            if (deviceId != null && !deviceId.equals(sk.getPort().connectPoint()
+                    .deviceId())) {
                 return;
             }
-            if (portNumber != null && !portNumber.equals(accessDevicePort.connectPoint().port())) {
+            if (portNumber != null && !portNumber.equals(sk.getPort().connectPoint().port())) {
                 return;
             }
-             sortedStatus.compute(accessDevicePort.connectPoint().deviceId(), (id, portMap) -> {
+            sortedStatus.compute(sk.getPort().connectPoint().deviceId(), (id, portMap) -> {
                 if (portMap == null) {
                     portMap = new HashMap<>();
                 }
-                portMap.put(accessDevicePort.connectPoint().port(), fs);
+                portMap.compute(sk.getPort().connectPoint().port(), (id2, ps) -> {
+                    if (ps == null) {
+                        ps = new HashMap<>();
+                    }
+                    ps.put(sk.getService(), fs);
+                    return ps;
+                });
 
                 return portMap;
             });
@@ -84,10 +92,16 @@ public class ShowPortStatus extends AbstractShellCommand {
         sortedStatus.forEach(this::display);
     }
 
-    private void display(DeviceId deviceId, Map<PortNumber, OltPortStatus> portStatus) {
-        print("deviceId=%s, managedPorts=%d", deviceId, portStatus.size());
-        portStatus.forEach((port, status) ->
-                print("\tport=%s defaultEapolStatus=%s subscriberFlowsStatus=%s dhcpStatus=%s",
-                        port, status.defaultEapolStatus, status.subscriberFlowsStatus, status.dhcpStatus));
+    private void display(DeviceId deviceId, Map<PortNumber, Map<UniTagInformation, OltPortStatus>> ports) {
+        print("deviceId=%s, managedPorts=%d", deviceId, ports.size());
+
+        ports.forEach((port, subscribers) -> {
+            print("\tport=%s", port);
+            subscribers.forEach((uti, status) -> {
+                print("\t\tservice=%s defaultEapolStatus=%s subscriberFlowsStatus=%s dhcpStatus=%s",
+                        uti.getServiceName(), status.defaultEapolStatus,
+                        status.subscriberFlowsStatus, status.dhcpStatus);
+            });
+        });
     }
 }

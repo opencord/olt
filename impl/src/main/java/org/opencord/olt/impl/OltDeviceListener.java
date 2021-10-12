@@ -224,8 +224,7 @@ public class OltDeviceListener
                                 portWithName(sub.port), sub.status);
                         discoveredSubscribersQueue.add(sub);
                     }
-                } else if (oltFlowService.hasSubscriberFlows(port) ||
-                                oltFlowService.hasDhcpFlows(port)) {
+                } else if (oltFlowService.isSubscriberProvisioned(new AccessDevicePort(port))) {
                     SubscriberAndDeviceInformation si = subsService.get(getPortName(port));
                     if (si == null) {
                         //NOTE this should not happen given that the subscriber was provisioned before
