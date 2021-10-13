@@ -18,6 +18,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "10f9c129_27dfa410",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-13T15:19:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "97d6e7dc_ce4c4e87",
+      "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d7e0d2ca_9df9360c",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-10-13T07:12:10Z",
       "side": 1,
       "message": "same, no need a loop, we need to update only \"specificService\".",
+      "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "19ae16c5_e6362131",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 422,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-13T15:19:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7e0d2ca_9df9360c",
       "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -52,6 +88,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b13284c6_d6810a94",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 675,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-13T15:19:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2d87f761_329e47ae",
+      "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f12f9e61_a870a24e",
@@ -65,6 +119,24 @@
       "writtenOn": "2021-10-13T07:12:10Z",
       "side": 1,
       "message": "no need to loop every element, we can break the loop when we find it.",
+      "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f6af0c2_1d3ffdfd",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 680,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-13T15:19:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f12f9e61_a870a24e",
       "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -86,6 +158,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8284f0a5_628b737d",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/SubscriberKey.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-13T15:19:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2f00227a_aeac46e1",
+      "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9b48fe7e_e5859513",
@@ -99,6 +189,24 @@
       "writtenOn": "2021-10-13T07:12:10Z",
       "side": 1,
       "message": "UniTagInformation has lots of parameters. Are we need to consider all of them or can we use only parameter like serviceName?",
+      "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb01b378_69d11cc7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/SubscriberKey.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-10-13T15:19:26Z",
+      "side": 1,
+      "message": "For now only serviceName is used, but I can see how it could be helpful to have other informations there, eg: to print more debug information in the CLI. But we can remove it if it causes issues or it becomes a performance bottleneck.",
+      "parentUuid": "9b48fe7e_e5859513",
       "revId": "d12fda59d298a8e5255f98554eb70331baeea2ba",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
