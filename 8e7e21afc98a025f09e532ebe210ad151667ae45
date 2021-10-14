@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c6d72cd_f5d28082",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000681
+      },
+      "writtenOn": "2021-10-14T07:38:22Z",
+      "side": 1,
+      "message": "I\u0027ve tested it with updating sadis data and giving a new service, works good. It can be merged onto main patch.",
+      "revId": "8e7e21afc98a025f09e532ebe210ad151667ae45",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
