@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77de5498_007d86e5",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 283,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-10-19T07:15:43Z",
+      "side": 1,
+      "message": "do we still need the custom serializer after we moved to PortNumber ?",
+      "revId": "b9493be24de788bb48229766bed3fb9153d714d8",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
