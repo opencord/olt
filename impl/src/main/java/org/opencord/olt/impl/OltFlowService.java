@@ -829,6 +829,10 @@ public class OltFlowService implements AccessDeviceFlowService {
                     .setVlanId(uniTagInformation.getPonCTag());
         }
 
+        if (uniTagInformation.getPonSTag().toShort() == VlanId.ANY_VALUE) {
+            treatmentBuilder.popVlan();
+        }
+
         if (uniTagInformation.getUsPonCTagPriority() != NO_PCP) {
             treatmentBuilder.setVlanPcp((byte) uniTagInformation.getUsPonCTagPriority());
         }
