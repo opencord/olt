@@ -829,6 +829,11 @@ public class OltFlowService implements AccessDeviceFlowService {
                     .setVlanId(uniTagInformation.getPonCTag());
         }
 
+        //TODO: generate a FLOWOBJECTIVE that add the vlan_pop
+        if (uniTagInformation.getPonSTag().toShort() == VlanId.ANY_VALUE) {
+            treatmentBuilder.popVlan();
+        }
+
         if (uniTagInformation.getUsPonCTagPriority() != NO_PCP) {
             treatmentBuilder.setVlanPcp((byte) uniTagInformation.getUsPonCTagPriority());
         }
@@ -867,6 +872,7 @@ public class OltFlowService implements AccessDeviceFlowService {
                                                          UniTagInformation tagInformation,
                                                          Optional<MacAddress> macAddress) {
 
+        log.info("TIM 1.8  createDownBuilder MacAddress {}", macAddress);
         //subscriberVlan can be any valid Vlan here including ANY to make sure the packet is tagged
         TrafficSelector.Builder selectorBuilder = DefaultTrafficSelector.builder()
                 .matchVlanId(tagInformation.getPonSTag())
