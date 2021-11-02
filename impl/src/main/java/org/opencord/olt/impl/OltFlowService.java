@@ -1226,9 +1226,13 @@ public class OltFlowService implements OltFlowServiceInterface {
             treatmentBuilder.pushVlan()
                     .setVlanId(uti.getPonCTag());
         }
+        if (uti.getPonSTag().toShort() == VlanId.ANY_VALUE) {
+            treatmentBuilder.popVlan();
+        }
 
         if (uti.getUsPonCTagPriority() != -1) {
             treatmentBuilder.setVlanPcp((byte) uti.getUsPonCTagPriority());
+
         }
 
         treatmentBuilder.pushVlan()
