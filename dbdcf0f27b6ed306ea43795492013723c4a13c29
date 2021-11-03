@@ -1,0 +1,225 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4951334_8efe2095",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 594,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "I think innerVlanCriterion \u003d\u003d null should be kept",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8cebaacc_5d2c3f3d",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 609,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "remove this line",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36955fc9_43290e07",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 619,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "this log can be removed",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fcfcfb87_98ed023b",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 633,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "same",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44a79d42_e1dacdc0",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 652,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "same",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d72a2f08_178ea043",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 834,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "same",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1ff2806_9d41e29e",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 838,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "remove commented code",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f44f1c4e_e886e51e",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 855,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "remove commented code, valid for all other occurrences",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7f9a3ae_2fe5be1e",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 862,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "remove",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c50a44d1_77f954a7",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1009,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "remove",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1d2dedb_eb735d44",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 1020,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "same",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8207d185_a875397a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 832,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "remove TODO, put a log in the comment",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14fede7e_7ffc3d64",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 875,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-03T11:32:29Z",
+      "side": 1,
+      "message": "remove",
+      "revId": "dbdcf0f27b6ed306ea43795492013723c4a13c29",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
