@@ -36,6 +36,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c54d73be_96f7f448",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-19T22:22:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3e366e0c_17a256f1",
+      "revId": "e920cdb3ac0adc26de6a5fb2761f719dfe6f31e7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2764f668_8269d5ce",
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "same",
       "parentUuid": "2764f668_8269d5ce",
+      "revId": "e920cdb3ac0adc26de6a5fb2761f719dfe6f31e7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9889aba_6d155ac0",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/UniTagRemoveCommand.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-19T22:22:07Z",
+      "side": 1,
+      "message": "we also needed to remove the subscriber, not to add it again.",
+      "parentUuid": "b1a74afd_521a402a",
       "revId": "e920cdb3ac0adc26de6a5fb2761f719dfe6f31e7",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }

@@ -106,6 +106,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bde07534_a58c0868",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/DiscoveredSubscriber.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-19T22:22:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "13887644_727385d4",
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fb6603d7_16de5d97",
@@ -231,6 +249,30 @@
       "side": 1,
       "message": "the bandwidths profile name, I will address",
       "parentUuid": "f751ff4b_e08f6ca7",
+      "range": {
+        "startLine": 32,
+        "startChar": 18,
+        "endLine": 32,
+        "endChar": 34
+      },
+      "revId": "58e96d32fd138140d85df2e51c5aa2a3dab8e912",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "309a274a_faceb30b",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/MeterData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-19T22:22:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f4004c0_93273944",
       "range": {
         "startLine": 32,
         "startChar": 18,

@@ -107,6 +107,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecc87550_7a92f20c",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowFailedSubscribersCommand.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-19T22:22:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "fd9a5e4c_9e1de7b1",
+      "revId": "751451d0ea05d8715c92ada0a1e08b8bfe8ca62b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2192fb02_4b5b06fe",

@@ -71,6 +71,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d85aca48_1d43f205",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltMeterService.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-19T22:22:07Z",
+      "side": 1,
+      "message": "Every flow has a meter, if the bandwidth profile is not specified in the Sadis config then the default is used",
+      "parentUuid": "567d922d_28d2b977",
+      "revId": "3d73e09ac3bcb87674aa0e21bc3179638934716a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7dcf435d_6394ad10",
@@ -88,6 +106,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dea51659_9f61db5e",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltTest.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-19T22:22:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7dcf435d_6394ad10",
+      "revId": "3d73e09ac3bcb87674aa0e21bc3179638934716a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "949a95c8_26b45707",
@@ -101,6 +137,24 @@
       "writtenOn": "2021-10-11T08:50:19Z",
       "side": 1,
       "message": "same",
+      "revId": "3d73e09ac3bcb87674aa0e21bc3179638934716a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "00835277_ef4c9f16",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltTest.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-19T22:22:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "949a95c8_26b45707",
       "revId": "3d73e09ac3bcb87674aa0e21bc3179638934716a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
