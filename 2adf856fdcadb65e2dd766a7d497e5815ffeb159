@@ -1,0 +1,408 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2978e903_4e3ce362",
+        "filename": "assets/diagram.png",
+        "patchSetId": 35
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "please update",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e7737f8_7090a401",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowPortStatus.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "you can return here",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9557aacc_031c1aaa",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowProgrammedMeters.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "you can return here",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd8e8267_8354a230",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowProgrammedSubscribersCommand.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "NIT: .isEmpty()",
+      "range": {
+        "startLine": 58,
+        "startChar": 35,
+        "endLine": 58,
+        "endChar": 58
+      },
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed9a7081_44708472",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowProgrammedSubscribersCommand.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 63,
+        "startChar": 31,
+        "endLine": 63,
+        "endChar": 50
+      },
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ee221c1_cd8de3a5",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowRequestedSubscribersCommand.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 58,
+        "startChar": 35,
+        "endLine": 58,
+        "endChar": 58
+      },
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c69c5c94_84caf16d",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/ShowRequestedSubscribersCommand.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 63,
+        "startChar": 31,
+        "endLine": 63,
+        "endChar": 50
+      },
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c14aeb0_42a8bd4b",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/SubscriberRemoveCommand.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "wrong",
+      "range": {
+        "startLine": 35,
+        "startChar": 23,
+        "endLine": 35,
+        "endChar": 27
+      },
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f147dcae_b3fa58d2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/DiscoveredSubscriber.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "javadoc",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "646afdcf_dd4ae3bf",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "possibly move after NNI",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c8b1c5f_95be0612",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "same",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb8b2abd_fccd8db7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "trace log in here",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffc7002b_9a1d7409",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 573,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "can we capture only the specific sleep exception ? woudl be best to remove this entirely",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d260a93b_873d9935",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 653,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "debug ?",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "18e0d819_bb0af7e3",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 661,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "same, catch of a general Exception is not a good practice, please catch the specific one. Valid for all Exceptions here.",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "487351ee_6108ed4a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltDeviceService.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "instead of logging the leadership everywhere we use this method might be good to log it here.",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d49d5e1_a616c690",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "remove",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be83e321_a4bb8da3",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "maybe a better log here",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "97dfc27d_5b1e84b6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 1283,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "you can return here and avoid the null check at line 1286",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c8eba8f_e553e536",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 1374,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "same",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f2dc52b_58e782af",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltPortStatus.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "javadoc",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83a61b7a_71561b64",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/ServiceKeySerializer.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "javadoc and remove uncommented code",
+      "revId": "2adf856fdcadb65e2dd766a7d497e5815ffeb159",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}

@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3e366e0c_17a256f1",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/UniTagAddCommand.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "please doublecheck this",
+      "parentUuid": "4e60c51f_db1b4c85",
+      "revId": "e920cdb3ac0adc26de6a5fb2761f719dfe6f31e7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2764f668_8269d5ce",
         "filename": "impl/src/main/java/org/opencord/olt/cli/UniTagRemoveCommand.java",
         "patchSetId": 19
@@ -31,6 +49,24 @@
       "writtenOn": "2021-10-14T07:36:23Z",
       "side": 1,
       "message": "Wrong method call. sTag and cTag parameters are in wrong order.",
+      "revId": "e920cdb3ac0adc26de6a5fb2761f719dfe6f31e7",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1a74afd_521a402a",
+        "filename": "impl/src/main/java/org/opencord/olt/cli/UniTagRemoveCommand.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2021-11-19T21:24:28Z",
+      "side": 1,
+      "message": "same",
+      "parentUuid": "2764f668_8269d5ce",
       "revId": "e920cdb3ac0adc26de6a5fb2761f719dfe6f31e7",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
