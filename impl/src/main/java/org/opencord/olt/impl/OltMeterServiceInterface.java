@@ -40,9 +40,10 @@ public interface OltMeterServiceInterface {
      * if not present it will create them and return false.
      * @param deviceId DeviceId
      * @param si SubscriberAndDeviceInformation
+     * @param multicastServiceName The multicast service name
      * @return boolean
      */
-    boolean createMeters(DeviceId deviceId, SubscriberAndDeviceInformation si);
+    boolean createMeters(DeviceId deviceId, SubscriberAndDeviceInformation si, String multicastServiceName);
 
     /**
      * Checks if a meter for the specified bandwidthProfile exists

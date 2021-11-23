@@ -533,7 +533,7 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         // NOTE createMeters will return if the meters are not installed
         if (!oltMeterService.createMeters(sub.device.id(),
-                sub.subscriberAndDeviceInformation)) {
+                sub.subscriberAndDeviceInformation, multicastServiceName)) {
             return false;
         }
 

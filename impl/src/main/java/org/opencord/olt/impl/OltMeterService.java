@@ -241,7 +241,7 @@ public class OltMeterService implements OltMeterServiceInterface {
     }
 
     @Override
-    public boolean createMeters(DeviceId deviceId, SubscriberAndDeviceInformation si) {
+    public boolean createMeters(DeviceId deviceId, SubscriberAndDeviceInformation si, String multicastServiceName) {
         // Each UniTagInformation has up to 4 meters,
         // check and/or create all of them
         AtomicBoolean waitingOnMeter = new AtomicBoolean();
@@ -249,6 +249,14 @@ public class OltMeterService implements OltMeterServiceInterface {
         Map<String, List<String>> pendingMeters = new HashMap<>();
         si.uniTagList().forEach(uniTagInfo -> {
             String serviceName = uniTagInfo.getServiceName();
+
+            if (multicastServiceName.equals(uniTagInfo.getServiceName())) {
+                log.debug("This is the multicast service ({}) for subscriber {} on {}, " +
+                                "meters are not needed",
+                        uniTagInfo.getServiceName(), si.id(), deviceId);
+                return;
+            }
+
             pendingMeters.put(serviceName, new LinkedList<>());
             String usBp = uniTagInfo.getUpstreamBandwidthProfile();
             String dsBp = uniTagInfo.getDownstreamBandwidthProfile();
