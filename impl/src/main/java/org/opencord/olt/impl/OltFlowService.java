@@ -581,8 +581,9 @@ public class OltFlowService implements OltFlowServiceInterface {
             // remove the tagged eapol
             handleSubscriberEapolFlows(sub, FlowOperation.REMOVE, si);
 
-            // and add the default one back
-            if (sub.port.isEnabled()) {
+            // and add the default one back (only if the port is ENABLED and still present on the device)
+            if (sub.port.isEnabled() && deviceService.getPort(sub.device.id(), sub.port.number()) != null) {
+
                 // NOTE we remove the subscriber when the port goes down
                 // but in that case we don't need to add default eapol
                 handleEapolFlow(sub, defaultBandwithProfile, defaultBandwithProfile,
