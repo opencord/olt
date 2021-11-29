@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "461e86f6_c6010d58",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-29T18:39:48Z",
+      "side": 1,
+      "message": "do we keep references to the service providers int he logs?",
+      "range": {
+        "startLine": 631,
+        "startChar": 23,
+        "endLine": 631,
+        "endChar": 26
+      },
+      "revId": "d6524e48b7376457b8be401aac3e65bcedbf95bc",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89ba6b69_de19837a",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 845,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-29T18:39:48Z",
+      "side": 1,
+      "message": "are these comments needed?",
+      "range": {
+        "startLine": 844,
+        "startChar": 12,
+        "endLine": 845,
+        "endChar": 85
+      },
+      "revId": "d6524e48b7376457b8be401aac3e65bcedbf95bc",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fdad2ec8_4fe0a272",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 980,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-29T18:39:48Z",
+      "side": 1,
+      "message": "either Java docs or remove",
+      "range": {
+        "startLine": 980,
+        "startChar": 4,
+        "endLine": 980,
+        "endChar": 20
+      },
+      "revId": "d6524e48b7376457b8be401aac3e65bcedbf95bc",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
