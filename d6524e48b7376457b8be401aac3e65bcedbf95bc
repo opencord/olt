@@ -24,6 +24,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f133c7d_5936aaed",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-29T20:57:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "461e86f6_c6010d58",
+      "range": {
+        "startLine": 631,
+        "startChar": 23,
+        "endLine": 631,
+        "endChar": 26
+      },
+      "revId": "d6524e48b7376457b8be401aac3e65bcedbf95bc",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "89ba6b69_de19837a",
@@ -47,6 +71,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f983addc_2058bce0",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 845,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-29T20:57:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "89ba6b69_de19837a",
+      "range": {
+        "startLine": 844,
+        "startChar": 12,
+        "endLine": 845,
+        "endChar": 85
+      },
+      "revId": "d6524e48b7376457b8be401aac3e65bcedbf95bc",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fdad2ec8_4fe0a272",
@@ -60,6 +108,30 @@
       "writtenOn": "2021-11-29T18:39:48Z",
       "side": 1,
       "message": "either Java docs or remove",
+      "range": {
+        "startLine": 980,
+        "startChar": 4,
+        "endLine": 980,
+        "endChar": 20
+      },
+      "revId": "d6524e48b7376457b8be401aac3e65bcedbf95bc",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "be631b88_74d76e70",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 980,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-11-29T20:57:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fdad2ec8_4fe0a272",
       "range": {
         "startLine": 980,
         "startChar": 4,
