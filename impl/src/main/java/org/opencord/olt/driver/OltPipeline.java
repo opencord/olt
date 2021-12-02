@@ -431,6 +431,12 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
 
     }
 
+    @Override
+    public void purgeAll(ApplicationId appId) {
+        log.warn("Purge All not implemented by OLT Pipeliner");
+        //TODO not used by OLT app, only by trellis
+    }
+
     private GroupBucket buildBucket(TrafficTreatment treatment) {
         return DefaultGroupBucket.createAllGroupBucket(treatment);
     }
