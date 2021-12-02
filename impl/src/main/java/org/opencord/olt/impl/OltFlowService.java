@@ -82,9 +82,11 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -381,7 +383,7 @@ public class OltFlowService implements OltFlowServiceInterface {
     @Override
     public ImmutableMap<ServiceKey, UniTagInformation> getProgrammedSubscribers() {
         // NOTE we might want to remove this conversion and directly use cpStatus as it contains
-        // all the required information about suscribers
+        // all the required information about subscribers
         Map<ServiceKey, UniTagInformation> subscribers =
                 new HashMap<>();
         try {
@@ -394,6 +396,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                                 sk.getPort().connectPoint().port()) &&
                                 // not EAPOL flow
                                 !sk.getService().equals(defaultEapolUniTag)
+
                 ) {
                     subscribers.put(sk, sk.getService());
                 }
@@ -656,9 +659,16 @@ public class OltFlowService implements OltFlowServiceInterface {
     @Override
     public void purgeDeviceFlows(DeviceId deviceId) {
         log.debug("Purging flows on device {}", deviceId);
-        flowRuleService.purgeFlowRules(deviceId);
+        try {
+            flowRuleService.purgeFlowRules(deviceId);
+        } catch (Exception e) {
+            log.error("Cannot purge flow rules", e);
+        }
 
         // removing the status from the cpStatus map
+        if (log.isTraceEnabled()) {
+            log.trace("Clearing cp status from device {}", deviceId);
+        }
         try {
             cpStatusWriteLock.lock();
             Iterator<Map.Entry<ServiceKey, OltPortStatus>> iter = cpStatus.entrySet().iterator();
@@ -668,11 +678,16 @@ public class OltFlowService implements OltFlowServiceInterface {
                     cpStatus.remove(entry.getKey());
                 }
             }
+        } catch (Exception e) {
+            log.error("Cannot wipe out cpStatus", e);
         } finally {
             cpStatusWriteLock.unlock();
         }
 
         // removing subscribers from the provisioned map
+        if (log.isTraceEnabled()) {
+            log.trace("Clearing provisioned subscribers from device {}", deviceId);
+        }
         try {
             provisionedSubscribersWriteLock.lock();
             Iterator<Map.Entry<ServiceKey, Boolean>> iter = provisionedSubscribers.entrySet().iterator();
@@ -682,9 +697,12 @@ public class OltFlowService implements OltFlowServiceInterface {
                     provisionedSubscribers.remove(entry.getKey());
                 }
             }
+        } catch (Exception e) {
+            log.error("Cannot wipe out subscribers", e);
         } finally {
             provisionedSubscribersWriteLock.unlock();
         }
+        log.debug("Done clearing up device flows and subscribers");
     }
 
     @Override
@@ -1473,11 +1491,34 @@ public class OltFlowService implements OltFlowServiceInterface {
 
     protected void updateConnectPointStatus(ServiceKey key, OltFlowsStatus eapolStatus,
                                             OltFlowsStatus subscriberFlowsStatus, OltFlowsStatus dhcpStatus) {
+        if (log.isTraceEnabled()) {
+            log.trace("Updating cpStatus {} with values: eapolFlow={}, subscriberFlows={}, dhcpFlow={}",
+                    key, eapolStatus, subscriberFlowsStatus, dhcpStatus);
+        }
         try {
             cpStatusWriteLock.lock();
             OltPortStatus status = cpStatus.get(key);
 
+
             if (status == null) {
+                // if we don't have status for the connectPoint
+                // and we're only updating status to PENDING_REMOVE or ERROR
+                // do not create it. This is because this case will only happen when a device is removed
+                // and it's status cleaned
+                List<OltFlowsStatus> statusesToIgnore = new ArrayList<>();
+                statusesToIgnore.add(OltFlowsStatus.PENDING_REMOVE);
+                statusesToIgnore.add(OltFlowsStatus.ERROR);
+
+                if (
+                        (statusesToIgnore.contains(subscriberFlowsStatus) && dhcpStatus == null) ||
+                                (subscriberFlowsStatus == null && statusesToIgnore.contains(dhcpStatus))
+                ) {
+                    if (log.isTraceEnabled()) {
+                        log.trace("Ignoring cpStatus update as status is meaningless");
+                    }
+                    return;
+                }
+
                 status = new OltPortStatus(
                         eapolStatus != null ? eapolStatus : OltFlowsStatus.NONE,
                         subscriberFlowsStatus != null ? subscriberFlowsStatus : OltFlowsStatus.NONE,
