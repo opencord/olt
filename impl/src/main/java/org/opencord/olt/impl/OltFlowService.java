@@ -1030,6 +1030,10 @@ public class OltFlowService implements OltFlowServiceInterface {
 
             log.info("{} Data plane flows for subscriber {} on {} and service {}",
                     flowOpToString(action), si.id(), portWithName(port), uti.getServiceName());
+            ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
+            OltFlowsStatus status = action.equals(FlowOperation.ADD) ?
+                    OltFlowsStatus.PENDING_ADD : OltFlowsStatus.PENDING_REMOVE;
+            updateConnectPointStatus(sk, null, status, null);
 
             // upstream flows
             MeterId usMeterId = oltMeterService
