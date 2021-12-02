@@ -77,9 +77,11 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.onosproject.net.AnnotationKeys.PORT_NAME;
+import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.ERROR;
 import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.NONE;
 import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.ADDED;
 import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.PENDING_ADD;
+import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.PENDING_REMOVE;
 import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.REMOVED;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID_DEFAULT;
 
@@ -169,6 +171,38 @@ public class OltFlowServiceTest extends OltTestHelpers {
         Assert.assertEquals(NONE, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
         Assert.assertEquals(NONE, updated.dhcpStatus);
+    }
+
+    /**
+     * If the flow status is PENDING_REMOVE or ERROR and there is no
+     * previous state in the map that don't update it.
+     * In case of a device disconnection we immediately wipe out the status,
+     * but then flows might update the cpStatus map. That result
+     */
+    @Test
+    public void doNotUpdateConnectPointStatus() {
+        DeviceId deviceId = DeviceId.deviceId("test-device");
+        ProviderId pid = new ProviderId("of", "foo");
+        Device device =
+                new DefaultDevice(pid, deviceId, Device.Type.OLT, "", "", "", "", null);
+        Port port1 = new DefaultPort(device, PortNumber.portNumber(1), true,
+                DefaultAnnotations.builder().set(PORT_NAME, "port-1").build());
+
+        ServiceKey sk1 = new ServiceKey(new AccessDevicePort(port1), new UniTagInformation());
+
+        // cpStatus map for the test
+        oltFlowService.cpStatus = oltFlowService.storageService.
+                <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
+
+        // check that an entry is not created if the only status is pending remove
+        oltFlowService.updateConnectPointStatus(sk1, null, null, PENDING_REMOVE);
+        OltPortStatus entry = oltFlowService.cpStatus.get(sk1);
+        Assert.assertNull(entry);
+
+        // check that an entry is not created if the only status is ERROR
+        oltFlowService.updateConnectPointStatus(sk1, null, null, ERROR);
+        entry = oltFlowService.cpStatus.get(sk1);
+        Assert.assertNull(entry);
     }
 
     @Test
