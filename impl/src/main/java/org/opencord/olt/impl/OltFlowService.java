@@ -659,11 +659,7 @@ public class OltFlowService implements OltFlowServiceInterface {
     @Override
     public void purgeDeviceFlows(DeviceId deviceId) {
         log.debug("Purging flows on device {}", deviceId);
-        try {
-            flowRuleService.purgeFlowRules(deviceId);
-        } catch (Exception e) {
-            log.error("Cannot purge flow rules", e);
-        }
+        flowRuleService.purgeFlowRules(deviceId);
 
         // removing the status from the cpStatus map
         if (log.isTraceEnabled()) {
@@ -678,8 +674,6 @@ public class OltFlowService implements OltFlowServiceInterface {
                     cpStatus.remove(entry.getKey());
                 }
             }
-        } catch (Exception e) {
-            log.error("Cannot wipe out cpStatus", e);
         } finally {
             cpStatusWriteLock.unlock();
         }
@@ -697,8 +691,6 @@ public class OltFlowService implements OltFlowServiceInterface {
                     provisionedSubscribers.remove(entry.getKey());
                 }
             }
-        } catch (Exception e) {
-            log.error("Cannot wipe out subscribers", e);
         } finally {
             provisionedSubscribersWriteLock.unlock();
         }
