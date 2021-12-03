@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b39a2068_d163a7c4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2021-12-03T00:02:59Z",
+      "side": 1,
+      "message": "Ran here: https://jenkins.opencord.org/job/build_onf-demo-pod_1T8GEM_voltha_DT_master_test/650/console\nfixed the issue on \"Test Disable and Enable ONU for DT\" then other things failed",
+      "revId": "80f5e97e6119685d6f069fbddd25e5f683397b59",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
