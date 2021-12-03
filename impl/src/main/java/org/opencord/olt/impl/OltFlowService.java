@@ -551,10 +551,12 @@ public class OltFlowService implements OltFlowServiceInterface {
             return false;
         }
 
+        // NOTE that the EAPOL flows handling is based on the data-plane flows status
+        // always process them before
+        handleSubscriberEapolFlows(sub, FlowOperation.ADD, sub.subscriberAndDeviceInformation);
+
         handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.ADD,
                 sub.subscriberAndDeviceInformation, multicastServiceName);
-
-        handleSubscriberEapolFlows(sub, FlowOperation.ADD, sub.subscriberAndDeviceInformation);
 
         handleSubscriberIgmpFlows(sub, FlowOperation.ADD);
 
