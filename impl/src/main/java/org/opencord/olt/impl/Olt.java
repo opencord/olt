@@ -852,8 +852,12 @@ public class Olt
                 }
             } else {
                 if (oltDeviceService.isNniPort(device, port.number())) {
-                    // NOTE this may need to be handled on DEVICE_REMOVE as we don't disable the NNI
-                    oltFlowService.handleNniFlows(device, port, OltFlowService.FlowOperation.REMOVE);
+                    // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
+                    // In that case the flows are purged anyway, so there's no need to deal with them,
+                    // it would actually be counter-productive as the openflow connection is severed and they won't
+                    // be correctly processed
+                    log.debug("NNI port went down, " +
+                            "ignoring event as flows will be removed in the generic device cleanup");
                 } else {
                     post(new AccessDeviceEvent(AccessDeviceEvent.Type.UNI_REMOVED, device.id(), port));
                     // NOTE we are assuming that if a subscriber has default eapol

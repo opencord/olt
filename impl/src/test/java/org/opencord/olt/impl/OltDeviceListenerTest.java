@@ -50,6 +50,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -149,8 +150,9 @@ public class OltDeviceListenerTest extends OltTestHelpers {
         DeviceEvent nniDisabledEvent = new DeviceEvent(DeviceEvent.Type.PORT_UPDATED, testDevice, disabledNniPort);
         oltDeviceListener.event(nniDisabledEvent);
 
+        // when the NNI goes down we ignore the event
         assert olt.eventsQueues.isEmpty();
-        verify(olt.oltFlowService, times(1))
+        verify(olt.oltFlowService, never())
                 .handleNniFlows(testDevice, disabledNniPort, OltFlowService.FlowOperation.REMOVE);
 
         // when we disable the device we receive a PORT_REMOVED event with status ENABLED
