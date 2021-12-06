@@ -422,33 +422,36 @@ public class OltFlowService implements OltFlowServiceInterface {
     public void handleNniFlows(Device device, Port port, FlowOperation action) {
 
         // always handle the LLDP flow
+        log.debug("{} LLDP trap flow on NNI {} for device {}", portWithName(port), device.id(), flowOpToString(action));
         processLldpFilteringObjective(device.id(), port, action);
 
         if (enableDhcpOnNni) {
             if (enableDhcpV4) {
-                log.debug("Installing DHCPv4 trap flow on NNI {} for device {}", portWithName(port), device.id());
+                log.debug("{} DHCPv4 trap flow on NNI {} for device {}", portWithName(port), device.id(),
+                        flowOpToString(action));
                 processDhcpFilteringObjectives(device.id(), port, action, FlowDirection.DOWNSTREAM,
                         67, 68, EthType.EtherType.IPV4.ethType(), IPv4.PROTOCOL_UDP,
                         null, null, nniUniTag);
             }
             if (enableDhcpV6) {
-                log.debug("Installing DHCPv6 trap flow on NNI {} for device {}", portWithName(port), device.id());
+                log.debug("{} DHCPv6 trap flow on NNI {} for device {}", portWithName(port), device.id(),
+                        flowOpToString(action));
                 processDhcpFilteringObjectives(device.id(), port, action, FlowDirection.DOWNSTREAM,
                         546, 547, EthType.EtherType.IPV6.ethType(), IPv6.PROTOCOL_UDP,
                         null, null, nniUniTag);
             }
         } else {
-            log.info("DHCP is not required on NNI {} for device {}", portWithName(port), device.id());
+            log.debug("DHCP is not required on NNI {} for device {}", portWithName(port), device.id());
         }
 
         if (enableIgmpOnNni) {
-            log.debug("Installing IGMP flow on NNI {} for device {}", portWithName(port), device.id());
+            log.debug("{} IGMP flow on NNI {} for device {}", portWithName(port), device.id(), flowOpToString(action));
             processIgmpFilteringObjectives(device.id(), port, action, FlowDirection.DOWNSTREAM,
                     null, null, NONE_TP_ID, VlanId.NONE, VlanId.ANY, -1);
         }
 
         if (enablePppoe) {
-            log.debug("Installing PPPoE flow on NNI {} for device {}", port.number(), device.id());
+            log.debug("{} PPPoE flow on NNI {} for device {}", port.number(), device.id(), flowOpToString(action));
             processPPPoEDFilteringObjectives(device.id(), port, action, FlowDirection.DOWNSTREAM,
                     null, null, NONE_TP_ID, VlanId.NONE, VlanId.ANY, null);
         }

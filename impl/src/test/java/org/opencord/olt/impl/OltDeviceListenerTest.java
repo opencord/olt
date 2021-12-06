@@ -155,14 +155,15 @@ public class OltDeviceListenerTest extends OltTestHelpers {
         verify(olt.oltFlowService, never())
                 .handleNniFlows(testDevice, disabledNniPort, OltFlowService.FlowOperation.REMOVE);
 
-        // when we disable the device we receive a PORT_REMOVED event with status ENABLED
-        // make sure we're removing the flows correctly
-        DeviceEvent nniRemoveEvent = new DeviceEvent(DeviceEvent.Type.PORT_REMOVED, testDevice, enabledNniPort);
-        oltDeviceListener.event(nniRemoveEvent);
+        // if the NNI is removed we ignore the event
+        Port removedNniPort = new OltPort(testDevice, true, PortNumber.portNumber(1048576),
+                DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "nni-1").build());
+        DeviceEvent nniRemovedEvent = new DeviceEvent(DeviceEvent.Type.PORT_UPDATED, testDevice, removedNniPort);
+        oltDeviceListener.event(nniRemovedEvent);
 
         assert olt.eventsQueues.isEmpty();
-        verify(olt.oltFlowService, times(1))
-                .handleNniFlows(testDevice, enabledNniPort, OltFlowService.FlowOperation.REMOVE);
+        verify(olt.oltFlowService, never())
+                .handleNniFlows(testDevice, removedNniPort, OltFlowService.FlowOperation.REMOVE);
     }
 
     @Test

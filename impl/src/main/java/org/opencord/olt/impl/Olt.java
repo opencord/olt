@@ -819,11 +819,15 @@ public class Olt
                     portWithName(port), port.isEnabled() ? "ENABLED" : "DISABLED", device.id());
             if (port.isEnabled()) {
                 if (oltDeviceService.isNniPort(device, port.number())) {
-                    // NOTE in the NNI case we receive a PORT_REMOVED event with status ENABLED, thus we need to
-                    // pass the floeAction to the handleNniFlows method
                     OltFlowService.FlowOperation action = OltFlowService.FlowOperation.ADD;
+                    // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
+                    // In that case the flows are purged anyway, so there's no need to deal with them,
+                    // it would actually be counter-productive as the openflow connection is severed and they won't
+                    // be correctly processed
                     if (type == DeviceEvent.Type.PORT_REMOVED) {
-                        action = OltFlowService.FlowOperation.REMOVE;
+                        log.debug("NNI port went down, " +
+                                "ignoring event as flows will be removed in the generic device cleanup");
+                        return;
                     }
                     oltFlowService.handleNniFlows(device, port, action);
                 } else {
