@@ -194,12 +194,11 @@ public class OltTest extends OltTestHelpers {
         LinkedBlockingQueue<DiscoveredSubscriber> spiedQueue = spy(q);
         component.eventsQueues.put(cp, spiedQueue);
 
-        // trying to add the same event twice should result in a single item in the queue
         component.addSubscriberToQueue(sub);
         component.addSubscriberToQueue(sub);
 
-        verify(spiedQueue, times(1)).add(sub);
-        Assert.assertEquals(1, spiedQueue.size());
+        verify(spiedQueue, times(2)).add(sub);
+        Assert.assertEquals(2, spiedQueue.size());
 
 
 

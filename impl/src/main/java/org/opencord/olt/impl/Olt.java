@@ -649,16 +649,11 @@ public class Olt
         } finally {
             queueReadLock.unlock();
         }
-        if (!q.contains(sub)) {
-            log.info("Adding subscriber to queue: {} with status {} and subscriber {}",
-                    portWithName(sub.port), sub.status, sub.hasSubscriber);
-            q.add(sub);
-        } else {
-            log.debug("Not adding subscriber to queue as already present: {} with status {}",
-                    portWithName(sub.port), sub.status);
-            // no need to update the queue in the map if nothing has changed
-            return;
-        }
+
+        log.info("Adding subscriber to queue: {} with status {} and subscriber {}",
+                portWithName(sub.port), sub.status, sub.hasSubscriber);
+        q.add(sub);
+
         try {
             queueWriteLock.lock();
             eventsQueues.put(cp, q);
@@ -776,8 +771,11 @@ public class Olt
                             clearQueueForDevice(deviceId);
                         } else {
                             log.info("Device {} availability changed to false, but ports are still available, " +
-                                            "assuming temporary disconnection. Ports: {}",
-                                    deviceId, deviceService.getPorts(deviceId));
+                                            "assuming temporary disconnection.",
+                                    deviceId);
+                            if (log.isTraceEnabled()) {
+                                log.trace("Available ports: {}",  deviceService.getPorts(deviceId));
+                            }
                         }
                         return;
                     case DEVICE_REMOVED:
