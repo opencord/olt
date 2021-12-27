@@ -79,7 +79,7 @@ If you want to try out the app on a running ONOS cluster you can follow this pro
     ```
 3) Install the new version of the app
     ```shell
-    curl --fail -sSL --user karaf:karaf --noproxy 127.0.0.1  -X POST -HContent-Type:application/octet-stream http://127.0.0.1:30120/onos/v1/applications?activate=true --data-binary @app/target/olt-app-5.0.0-SNAPSHOT.oar
+    curl --fail -sSL --user karaf:karaf --noproxy 127.0.0.1  -X POST -HContent-Type:application/octet-stream http://127.0.0.1:30120/onos/v1/applications?activate=true --data-binary @app/target/olt-app-5.0.0.oar
     ```
    you should see:
     ```shell

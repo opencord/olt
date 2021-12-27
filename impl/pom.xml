@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.opencord</groupId>
             <artifactId>olt-api</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
+            <version>${olt.api.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
