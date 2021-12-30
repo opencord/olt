@@ -3,3 +3,4 @@ host=gerrit.opencord.org
 port=29418
 project=olt.git
 defaultremote=origin
+defaultbranch=olt-5.0

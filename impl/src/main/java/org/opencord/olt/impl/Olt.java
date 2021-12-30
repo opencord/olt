@@ -230,6 +230,7 @@ public class Olt
     protected void deactivate(ComponentContext context) {
         cfgService.unregisterProperties(getClass(), false);
         discoveredSubscriberExecutor.shutdown();
+        deviceService.removeListener(deviceListener);
         flowsExecutor.shutdown();
         subscriberExecutor.shutdown();
         deviceListener.deactivate();
@@ -633,7 +634,6 @@ public class Olt
     }
 
     protected void unbindSadisService(SadisService service) {
-        deviceService.removeListener(deviceListener);
         deviceListener = null;
         sadisService = null;
         subsService = null;
