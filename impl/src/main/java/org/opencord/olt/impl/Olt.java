@@ -439,7 +439,7 @@ public class Olt
         uniTagInformationList.add(specificService);
         si.setUniTagList(uniTagInformationList);
         DiscoveredSubscriber sub = new DiscoveredSubscriber(device, port,
-                DiscoveredSubscriber.Status.ADDED, true, si);
+                DiscoveredSubscriber.Status.REMOVED, true, si);
 
         // NOTE we need to keep a list of the subscribers that are provisioned on a port,
         // regardless of the flow status

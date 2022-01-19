@@ -395,7 +395,9 @@ public class OltFlowService implements OltFlowServiceInterface {
                         !oltDeviceService.isNniPort(deviceService.getDevice(sk.getPort().connectPoint().deviceId()),
                                 sk.getPort().connectPoint().port()) &&
                                 // not EAPOL flow
-                                !sk.getService().equals(defaultEapolUniTag)
+                                !sk.getService().equals(defaultEapolUniTag) &&
+                                !status.subscriberFlowsStatus.equals(OltFlowsStatus.PENDING_REMOVE)
+                                && !status.subscriberFlowsStatus.equals(OltFlowsStatus.REMOVED)
 
                 ) {
                     subscribers.put(sk, sk.getService());
