@@ -17,6 +17,7 @@
 package org.opencord.olt.impl;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.onlab.packet.EthType;
 import org.onlab.packet.IPv4;
 import org.onlab.packet.IPv6;
@@ -90,6 +91,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -517,9 +519,9 @@ public class OltFlowService implements OltFlowServiceInterface {
 
     private boolean addSubscriberFlows(DiscoveredSubscriber sub, String defaultBandwithProfile,
                                        String multicastServiceName) {
-        if (log.isTraceEnabled()) {
-            log.trace("Provisioning of subscriber on {} started", portWithName(sub.port));
-        }
+        //if (log.isTraceEnabled()) {
+            log.info("SCALE - Provisioning of subscriber on {} started", portWithName(sub.port));
+        //}
         if (enableEapol) {
             if (hasDefaultEapol(sub.port)) {
                 // remove EAPOL flow and throw exception so that we'll retry later
@@ -723,19 +725,24 @@ public class OltFlowService implements OltFlowServiceInterface {
     @Override
     public boolean isSubscriberServiceProvisioned(AccessDevicePort cp) {
         // if any service is programmed on this port, returns true
-        AtomicBoolean provisioned = new AtomicBoolean(false);
+        //log.info("SCALE isSubscriberServiceProvisioned start for cp {}", cp);
+        //AtomicBoolean provisioned = new AtomicBoolean(false);
+        Set<Map.Entry<ServiceKey, Boolean>> subs;
         try {
             provisionedSubscribersReadLock.lock();
-            for (Map.Entry<ServiceKey, Boolean> entry : provisionedSubscribers.entrySet()) {
-                if (entry.getKey().getPort().equals(cp) && entry.getValue()) {
-                    provisioned.set(true);
-                    break;
-                }
-            }
+            subs = ImmutableSet.copyOf(provisionedSubscribers.entrySet());
         } finally {
             provisionedSubscribersReadLock.unlock();
         }
-        return provisioned.get();
+
+        for (Map.Entry<ServiceKey, Boolean> entry : subs) {
+            if (entry.getKey().getPort().equals(cp) && entry.getValue()) {
+                //log.info("SCALE isSubscriberServiceProvisioned end (true) for {}", cp);
+                return true;
+            }
+        }
+        //log.info("SCALE isSubscriberServiceProvisioned end (false) for cp {}", cp);
+        return false;
     }
 
     @Override
