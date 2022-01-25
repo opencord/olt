@@ -90,6 +90,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -724,16 +725,19 @@ public class OltFlowService implements OltFlowServiceInterface {
     public boolean isSubscriberServiceProvisioned(AccessDevicePort cp) {
         // if any service is programmed on this port, returns true
         AtomicBoolean provisioned = new AtomicBoolean(false);
+        Set<Map.Entry<ServiceKey, Boolean>> subs;
         try {
             provisionedSubscribersReadLock.lock();
-            for (Map.Entry<ServiceKey, Boolean> entry : provisionedSubscribers.entrySet()) {
-                if (entry.getKey().getPort().equals(cp) && entry.getValue()) {
-                    provisioned.set(true);
-                    break;
-                }
-            }
+            subs = provisionedSubscribers.entrySet();
         } finally {
             provisionedSubscribersReadLock.unlock();
+        }
+
+        for (Map.Entry<ServiceKey, Boolean> entry : subs) {
+            if (entry.getKey().getPort().equals(cp) && entry.getValue()) {
+                provisioned.set(true);
+                break;
+            }
         }
         return provisioned.get();
     }

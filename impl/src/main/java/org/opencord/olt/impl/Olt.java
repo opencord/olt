@@ -721,7 +721,11 @@ public class Olt
 
         @Override
         public void event(DeviceEvent event) {
+            log.info("SCALE OltListener receives event {} for: {}/{}", event.type(), event.subject().id(),
+                    event.port() != null ? event.port().number() : null);
             eventExecutor.execute(() -> {
+                log.info("SCALE OltListener Executor receives event {} for: {}/{}",
+                        event.type(), event.subject().id(), event.port() != null ? event.port().number() : null);
                 boolean isOlt = oltDeviceService.isOlt(event.subject());
                 DeviceId deviceId = event.subject().id();
                 switch (event.type()) {
@@ -815,8 +819,15 @@ public class Olt
         protected void handleOltPort(DeviceEvent.Type type, Device device, Port port) {
             log.info("OltDeviceListener receives event {} for port {} with status {} on device {}", type,
                     portWithName(port), port.isEnabled() ? "ENABLED" : "DISABLED", device.id());
+            Boolean isNni = oltDeviceService.isNniPort(device, port.number());
+
+            if (!isNni && type == DeviceEvent.Type.PORT_ADDED) {
+                log.info("SCALE ignoring PORT_ADD on UNI port");
+                return;
+            }
+
             if (port.isEnabled()) {
-                if (oltDeviceService.isNniPort(device, port.number())) {
+                if (isNni) {
                     OltFlowService.FlowOperation action = OltFlowService.FlowOperation.ADD;
                     // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
                     // In that case the flows are purged anyway, so there's no need to deal with them,
@@ -853,7 +864,7 @@ public class Olt
                     addSubscriberToQueue(sub);
                 }
             } else {
-                if (oltDeviceService.isNniPort(device, port.number())) {
+                if (isNni) {
                     // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
                     // In that case the flows are purged anyway, so there's no need to deal with them,
                     // it would actually be counter-productive as the openflow connection is severed and they won't

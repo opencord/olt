@@ -186,7 +186,8 @@ public class OltDeviceListenerTest extends OltTestHelpers {
         PortNumber uniPortNumber = PortNumber.portNumber(16);
         Port uniAddedDisabled = new OltPort(testDevice, false, uniPortNumber,
                 DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "uni-1").build());
-        DeviceEvent uniAddedDisabledEvent = new DeviceEvent(DeviceEvent.Type.PORT_ADDED, testDevice, uniAddedDisabled);
+        DeviceEvent uniAddedDisabledEvent =
+                new DeviceEvent(DeviceEvent.Type.PORT_UPDATED, testDevice, uniAddedDisabled);
         ConnectPoint cp = new ConnectPoint(testDevice.id(), uniPortNumber);
 
         // if the port does not have default EAPOL we should not generate an event
