@@ -85,11 +85,13 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -722,20 +724,20 @@ public class OltFlowService implements OltFlowServiceInterface {
 
     @Override
     public boolean isSubscriberServiceProvisioned(AccessDevicePort cp) {
-        // if any service is programmed on this port, returns true
-        AtomicBoolean provisioned = new AtomicBoolean(false);
+        Set<Map.Entry<ServiceKey, Boolean>> subs;
         try {
             provisionedSubscribersReadLock.lock();
-            for (Map.Entry<ServiceKey, Boolean> entry : provisionedSubscribers.entrySet()) {
-                if (entry.getKey().getPort().equals(cp) && entry.getValue()) {
-                    provisioned.set(true);
-                    break;
-                }
-            }
+            subs = new HashSet<>(provisionedSubscribers.entrySet());
         } finally {
             provisionedSubscribersReadLock.unlock();
         }
-        return provisioned.get();
+
+        for (Map.Entry<ServiceKey, Boolean> entry : subs) {
+            if (entry.getKey().getPort().equals(cp) && entry.getValue()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

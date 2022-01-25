@@ -65,10 +65,10 @@ public final class OsgiPropertyConstants {
     public static final int REQUIRED_DRIVERS_PROPERTY_DELAY_DEFAULT = 5;
 
     public static final String FLOW_PROCESSING_THREADS = "flowProcessingThreads";
-    public static final int FLOW_PROCESSING_THREADS_DEFAULT = 8;
+    public static final int FLOW_PROCESSING_THREADS_DEFAULT = 32;
 
     public static final String SUBSCRIBER_PROCESSING_THREADS = "subscriberProcessingThreads";
-    public static final int SUBSCRIBER_PROCESSING_THREADS_DEFAULT = 8;
+    public static final int SUBSCRIBER_PROCESSING_THREADS_DEFAULT = 24;
 
     public static final String REQUEUE_DELAY = "requeueDelay";
     public static final int REQUEUE_DELAY_DEFAULT = 500;

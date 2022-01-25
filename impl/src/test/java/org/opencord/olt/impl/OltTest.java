@@ -45,6 +45,7 @@ import org.opencord.sadis.UniTagInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -115,8 +116,7 @@ public class OltTest extends OltTestHelpers {
         reset(component.oltFlowService);
 
         component.bindSadisService(sadisService);
-        component.eventsQueues = component.storageService.
-                <ConnectPoint, LinkedBlockingQueue<DiscoveredSubscriber>>consistentMapBuilder().build().asJavaMap();
+        component.eventsQueues = new HashMap<>();
         component.eventsQueues.put(cp, new LinkedBlockingQueue<>());
 
         component.discoveredSubscriberExecutor.execute(() -> {
