@@ -490,94 +490,98 @@ public class Olt
     }
 
     protected void processDiscoveredSubscribers() {
-        log.info("Started processDiscoveredSubscribers loop");
-        while (true) {
-            Set<ConnectPoint> discoveredCps;
-            try {
-                queueReadLock.lock();
-                discoveredCps = eventsQueues.keySet();
-            } catch (Exception e) {
-                log.error("Cannot read keys from queue map", e);
-                return;
-            } finally {
-                queueReadLock.unlock();
-            }
-
-            discoveredCps.forEach(cp -> {
-                LinkedBlockingQueue<DiscoveredSubscriber> eventsQueue;
-
+        try {
+            log.info("Started processDiscoveredSubscribers loop");
+            while (true) {
+                Set<ConnectPoint> discoveredCps;
                 try {
                     queueReadLock.lock();
-                    eventsQueue = eventsQueues.get(cp);
+                    discoveredCps = eventsQueues.keySet();
                 } catch (Exception e) {
-                    log.error("Cannot get key from queue map", e);
+                    log.error("Cannot read keys from queue map", e);
                     return;
                 } finally {
                     queueReadLock.unlock();
                 }
 
-                if (!oltDeviceService.isLocalLeader(cp.deviceId())) {
-                    // if we're not local leader for this device, ignore this queue
-                    if (log.isTraceEnabled()) {
-                        log.trace("Ignoring queue on CP {} as not master of the device", cp);
+                discoveredCps.forEach(cp -> {
+                    LinkedBlockingQueue<DiscoveredSubscriber> eventsQueue;
+
+                    try {
+                        queueReadLock.lock();
+                        eventsQueue = eventsQueues.get(cp);
+                    } catch (Exception e) {
+                        log.error("Cannot get key from queue map", e);
+                        return;
+                    } finally {
+                        queueReadLock.unlock();
                     }
-                    return;
-                }
 
-                flowsExecutor.execute(() -> {
-                    if (!eventsQueue.isEmpty()) {
-                        // we do not remove the event from the queue until it has been processed
-                        // in that way we guarantee that events are processed in order
-                        DiscoveredSubscriber sub = eventsQueue.peek();
-                        if (sub == null) {
-                            // the queue is empty
-                            return;
-                        }
-
+                    if (!oltDeviceService.isLocalLeader(cp.deviceId())) {
+                        // if we're not local leader for this device, ignore this queue
                         if (log.isTraceEnabled()) {
-                            log.trace("Processing subscriber on port {} with status {}",
-                                    portWithName(sub.port), sub.status);
+                            log.trace("Ignoring queue on CP {} as not master of the device", cp);
                         }
+                        return;
+                    }
 
-                        if (sub.hasSubscriber) {
-                            // this is a provision subscriber call
-                            if (oltFlowService.handleSubscriberFlows(sub, defaultBpId, multicastServiceName)) {
-                                if (log.isTraceEnabled()) {
-                                    log.trace("Provisioning of subscriber on {} completed",
-                                            portWithName(sub.port));
-                                }
-                                removeSubscriberFromQueue(sub);
-                            }
-                        } else {
-                            // this is a port event (ENABLED/DISABLED)
-                            // means no subscriber was provisioned on that port
-
-                            if (!deviceService.isAvailable(sub.device.id()) ||
-                                    deviceService.getPort(sub.device.id(), sub.port.number()) == null) {
-                                // If the device is not connected or the port is not available do nothing
-                                // This can happen when we disable and then immediately delete the device,
-                                // the queue is populated but the meters and flows are already gone
-                                // thus there is nothing left to do
+                    flowsExecutor.execute(() -> {
+                        if (!eventsQueue.isEmpty()) {
+                            // we do not remove the event from the queue until it has been processed
+                            // in that way we guarantee that events are processed in order
+                            DiscoveredSubscriber sub = eventsQueue.peek();
+                            if (sub == null) {
+                                // the queue is empty
                                 return;
                             }
 
-                            if (oltFlowService.handleBasicPortFlows(sub, defaultBpId, defaultBpId)) {
-                                if (log.isTraceEnabled()) {
-                                    log.trace("Processing of port {} completed",
-                                            portWithName(sub.port));
+                            //if (log.isTraceEnabled()) {
+                            log.info("SCALE - Processing subscriber {} on port {} with status {}, has subscriber {}",
+                                     sub, portWithName(sub.port), sub.status, sub.hasSubscriber);
+                            //}
+
+                            if (sub.hasSubscriber) {
+                                // this is a provision subscriber call
+                                if (oltFlowService.handleSubscriberFlows(sub, defaultBpId, multicastServiceName)) {
+                                    //if (log.isTraceEnabled()) {
+                                    //log.info("SCALE Provisioning of subscriber on {} completed",
+                                    //portWithName(sub.port));
+                                    //}
+                                    removeSubscriberFromQueue(sub);
                                 }
-                                removeSubscriberFromQueue(sub);
+                            } else {
+                                // this is a port event (ENABLED/DISABLED)
+                                // means no subscriber was provisioned on that port
+
+                                if (!deviceService.isAvailable(sub.device.id()) ||
+                                        deviceService.getPort(sub.device.id(), sub.port.number()) == null) {
+                                    // If the device is not connected or the port is not available do nothing
+                                    // This can happen when we disable and then immediately delete the device,
+                                    // the queue is populated but the meters and flows are already gone
+                                    // thus there is nothing left to do
+                                    return;
+                                }
+
+                                if (oltFlowService.handleBasicPortFlows(sub, defaultBpId, defaultBpId)) {
+                                    //if (log.isTraceEnabled()) {
+                                    //log.info("SCALE Processing of port {} completed",
+                                    //portWithName(sub.port));
+                                    //}
+                                    removeSubscriberFromQueue(sub);
+                                }
                             }
                         }
-                    }
+                    });
                 });
-            });
 
-            try {
-                TimeUnit.MILLISECONDS.sleep(requeueDelay);
-            } catch (InterruptedException e) {
-                continue;
+                try {
+                    TimeUnit.MILLISECONDS.sleep(requeueDelay);
+                } catch (InterruptedException e) {
+                    continue;
+                }
             }
+        } catch (Exception e) {
+            log.error("SCALE exception processing subscriber", e);
         }
     }
 
@@ -650,8 +654,8 @@ public class Olt
             queueReadLock.unlock();
         }
 
-        log.info("Adding subscriber to queue: {} with status {} and subscriber {}",
-                portWithName(sub.port), sub.status, sub.hasSubscriber);
+        log.info("SCALE Adding subscriber {} to queue: {}",
+                sub, portWithName(sub.port));
         q.add(sub);
 
         try {
@@ -668,9 +672,9 @@ public class Olt
     protected void removeSubscriberFromQueue(DiscoveredSubscriber sub) {
         ConnectPoint cp = new ConnectPoint(sub.device.id(), sub.port.number());
         LinkedBlockingQueue<DiscoveredSubscriber> q = null;
-        if (log.isTraceEnabled()) {
-            log.trace("removing subscriber {} from queue", sub);
-        }
+        //if (log.isTraceEnabled()) {
+            log.info("SCALE removing subscriber {} from queue : {}", sub, portWithName(sub.port));
+        //}
         try {
             queueReadLock.lock();
             q = eventsQueues.get(cp);
@@ -683,10 +687,10 @@ public class Olt
         }
         boolean removed = q.remove(sub);
         if (!removed) {
-            log.warn("Subscriber {} has not been removed from queue, is it still there? {}", sub, q);
+            log.warn("SCALE Subscriber {} has not been removed from queue, is it still there? {}", sub, q);
             return;
         } else {
-            log.debug("Subscriber {} has been removed from the queue", sub);
+            //log.info("SCALE Subscriber {} has been removed from the queue", sub);
         }
 
         try {
@@ -721,7 +725,11 @@ public class Olt
 
         @Override
         public void event(DeviceEvent event) {
+            log.info("SCALE OltListener receives event {} for: {}/{}", event.type(), event.subject().id(),
+                    event.port() != null ? event.port().number() : null);
             eventExecutor.execute(() -> {
+                log.info("SCALE OltListener Executor receives event {} for: {}/{}",
+                        event.type(), event.subject().id(), event.port() != null ? event.port().number() : null);
                 boolean isOlt = oltDeviceService.isOlt(event.subject());
                 DeviceId deviceId = event.subject().id();
                 switch (event.type()) {
@@ -815,8 +823,15 @@ public class Olt
         protected void handleOltPort(DeviceEvent.Type type, Device device, Port port) {
             log.info("OltDeviceListener receives event {} for port {} with status {} on device {}", type,
                     portWithName(port), port.isEnabled() ? "ENABLED" : "DISABLED", device.id());
+            Boolean isNni = oltDeviceService.isNniPort(device, port.number());
+
+            if (!isNni && type == DeviceEvent.Type.PORT_ADDED) {
+                log.info("SCALE ignoring PORT_ADD on UNI port");
+                return;
+            }
+
             if (port.isEnabled()) {
-                if (oltDeviceService.isNniPort(device, port.number())) {
+                if (isNni) {
                     OltFlowService.FlowOperation action = OltFlowService.FlowOperation.ADD;
                     // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
                     // In that case the flows are purged anyway, so there's no need to deal with them,
@@ -853,7 +868,7 @@ public class Olt
                     addSubscriberToQueue(sub);
                 }
             } else {
-                if (oltDeviceService.isNniPort(device, port.number())) {
+                if (isNni) {
                     // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
                     // In that case the flows are purged anyway, so there's no need to deal with them,
                     // it would actually be counter-productive as the openflow connection is severed and they won't
