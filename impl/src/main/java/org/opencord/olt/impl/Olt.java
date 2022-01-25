@@ -56,16 +56,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -256,9 +259,12 @@ public class Olt
                 if (flowsExecutor != null) {
                     flowsExecutor.shutdown();
                 }
-                flowsExecutor = Executors.newFixedThreadPool(flowProcessingThreads,
-                        groupedThreads(ONOS_OLT_SERVICE,
-                                "flows-installer-%d"));
+//                flowsExecutor = Executors.newFixedThreadPool(flowProcessingThreads,
+//                        groupedThreads(ONOS_OLT_SERVICE,
+//                                "flows-installer-%d"));
+                flowsExecutor = new ThreadPoolExecutor(0, flowProcessingThreads, 30,
+                        TimeUnit.SECONDS, new ThreadPoolQueue(flowProcessingThreads * 4),
+                        new ThreadPoolExecutor.DiscardPolicy());
             }
 
             String subscriberThreads = get(properties, SUBSCRIBER_PROCESSING_THREADS);
@@ -490,96 +496,102 @@ public class Olt
     }
 
     protected void processDiscoveredSubscribers() {
-        log.info("Started processDiscoveredSubscribers loop");
-        while (true) {
-            Set<ConnectPoint> discoveredCps;
-            try {
-                queueReadLock.lock();
-                discoveredCps = eventsQueues.keySet();
-            } catch (Exception e) {
-                log.error("Cannot read keys from queue map", e);
-                return;
-            } finally {
-                queueReadLock.unlock();
-            }
 
-            discoveredCps.forEach(cp -> {
-                LinkedBlockingQueue<DiscoveredSubscriber> eventsQueue;
-
+            log.info("Started processDiscoveredSubscribers loop");
+            while (true) {
+                Set<ConnectPoint> discoveredCps;
                 try {
                     queueReadLock.lock();
-                    eventsQueue = eventsQueues.get(cp);
+                    discoveredCps = new HashSet<>(eventsQueues.keySet());
                 } catch (Exception e) {
-                    log.error("Cannot get key from queue map", e);
-                    return;
+                    log.error("Cannot read keys from queue map", e);
+                    continue;
                 } finally {
                     queueReadLock.unlock();
                 }
 
-                if (!oltDeviceService.isLocalLeader(cp.deviceId())) {
-                    // if we're not local leader for this device, ignore this queue
-                    if (log.isTraceEnabled()) {
-                        log.trace("Ignoring queue on CP {} as not master of the device", cp);
+                discoveredCps.forEach(cp -> {
+                    LinkedBlockingQueue<DiscoveredSubscriber> eventsQueue;
+
+                    try {
+                        queueReadLock.lock();
+                        eventsQueue = eventsQueues.get(cp);
+                    } catch (Exception e) {
+                        log.error("Cannot get key from queue map", e);
+                        return;
+                    } finally {
+                        queueReadLock.unlock();
                     }
-                    return;
-                }
 
-                flowsExecutor.execute(() -> {
-                    if (!eventsQueue.isEmpty()) {
-                        // we do not remove the event from the queue until it has been processed
-                        // in that way we guarantee that events are processed in order
-                        DiscoveredSubscriber sub = eventsQueue.peek();
-                        if (sub == null) {
-                            // the queue is empty
-                            return;
-                        }
-
+                    if (!oltDeviceService.isLocalLeader(cp.deviceId())) {
+                        // if we're not local leader for this device, ignore this queue
                         if (log.isTraceEnabled()) {
-                            log.trace("Processing subscriber on port {} with status {}",
-                                    portWithName(sub.port), sub.status);
+                            log.trace("Ignoring queue on CP {} as not master of the device", cp);
                         }
+                        return;
+                    }
 
-                        if (sub.hasSubscriber) {
-                            // this is a provision subscriber call
-                            if (oltFlowService.handleSubscriberFlows(sub, defaultBpId, multicastServiceName)) {
-                                if (log.isTraceEnabled()) {
-                                    log.trace("Provisioning of subscriber on {} completed",
-                                            portWithName(sub.port));
-                                }
-                                removeSubscriberFromQueue(sub);
-                            }
-                        } else {
-                            // this is a port event (ENABLED/DISABLED)
-                            // means no subscriber was provisioned on that port
-
-                            if (!deviceService.isAvailable(sub.device.id()) ||
-                                    deviceService.getPort(sub.device.id(), sub.port.number()) == null) {
-                                // If the device is not connected or the port is not available do nothing
-                                // This can happen when we disable and then immediately delete the device,
-                                // the queue is populated but the meters and flows are already gone
-                                // thus there is nothing left to do
+                    try {
+                        flowsExecutor.execute(() -> {
+                        if (!eventsQueue.isEmpty()) {
+                            // we do not remove the event from the queue until it has been processed
+                            // in that way we guarantee that events are processed in order
+                            DiscoveredSubscriber sub = eventsQueue.peek();
+                            if (sub == null) {
+                                // the queue is empty
                                 return;
                             }
 
-                            if (oltFlowService.handleBasicPortFlows(sub, defaultBpId, defaultBpId)) {
-                                if (log.isTraceEnabled()) {
-                                    log.trace("Processing of port {} completed",
-                                            portWithName(sub.port));
+                            //if (log.isTraceEnabled()) {
+                            log.info("SCALE - Processing subscriber {} on port {} with status {}, has subscriber {}",
+                                     sub, portWithName(sub.port), sub.status, sub.hasSubscriber);
+                            //}
+
+                            if (sub.hasSubscriber) {
+                                // this is a provision subscriber call
+                                if (oltFlowService.handleSubscriberFlows(sub, defaultBpId, multicastServiceName)) {
+                                    //if (log.isTraceEnabled()) {
+                                    //log.info("SCALE Provisioning of subscriber on {} completed",
+                                    //portWithName(sub.port));
+                                    //}
+                                    removeSubscriberFromQueue(sub);
                                 }
-                                removeSubscriberFromQueue(sub);
+                            } else {
+                                // this is a port event (ENABLED/DISABLED)
+                                // means no subscriber was provisioned on that port
+
+                                if (!deviceService.isAvailable(sub.device.id()) ||
+                                        deviceService.getPort(sub.device.id(), sub.port.number()) == null) {
+                                    // If the device is not connected or the port is not available do nothing
+                                    // This can happen when we disable and then immediately delete the device,
+                                    // the queue is populated but the meters and flows are already gone
+                                    // thus there is nothing left to do
+                                    return;
+                                }
+
+                                if (oltFlowService.handleBasicPortFlows(sub, defaultBpId, defaultBpId)) {
+                                    //if (log.isTraceEnabled()) {
+                                    //log.info("SCALE Processing of port {} completed",
+                                    //portWithName(sub.port));
+                                    //}
+                                    removeSubscriberFromQueue(sub);
+                                }
                             }
                         }
+                    });
+                    } catch (Exception e) {
+                        log.error("SCALE exception processing subscriber", e);
                     }
                 });
-            });
 
-            try {
-                TimeUnit.MILLISECONDS.sleep(requeueDelay);
-            } catch (InterruptedException e) {
-                continue;
+                try {
+                    TimeUnit.MILLISECONDS.sleep(requeueDelay);
+                } catch (InterruptedException e) {
+                    continue;
+                }
             }
-        }
     }
+
 
     /**
      * Checks the subscriber uni tag list and find the uni tag information.
@@ -641,58 +653,55 @@ public class Olt
     }
 
     protected void addSubscriberToQueue(DiscoveredSubscriber sub) {
-        ConnectPoint cp = new ConnectPoint(sub.device.id(), sub.port.number());
-        LinkedBlockingQueue<DiscoveredSubscriber> q = null;
         try {
-            queueReadLock.lock();
-            q = eventsQueues.getOrDefault(cp, new LinkedBlockingQueue<>());
-        } finally {
-            queueReadLock.unlock();
-        }
+            ConnectPoint cp = new ConnectPoint(sub.device.id(), sub.port.number());
 
-        log.info("Adding subscriber to queue: {} with status {} and subscriber {}",
-                portWithName(sub.port), sub.status, sub.hasSubscriber);
-        q.add(sub);
-
-        try {
-            queueWriteLock.lock();
-            eventsQueues.put(cp, q);
-        } catch (UnsupportedOperationException | ClassCastException |
-                NullPointerException | IllegalArgumentException e) {
-            log.error("Cannot add subscriber to queue: {}", e.getMessage());
-        } finally {
-            queueWriteLock.unlock();
+            try {
+                queueWriteLock.lock();
+                eventsQueues.compute(cp, (subcp, queue) -> {
+                    queue = queue == null ? new LinkedBlockingQueue<>() : queue;
+                    log.info("SCALE Adding subscriber {} to queue: {} with existing {}",
+                             sub, portWithName(sub.port), queue);
+                    queue.add(sub);
+                    return queue;
+                });
+            } catch (UnsupportedOperationException | ClassCastException |
+                    NullPointerException | IllegalArgumentException e) {
+                log.error("SCALE Cannot add subscriber {} to queue: {}", portWithName(sub.port), e.getMessage());
+            } finally {
+                queueWriteLock.unlock();
+            }
+        } catch (Exception e) {
+            log.error("SCALE Can't add {} to queue", sub, e);
         }
     }
 
     protected void removeSubscriberFromQueue(DiscoveredSubscriber sub) {
         ConnectPoint cp = new ConnectPoint(sub.device.id(), sub.port.number());
-        LinkedBlockingQueue<DiscoveredSubscriber> q = null;
-        if (log.isTraceEnabled()) {
-            log.trace("removing subscriber {} from queue", sub);
-        }
-        try {
-            queueReadLock.lock();
-            q = eventsQueues.get(cp);
-        } finally {
-            queueReadLock.unlock();
-        }
-        if (q == null) {
-            log.warn("Cannot find queue for connectPoint {}", cp);
-            return;
-        }
-        boolean removed = q.remove(sub);
-        if (!removed) {
-            log.warn("Subscriber {} has not been removed from queue, is it still there? {}", sub, q);
-            return;
-        } else {
-            log.debug("Subscriber {} has been removed from the queue", sub);
-        }
+        //if (log.isTraceEnabled()) {
 
+        //}
         try {
             queueWriteLock.lock();
-            eventsQueues.remove(cp); // am I needed??
-            eventsQueues.put(cp, q);
+            eventsQueues.compute(cp, (subcp, queue) -> {
+                log.info("SCALE removing subscriber {} from queue : {} " +
+                                 "with existing {}", sub, portWithName(sub.port), queue);
+            if (queue == null) {
+                log.warn("Cannot find queue for connectPoint {}", cp);
+                return queue;
+            }
+            boolean removed = queue.remove(sub);
+            if (!removed) {
+                log.warn("SCALE Subscriber {} has not been removed from queue, " +
+                                 "is it still there? {}", sub, queue);
+                return queue;
+            } else {
+                log.info("SCALE Subscriber {} has been removed from the queue", sub);
+            }
+
+            log.info("SCALE adding back queue to map: {}", queue);
+            return queue;
+            });
         } catch (UnsupportedOperationException | ClassCastException |
                 NullPointerException | IllegalArgumentException e) {
             log.error("Cannot remove subscriber {} from queue: {}", sub, e.getMessage());
@@ -700,6 +709,52 @@ public class Olt
             queueWriteLock.unlock();
         }
     }
+
+//    protected void removeSubscriberFromQueue(DiscoveredSubscriber sub) {
+//        ConnectPoint cp = new ConnectPoint(sub.device.id(), sub.port.number());
+//        LinkedBlockingQueue<DiscoveredSubscriber> q = null;
+//        //if (log.isTraceEnabled()) {
+//            log.info("SCALE removing subscriber {} from queue : {} " +
+//                             "with existing {}", sub, portWithName(sub.port), q);
+//        //}
+//        try {
+//            queueWriteLock.lock();
+////        try {
+////            queueReadLock.lock();
+//            q = eventsQueues.get(cp);
+////        } finally {
+////            queueReadLock.unlock();
+////        }
+//            if (q == null) {
+//                log.warn("Cannot find queue for connectPoint {}", cp);
+//                return;
+//            }
+//            boolean removed = q.remove(sub);
+//            if (!removed) {
+//                log.warn("SCALE Subscriber {} has not been removed from queue, is it still there? {}", sub, q);
+//                return;
+//            } else {
+//                log.info("SCALE Subscriber {} has been removed from the queue", sub);
+//            }
+//
+////        try {
+////            queueWriteLock.lock();
+//            eventsQueues.remove(cp); // am I needed??
+//            log.info("SCALE adding back queue to map: {}", q);
+//            eventsQueues.put(cp, q);
+////        } catch (UnsupportedOperationException | ClassCastException |
+////                NullPointerException | IllegalArgumentException e) {
+////            log.error("Cannot remove subscriber {} from queue: {}", sub, e.getMessage());
+////        } finally {
+////            queueWriteLock.unlock();
+////        }
+//        } catch (UnsupportedOperationException | ClassCastException |
+//                NullPointerException | IllegalArgumentException e) {
+//            log.error("Cannot remove subscriber {} from queue: {}", sub, e.getMessage());
+//        } finally {
+//            queueWriteLock.unlock();
+//        }
+//    }
 
     protected class OltDeviceListener
             implements DeviceListener {
@@ -721,7 +776,11 @@ public class Olt
 
         @Override
         public void event(DeviceEvent event) {
+            log.info("SCALE OltListener receives event {} for: {}/{}", event.type(), event.subject().id(),
+                    event.port() != null ? event.port().number() : null);
             eventExecutor.execute(() -> {
+                log.info("SCALE OltListener Executor receives event {} for: {}/{}",
+                        event.type(), event.subject().id(), event.port() != null ? event.port().number() : null);
                 boolean isOlt = oltDeviceService.isOlt(event.subject());
                 DeviceId deviceId = event.subject().id();
                 switch (event.type()) {
@@ -815,8 +874,15 @@ public class Olt
         protected void handleOltPort(DeviceEvent.Type type, Device device, Port port) {
             log.info("OltDeviceListener receives event {} for port {} with status {} on device {}", type,
                     portWithName(port), port.isEnabled() ? "ENABLED" : "DISABLED", device.id());
+            Boolean isNni = oltDeviceService.isNniPort(device, port.number());
+
+            if (!isNni && type == DeviceEvent.Type.PORT_ADDED) {
+                log.info("SCALE ignoring PORT_ADD on UNI port {}", portWithName(port));
+                return;
+            }
+
             if (port.isEnabled()) {
-                if (oltDeviceService.isNniPort(device, port.number())) {
+                if (isNni) {
                     OltFlowService.FlowOperation action = OltFlowService.FlowOperation.ADD;
                     // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
                     // In that case the flows are purged anyway, so there's no need to deal with them,
@@ -853,7 +919,7 @@ public class Olt
                     addSubscriberToQueue(sub);
                 }
             } else {
-                if (oltDeviceService.isNniPort(device, port.number())) {
+                if (isNni) {
                     // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
                     // In that case the flows are purged anyway, so there's no need to deal with them,
                     // it would actually be counter-productive as the openflow connection is severed and they won't
@@ -917,5 +983,24 @@ public class Olt
                 }
             }
         }
+    }
+
+    protected final class ThreadPoolQueue extends ArrayBlockingQueue<Runnable> {
+
+        public ThreadPoolQueue(int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        public boolean offer(Runnable e) {
+            try {
+                put(e);
+            } catch (InterruptedException e1) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+            return true;
+        }
+
     }
 }
