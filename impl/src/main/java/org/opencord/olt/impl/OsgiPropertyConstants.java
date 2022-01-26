@@ -55,6 +55,9 @@ public final class OsgiPropertyConstants {
     public static final String ENABLE_EAPOL = "enableEapol";
     public static final boolean ENABLE_EAPOL_DEFAULT = true;
 
+    public static final String ENABLE_PPPOE_ON_NNI = "enablePppoeOnNni";
+    public static final boolean ENABLE_PPPOE_ON_NNI_DEFAULT = false;
+
     public static final String ENABLE_PPPOE = "enablePppoe";
     public static final boolean ENABLE_PPPOE_DEFAULT = false;
 
