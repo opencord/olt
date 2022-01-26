@@ -157,22 +157,22 @@ public class OltFlowServiceTest extends OltTestHelpers {
         // cpStatus map for the test
         component.cpStatus = component.storageService.
                 <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
-        OltPortStatus cp1Status = new OltPortStatus(PENDING_ADD, NONE, NONE);
+        OltPortStatus cp1Status = new OltPortStatus(PENDING_ADD, NONE, NONE, NONE);
         component.cpStatus.put(sk1, cp1Status);
 
         //check that we only update the provided value
-        component.updateConnectPointStatus(sk1, ADDED, null, null);
+        component.updateConnectPointStatus(sk1, ADDED, null, null, null);
         OltPortStatus updated = component.cpStatus.get(sk1);
         Assert.assertEquals(ADDED, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
         Assert.assertEquals(NONE, updated.dhcpStatus);
 
         // check that it creates an entry if it does not exist
-        component.updateConnectPointStatus(sk2, PENDING_ADD, NONE, NONE);
+        component.updateConnectPointStatus(sk2, PENDING_ADD, NONE, NONE, NONE);
         Assert.assertNotNull(component.cpStatus.get(sk2));
 
         // check that if we create a new entry with null values they're converted to NONE
-        component.updateConnectPointStatus(sk3, null, null, null);
+        component.updateConnectPointStatus(sk3, null, null, null, null);
         updated = component.cpStatus.get(sk3);
         Assert.assertEquals(NONE, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
@@ -201,12 +201,12 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
 
         // check that an entry is not created if the only status is pending remove
-        component.updateConnectPointStatus(sk1, null, null, PENDING_REMOVE);
+        component.updateConnectPointStatus(sk1, null, null, PENDING_REMOVE, null);
         OltPortStatus entry = component.cpStatus.get(sk1);
         Assert.assertNull(entry);
 
         // check that an entry is not created if the only status is ERROR
-        component.updateConnectPointStatus(sk1, null, null, ERROR);
+        component.updateConnectPointStatus(sk1, null, null, ERROR, null);
         entry = component.cpStatus.get(sk1);
         Assert.assertNull(entry);
     }
@@ -230,12 +230,14 @@ public class OltFlowServiceTest extends OltTestHelpers {
         OltPortStatus portStatusAdded = new OltPortStatus(
                 OltFlowService.OltFlowsStatus.ADDED,
                 NONE,
+                null,
                 null
         );
 
         OltPortStatus portStatusRemoved = new OltPortStatus(
                 REMOVED,
                 NONE,
+                null,
                 null
         );
 
@@ -266,19 +268,22 @@ public class OltFlowServiceTest extends OltTestHelpers {
         OltPortStatus withDefaultEapol = new OltPortStatus(
                 ADDED,
                 NONE,
+                NONE,
                 NONE
         );
 
         OltPortStatus withDhcp = new OltPortStatus(
                 REMOVED,
                 NONE,
-                ADDED
+                ADDED,
+                NONE
         );
 
         OltPortStatus withSubFlow = new OltPortStatus(
                 REMOVED,
                 ADDED,
-                ADDED
+                ADDED,
+                NONE
         );
 
         component.cpStatus.put(skWithStatus, withDefaultEapol);
