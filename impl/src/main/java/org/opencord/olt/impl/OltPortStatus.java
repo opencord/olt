@@ -28,13 +28,16 @@ public class OltPortStatus {
     // NOTE we need to keep track of the DHCP status as that is installed before the other flows
     // if macLearning is enabled (DHCP is needed to learn the MacAddress from the host)
     public OltFlowService.OltFlowsStatus dhcpStatus;
+    public OltFlowService.OltFlowsStatus pppoeStatus;
 
     public OltPortStatus(OltFlowService.OltFlowsStatus defaultEapolStatus,
                          OltFlowService.OltFlowsStatus subscriberFlowsStatus,
-                         OltFlowService.OltFlowsStatus dhcpStatus) {
+                         OltFlowService.OltFlowsStatus dhcpStatus,
+                         OltFlowService.OltFlowsStatus pppoeStatus) {
         this.defaultEapolStatus = defaultEapolStatus;
         this.subscriberFlowsStatus = subscriberFlowsStatus;
         this.dhcpStatus = dhcpStatus;
+        this.pppoeStatus = pppoeStatus;
     }
 
     @Override

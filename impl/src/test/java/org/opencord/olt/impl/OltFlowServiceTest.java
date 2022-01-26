@@ -157,22 +157,22 @@ public class OltFlowServiceTest extends OltTestHelpers {
         // cpStatus map for the test
         component.cpStatus = component.storageService.
                 <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
-        OltPortStatus cp1Status = new OltPortStatus(PENDING_ADD, NONE, NONE);
+        OltPortStatus cp1Status = new OltPortStatus(PENDING_ADD, NONE, NONE, NONE);
         component.cpStatus.put(sk1, cp1Status);
 
         //check that we only update the provided value
-        component.updateConnectPointStatus(sk1, ADDED, null, null);
+        component.updateConnectPointStatus(sk1, ADDED, null, null, null);
         OltPortStatus updated = component.cpStatus.get(sk1);
         Assert.assertEquals(ADDED, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
         Assert.assertEquals(NONE, updated.dhcpStatus);
 
         // check that it creates an entry if it does not exist
-        component.updateConnectPointStatus(sk2, PENDING_ADD, NONE, NONE);
+        component.updateConnectPointStatus(sk2, PENDING_ADD, NONE, NONE, NONE);
         Assert.assertNotNull(component.cpStatus.get(sk2));
 
         // check that if we create a new entry with null values they're converted to NONE
-        component.updateConnectPointStatus(sk3, null, null, null);
+        component.updateConnectPointStatus(sk3, null, null, null, null);
         updated = component.cpStatus.get(sk3);
         Assert.assertEquals(NONE, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
@@ -201,12 +201,12 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
 
         // check that an entry is not created if the only status is pending remove
-        component.updateConnectPointStatus(sk1, null, null, PENDING_REMOVE);
+        component.updateConnectPointStatus(sk1, null, null, PENDING_REMOVE, null);
         OltPortStatus entry = component.cpStatus.get(sk1);
         Assert.assertNull(entry);
 
         // check that an entry is not created if the only status is ERROR
-        component.updateConnectPointStatus(sk1, null, null, ERROR);
+        component.updateConnectPointStatus(sk1, null, null, ERROR, null);
         entry = component.cpStatus.get(sk1);
         Assert.assertNull(entry);
     }
@@ -230,12 +230,14 @@ public class OltFlowServiceTest extends OltTestHelpers {
         OltPortStatus portStatusAdded = new OltPortStatus(
                 OltFlowService.OltFlowsStatus.ADDED,
                 NONE,
+                null,
                 null
         );
 
         OltPortStatus portStatusRemoved = new OltPortStatus(
                 REMOVED,
                 NONE,
+                null,
                 null
         );
 
@@ -266,19 +268,22 @@ public class OltFlowServiceTest extends OltTestHelpers {
         OltPortStatus withDefaultEapol = new OltPortStatus(
                 ADDED,
                 NONE,
+                NONE,
                 NONE
         );
 
         OltPortStatus withDhcp = new OltPortStatus(
                 REMOVED,
                 NONE,
-                ADDED
+                ADDED,
+                NONE
         );
 
         OltPortStatus withSubFlow = new OltPortStatus(
                 REMOVED,
                 ADDED,
-                ADDED
+                ADDED,
+                NONE
         );
 
         component.cpStatus.put(skWithStatus, withDefaultEapol);
@@ -558,6 +563,52 @@ public class OltFlowServiceTest extends OltTestHelpers {
     }
 
     @Test
+    public void testHandleNniFlowsPppoe() {
+        component.enablePppoeOnNni = true;
+        component.enablePppoe = true;
+        component.handleNniFlows(testDevice, nniPort, OltFlowService.FlowOperation.ADD);
+
+        FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
+                .permit()
+                .withKey(Criteria.matchInPort(nniPort.number()))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.PPPoED.ethType()))
+                .fromApp(testAppId)
+                .withPriority(10000)
+                .withMeta(DefaultTrafficTreatment.builder().setOutput(PortNumber.CONTROLLER).build())
+                .add();
+
+        // invoked with the correct Pppoe filtering objective
+        verify(component.flowObjectiveService, times(1))
+                .filter(eq(deviceId), argThat(new FilteringObjectiveMatcher(expectedFilter)));
+        // invoked only twice, LLDP and DHCP
+        verify(component.flowObjectiveService, times(2))
+                .filter(eq(deviceId), any());
+    }
+
+    @Test
+    public void testRemoveNniFlowsPppoe() {
+        component.enablePppoeOnNni = true;
+        component.enablePppoe = true;
+        component.handleNniFlows(testDevice, nniPortDisabled, OltFlowService.FlowOperation.REMOVE);
+
+        FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
+                .deny()
+                .withKey(Criteria.matchInPort(nniPort.number()))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.PPPoED.ethType()))
+                .fromApp(testAppId)
+                .withPriority(10000)
+                .withMeta(DefaultTrafficTreatment.builder().setOutput(PortNumber.CONTROLLER).build())
+                .add();
+
+        // invoked with the correct Pppoe filtering objective
+        verify(component.flowObjectiveService, times(1))
+                .filter(eq(deviceId), argThat(new FilteringObjectiveMatcher(expectedFilter)));
+        // invoked only twice, LLDP and DHCP
+        verify(component.flowObjectiveService, times(2))
+                .filter(eq(deviceId), any());
+    }
+
+    @Test
     public void testMacAddressNotRequired() {
         // create a single service that doesn't require mac address
         List<UniTagInformation> uniTagInformationList = new LinkedList<>();
@@ -665,6 +716,56 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .add();
 
         component.handleSubscriberDhcpFlows(addedSub.device.id(), addedSub.port,
+                OltFlowService.FlowOperation.ADD, si);
+        verify(component.flowObjectiveService, times(1))
+                .filter(eq(addedSub.device.id()), argThat(new FilteringObjectiveMatcher(expectedFilter)));
+    }
+
+    @Test
+    public void testHandleSubscriberPppoeFlowsAdd() {
+
+        String usBp = "usBp";
+        String usOltBp = "usOltBp";
+        component.enablePppoe = true;
+
+        // create two services, one requires Pppoe the other doesn't
+        List<UniTagInformation> uniTagInformationList = new LinkedList<>();
+        VlanId hsiaCtag = VlanId.vlanId((short) 11);
+        UniTagInformation hsia = new UniTagInformation.Builder()
+                .setPonCTag(hsiaCtag)
+                .setTechnologyProfileId(64)
+                .setUniTagMatch(VlanId.vlanId(VlanId.NO_VID))
+                .setUpstreamBandwidthProfile(usBp)
+                .setUpstreamOltBandwidthProfile(usOltBp)
+                .setIsPppoeRequired(true).build();
+        UniTagInformation mc = new UniTagInformation.Builder()
+                .setIsPppoeRequired(false).build();
+        uniTagInformationList.add(hsia);
+        uniTagInformationList.add(mc);
+
+        SubscriberAndDeviceInformation si = new SubscriberAndDeviceInformation();
+        si.setUniTagList(uniTagInformationList);
+
+        final DiscoveredSubscriber addedSub =
+                new DiscoveredSubscriber(testDevice,
+                        uniUpdateEnabled, DiscoveredSubscriber.Status.ADDED,
+                        false, si);
+
+        // return meter IDs
+        doReturn(MeterId.meterId(2)).when(component.oltMeterService)
+                .getMeterIdForBandwidthProfile(addedSub.device.id(), usBp);
+        doReturn(MeterId.meterId(3)).when(component.oltMeterService)
+                .getMeterIdForBandwidthProfile(addedSub.device.id(), usOltBp);
+
+        FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
+                .permit()
+                .withKey(Criteria.matchInPort(addedSub.port.number()))
+                .addCondition(Criteria.matchEthType(EthType.EtherType.PPPoED.ethType()))
+                .fromApp(testAppId)
+                .withPriority(10000)
+                .add();
+
+        component.handleSubscriberPppoeFlows(addedSub.device.id(), addedSub.port,
                 OltFlowService.FlowOperation.ADD, si);
         verify(component.flowObjectiveService, times(1))
                 .filter(eq(addedSub.device.id()), argThat(new FilteringObjectiveMatcher(expectedFilter)));

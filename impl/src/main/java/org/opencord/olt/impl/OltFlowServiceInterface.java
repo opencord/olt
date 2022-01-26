@@ -70,6 +70,14 @@ public interface OltFlowServiceInterface {
     boolean hasDhcpFlows(Port port, UniTagInformation uti);
 
     /**
+     * Checks if the pppoe flows are installed.
+     * @param port the port
+     * @param uti the UniTagInformation to check for
+     * @return true if installed, false otherwise.
+     */
+    boolean hasPppoeFlows(Port port, UniTagInformation uti);
+
+    /**
      * Checks if the subscriber flows are installed.
      * @param port the port
      * @param uti the UniTagInformation to check for
