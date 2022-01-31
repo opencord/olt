@@ -16,6 +16,46 @@
       "message": "patch passed Jenkins tests over the weekend, will merge and release a new voltha-onos",
       "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "92bef2d3_ade335e4",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 576,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2022-01-31T16:43:18Z",
+      "side": 1,
+      "message": "return or continue ? If return should we check if there are still events ?",
+      "range": {
+        "startLine": 576,
+        "startChar": 36,
+        "endLine": 576,
+        "endChar": 42
+      },
+      "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d3dde0e_3a6304f9",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OsgiPropertyConstants.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2022-01-31T16:43:18Z",
+      "side": 1,
+      "message": "Shall we use the available processor x 2?",
+      "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
