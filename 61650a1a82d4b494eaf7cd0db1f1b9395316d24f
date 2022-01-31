@@ -67,6 +67,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4a47a0af_e0bfdd9c",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 576,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2022-01-31T17:45:08Z",
+      "side": 1,
+      "message": "should we purge the content of the linkedblockingqueue ?",
+      "parentUuid": "b2537b68_5e4e44ac",
+      "range": {
+        "startLine": 576,
+        "startChar": 36,
+        "endLine": 576,
+        "endChar": 42
+      },
+      "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9d3dde0e_3a6304f9",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OsgiPropertyConstants.java",
         "patchSetId": 8
@@ -96,6 +120,24 @@
       "side": 1,
       "message": "what is the available processor ?",
       "parentUuid": "9d3dde0e_3a6304f9",
+      "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f28ca00_a2f0d8df",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OsgiPropertyConstants.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2022-01-31T17:45:08Z",
+      "side": 1,
+      "message": "https://stackoverflow.com/questions/4759570/finding-number-of-cores-in-java/52629195\n\nThere is a call to Runtime to get the available processors",
+      "parentUuid": "fc0e947f_9722c0d1",
       "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
