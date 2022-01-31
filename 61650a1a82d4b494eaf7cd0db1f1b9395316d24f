@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b2537b68_5e4e44ac",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 576,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-01-31T17:40:30Z",
+      "side": 1,
+      "message": "this was present before the patch, but as teo mentions in the comment, we et in this state where events don\u0027t matter anymore because the whole device is gone with meters flows and groups getting purged from ONOS by the app.",
+      "parentUuid": "92bef2d3_ade335e4",
+      "range": {
+        "startLine": 576,
+        "startChar": 36,
+        "endLine": 576,
+        "endChar": 42
+      },
+      "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9d3dde0e_3a6304f9",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OsgiPropertyConstants.java",
         "patchSetId": 8
@@ -54,6 +78,24 @@
       "writtenOn": "2022-01-31T16:43:18Z",
       "side": 1,
       "message": "Shall we use the available processor x 2?",
+      "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fc0e947f_9722c0d1",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OsgiPropertyConstants.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-01-31T17:40:30Z",
+      "side": 1,
+      "message": "what is the available processor ?",
+      "parentUuid": "9d3dde0e_3a6304f9",
       "revId": "61650a1a82d4b494eaf7cd0db1f1b9395316d24f",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
