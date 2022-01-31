@@ -16,6 +16,40 @@
       "message": "recheck",
       "revId": "4354d439a30ed989d892ec1235191cc36c8fd1ac",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10eefe10_59a14c52",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-01-31T07:52:42Z",
+      "side": 1,
+      "message": "looks very good, waiting for sadis and a test. ",
+      "revId": "4354d439a30ed989d892ec1235191cc36c8fd1ac",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca084de0_61333daf",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-01-31T07:52:42Z",
+      "side": 1,
+      "message": "Can you please add a PPPoE flow test ?",
+      "revId": "4354d439a30ed989d892ec1235191cc36c8fd1ac",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
