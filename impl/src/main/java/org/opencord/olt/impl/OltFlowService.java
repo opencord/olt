@@ -28,9 +28,11 @@ import org.onlab.util.Tools;
 import org.onosproject.cfg.ComponentConfigService;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
+import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.Annotations;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DefaultAnnotations;
+import org.onosproject.net.DefaultPort;
 import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.Host;
@@ -1646,10 +1648,30 @@ public class OltFlowService implements OltFlowServiceInterface {
             switch (event.type()) {
                 case RULE_ADDED:
                 case RULE_REMOVED:
+                    DeviceId deviceId = event.subject().deviceId();
                     Port port = getCpFromFlowRule(event.subject());
                     if (port == null) {
-                        log.error("Can't find port in flow {}", event.subject());
-                        return;
+                        log.warn("Port is gone in ONOS, " +
+                                         "manually creating it {}", event.subject());
+                        PortNumber inPort = getPortNumberFromFlowRule(event.subject());
+                        cpStatusReadLock.lock();
+                        Optional<ServiceKey> keyWithPort = cpStatus.keySet()
+                                .stream().filter(key -> key.getPort().connectPoint()
+                                        .deviceId().equals(deviceId)
+                                         && key.getPort().connectPoint().port()
+                                        .equals(inPort)).findFirst();
+                        cpStatusReadLock.unlock();
+                        if (keyWithPort.isPresent()) {
+                            port = new DefaultPort(deviceService.getDevice(deviceId),
+                                                   inPort, false,
+                                                   DefaultAnnotations.builder()
+                                                           .set(AnnotationKeys.PORT_NAME,
+                                                                keyWithPort.get().getPort().name())
+                                                           .build());
+                        } else {
+                            log.warn("Can't find corresponding status for {}/{}", deviceId, inPort);
+                            return;
+                        }
                     }
                     if (log.isTraceEnabled()) {
                         log.trace("flow event {} on cp {}: {}", event.type(),
@@ -1676,7 +1698,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                 }
                 updateConnectPointStatus(sk, status, null, null, null);
             } else if (isDhcpFlow(flowRule)) {
-                ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule);
+                ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule, port);
                 if (sk == null) {
                     return;
                 }
@@ -1685,7 +1707,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                 }
                 updateConnectPointStatus(sk, null, null, status, null);
             } else if (isPppoeFlow(flowRule)) {
-                ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule);
+                ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule, port);
                 if (sk == null) {
                     return;
                 }
@@ -1694,14 +1716,17 @@ public class OltFlowService implements OltFlowServiceInterface {
                 }
                 updateConnectPointStatus(sk, null, null, null, status);
             } else if (isDataFlow(flowRule)) {
-
-                if (oltDeviceService.isNniPort(deviceService.getDevice(flowRule.deviceId()),
-                        getCpFromFlowRule(flowRule).number())) {
+                PortNumber number = getPortNumberFromFlowRule(flowRule);
+                if (number == null) {
+                    log.error("Can't capture the port number from flow {}", flowRule);
+                    return;
+                }
+                if (oltDeviceService.isNniPort(deviceService.getDevice(flowRule.deviceId()), number)) {
                     // the NNI has data-plane for every subscriber, doesn't make sense to track them
                     return;
                 }
 
-                ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule);
+                ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule, port);
                 if (sk == null) {
                     return;
                 }
@@ -1784,16 +1809,22 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         private Port getCpFromFlowRule(FlowRule flowRule) {
             DeviceId deviceId = flowRule.deviceId();
-            PortCriterion inPort = (PortCriterion) flowRule.selector().getCriterion(Criterion.Type.IN_PORT);
+            PortNumber inPort = getPortNumberFromFlowRule(flowRule);
             if (inPort != null) {
-                PortNumber port = inPort.port();
-                return deviceService.getPort(deviceId, port);
+                return deviceService.getPort(deviceId, inPort);
             }
             return null;
         }
 
-        private ServiceKey getSubscriberKeyFromFlowRule(FlowRule flowRule) {
-            Port flowPort = getCpFromFlowRule(flowRule);
+        private PortNumber getPortNumberFromFlowRule(FlowRule flowRule) {
+            PortCriterion inPort = (PortCriterion) flowRule.selector().getCriterion(Criterion.Type.IN_PORT);
+            if (inPort != null) {
+                return inPort.port();
+            }
+            return null;
+        }
+
+        private ServiceKey getSubscriberKeyFromFlowRule(FlowRule flowRule, Port flowPort) {
             SubscriberAndDeviceInformation si = subsService.get(getPortName(flowPort));
 
             Boolean isNni = oltDeviceService.isNniPort(deviceService.getDevice(flowRule.deviceId()), flowPort.number());

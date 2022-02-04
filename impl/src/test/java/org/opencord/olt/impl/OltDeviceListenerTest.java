@@ -160,6 +160,7 @@ public class OltDeviceListenerTest extends OltTestHelpers {
                 DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "nni-1").build());
         DeviceEvent nniRemovedEvent = new DeviceEvent(DeviceEvent.Type.PORT_UPDATED, testDevice, removedNniPort);
         oltDeviceListener.event(nniRemovedEvent);
+        //TODO extend test
 
         assert olt.eventsQueues.isEmpty();
         verify(olt.oltFlowService, never())
