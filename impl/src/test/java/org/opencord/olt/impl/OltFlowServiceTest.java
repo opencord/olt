@@ -46,10 +46,13 @@ import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceService;
 import org.onosproject.net.flow.DefaultFlowRule;
+import org.onosproject.net.flow.DefaultTrafficSelector;
 import org.onosproject.net.flow.DefaultTrafficTreatment;
 import org.onosproject.net.flow.FlowRule;
 import org.onosproject.net.flow.FlowRuleEvent;
 import org.onosproject.net.flow.FlowRuleService;
+import org.onosproject.net.flow.TrafficSelector;
+import org.onosproject.net.flow.TrafficTreatment;
 import org.onosproject.net.flow.criteria.Criteria;
 import org.onosproject.net.flowobjective.DefaultFilteringObjective;
 import org.onosproject.net.flowobjective.FilteringObjective;
@@ -68,6 +71,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -89,6 +93,9 @@ import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_
 
 public class OltFlowServiceTest extends OltTestHelpers {
 
+    public static final String PORT_1 = "port-1";
+    public static final String PORT_2 = "port-2";
+    public static final String PORT_3 = "port-3";
     private OltFlowService component;
     private OltFlowService oltFlowService;
     OltFlowService.InternalFlowListener internalFlowListener;
@@ -144,11 +151,11 @@ public class OltFlowServiceTest extends OltTestHelpers {
         Device device =
                 new DefaultDevice(pid, deviceId, Device.Type.OLT, "", "", "", "", null);
         Port port1 = new DefaultPort(device, PortNumber.portNumber(1), true,
-                DefaultAnnotations.builder().set(PORT_NAME, "port-1").build());
+                DefaultAnnotations.builder().set(PORT_NAME, PORT_1).build());
         Port port2 = new DefaultPort(device, PortNumber.portNumber(2), true,
-                DefaultAnnotations.builder().set(PORT_NAME, "port-2").build());
+                DefaultAnnotations.builder().set(PORT_NAME, PORT_2).build());
         Port port3 = new DefaultPort(device, PortNumber.portNumber(3), true,
-                DefaultAnnotations.builder().set(PORT_NAME, "port-3").build());
+                DefaultAnnotations.builder().set(PORT_NAME, PORT_3).build());
 
         ServiceKey sk1 = new ServiceKey(new AccessDevicePort(port1), new UniTagInformation());
         ServiceKey sk2 = new ServiceKey(new AccessDevicePort(port2), new UniTagInformation());
@@ -192,7 +199,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         Device device =
                 new DefaultDevice(pid, deviceId, Device.Type.OLT, "", "", "", "", null);
         Port port1 = new DefaultPort(device, PortNumber.portNumber(1), true,
-                DefaultAnnotations.builder().set(PORT_NAME, "port-1").build());
+                DefaultAnnotations.builder().set(PORT_NAME, PORT_1).build());
 
         ServiceKey sk1 = new ServiceKey(new AccessDevicePort(port1), new UniTagInformation());
 
@@ -822,7 +829,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         Device device =
                 new DefaultDevice(pid, deviceId, Device.Type.OLT, "", "", "", "", null);
         Port port = new DefaultPort(device, PortNumber.portNumber(1), true,
-                DefaultAnnotations.builder().set(PORT_NAME, "port-1").build());
+                DefaultAnnotations.builder().set(PORT_NAME, PORT_1).build());
 
         List<UniTagInformation> uniTagInformationList = new LinkedList<>();
         UniTagInformation hsia = new UniTagInformation.Builder()
@@ -863,5 +870,66 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .handleEapolFlow(any(), any(), any(),
                         eq(OltFlowService.FlowOperation.ADD), eq(VlanId.vlanId(OltFlowService.EAPOL_DEFAULT_VLAN)));
         Assert.assertTrue(res);
+    }
+
+    @Test
+    public void testRemovedFlowEvent() throws InterruptedException {
+        // test that we update the status in case of REMOVED flow even with non
+        // existing port in the onos device manager
+
+        DeviceId deviceId = DeviceId.deviceId("test-device");
+        ProviderId pid = new ProviderId("of", "foo");
+        Device device =
+                new DefaultDevice(pid, deviceId, Device.Type.OLT, "", "", "", "", null);
+
+        Port port1 = new DefaultPort(device, PortNumber.portNumber(1), true,
+                                     DefaultAnnotations.builder().set(PORT_NAME, PORT_1).build());
+        // create empty service for testing
+        List<UniTagInformation> uniTagInformationList = new LinkedList<>();
+        UniTagInformation vlanUniTag = new UniTagInformation.Builder().setPonCTag(VlanId.vlanId((short) 60))
+                .build();
+        uniTagInformationList.add(vlanUniTag);
+        SubscriberAndDeviceInformation si = new SubscriberAndDeviceInformation();
+        si.setUniTagList(uniTagInformationList);
+        ServiceKey sk1 = new ServiceKey(new AccessDevicePort(port1), vlanUniTag);
+
+        TrafficSelector selector = DefaultTrafficSelector.builder()
+                .matchInPort(port1.number())
+                .matchVlanId(VlanId.vlanId((short) 60))
+                .build();
+
+        TrafficTreatment treatment = DefaultTrafficTreatment.builder()
+                .immediate()
+                .setOutput(port1.number())
+                .build();
+
+        FlowRule flowRule = DefaultFlowRule.builder()
+                .makePermanent()
+                .withPriority(1000)
+                .forTable(0)
+                .forDevice(deviceId)
+                .fromApp(testAppId)
+                .withSelector(selector)
+                .withTreatment(treatment)
+                .build();
+
+        // cpStatus map for the test
+        component.cpStatus = component.storageService.
+                <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
+        OltPortStatus cp1Status = new OltPortStatus(NONE, PENDING_REMOVE, NONE, NONE);
+        component.cpStatus.put(sk1, cp1Status);
+
+        FlowRuleEvent event = new FlowRuleEvent(FlowRuleEvent.Type.RULE_REMOVED, flowRule);
+        doReturn(true).when(component.oltDeviceService).isLocalLeader(any());
+        doReturn(device).when(component.deviceService).getDevice(deviceId);
+        doReturn(si).when(component.subsService).get(PORT_1);
+
+        oltFlowService.internalFlowListener.event(event);
+
+        //Some time to finish the operation
+        TimeUnit.MILLISECONDS.sleep(200);
+
+        OltPortStatus status = component.cpStatus.get(sk1);
+        Assert.assertEquals(REMOVED, status.subscriberFlowsStatus);
     }
 }
