@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "602f0fbe_6ad98385",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltDeviceListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2022-02-07T14:52:07Z",
+      "side": 1,
+      "message": "in this patch ?",
+      "revId": "72a930e1c63668294fc608d178c715ad9bd94f83",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
