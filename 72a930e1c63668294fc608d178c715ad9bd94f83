@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3836f650_bf99b569",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000461
+      },
+      "writtenOn": "2022-02-07T15:31:04Z",
+      "side": 1,
+      "message": "The ticket doesn\u0027t seem to be related to this fix.",
+      "revId": "72a930e1c63668294fc608d178c715ad9bd94f83",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "602f0fbe_6ad98385",
