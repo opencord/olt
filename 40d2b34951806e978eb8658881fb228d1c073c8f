@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2789d270_38d6d2f7",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 930,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2022-02-08T17:22:19Z",
+      "side": 1,
+      "message": "it is not better to use AssertAfter macro ?",
+      "revId": "40d2b34951806e978eb8658881fb228d1c073c8f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
