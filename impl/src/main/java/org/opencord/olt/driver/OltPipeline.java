@@ -34,6 +34,7 @@ import org.onlab.util.Accumulator;
 import org.onlab.util.KryoNamespace;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
+import org.onosproject.net.Annotations;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
 import org.onosproject.net.behaviour.NextGroup;
@@ -80,6 +81,7 @@ import org.onosproject.net.group.GroupListener;
 import org.onosproject.net.group.GroupService;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.StorageService;
+import org.opencord.olt.impl.fttb.FttbUtils;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
@@ -96,6 +98,9 @@ import java.util.stream.Collectors;
 import static org.onosproject.core.CoreService.CORE_APP_NAME;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DOWNSTREAM_OLT;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DOWNSTREAM_ONU;
+import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DIRECTION;
+import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DOWNSTREAM;
+import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_UPSTREAM;
 import static org.opencord.olt.impl.OsgiPropertyConstants.UPSTREAM_OLT;
 import static org.opencord.olt.impl.OsgiPropertyConstants.UPSTREAM_ONU;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
@@ -332,6 +337,12 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
         log.debug("Installing forwarding objective {}", fwd);
         if (checkForMulticast(fwd)) {
             processMulticastRule(fwd);
+            return;
+        }
+
+        if (FttbUtils.isFttbRule(fwd)) {
+            log.debug("Processing FTTB rule : {}", fwd);
+            processFttbRules(fwd);
             return;
         }
 
@@ -1137,8 +1148,9 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
         if (matchVlanId != null) {
             log.debug("Building selector with match VLAN, {}", matchVlanId);
             // in case of TT upstream the packet comes tagged and the vlan is swapped.
+            Criterion vlanPcp = filterForCriterion(filter.conditions(), Criterion.Type.VLAN_PCP);
             selector = buildSelector(filter.key(), ethType, ipProto, udpSrcPort,
-                                     udpDstPort, matchVlanId);
+                                     udpDstPort, matchVlanId, vlanPcp);
             treatment = buildTreatment(output, meter, writeMetadata,
                                        vlanIdInstruction, vlanPcpInstruction);
         } else {
@@ -1484,5 +1496,151 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
         }
 
         applyRules(fwd, inner, outer);
+    }
+
+    private void processFttbRules(ForwardingObjective fwd) {
+        Annotations annotations = fwd.annotations();
+        String direction = annotations.value(FTTB_FLOW_DIRECTION);
+
+        if (direction == null) {
+            log.error("Flow direction not found for Fttb rule {} ", fwd);
+            return;
+        }
+
+        switch (direction) {
+            case FTTB_FLOW_DOWNSTREAM:
+                processDownstreamFttbRules(fwd);
+                break;
+            case FTTB_FLOW_UPSTREAM:
+                processUpstreamFttbRules(fwd);
+                break;
+            default:
+                log.error("Invalid flow direction {}, for {} ", direction, fwd);
+        }
+    }
+
+    private void processUpstreamFttbRules(ForwardingObjective fwd) {
+        TrafficSelector selector = fwd.selector();
+        TrafficTreatment treatment =  fwd.treatment();
+
+        // Selectors
+        Criterion inPortCriterion = selector.getCriterion(Criterion.Type.IN_PORT);
+        Criterion cVlanVidCriterion = selector.getCriterion(Criterion.Type.VLAN_VID);
+        Criterion cTagPriority = selector.getCriterion(Criterion.Type.VLAN_PCP);
+        Criterion ethSrcCriterion = selector.getCriterion(Criterion.Type.ETH_SRC);
+
+        // Instructions
+        L2ModificationInstruction.ModVlanIdInstruction sVlanSetVid = null;
+        L2ModificationInstruction.ModVlanPcpInstruction sTagPrioritySet = null;
+
+        List<Instruction> instructions = treatment.allInstructions();
+        List<Instruction> vlanIdL2Instructions = findL2Instructions(L2ModificationInstruction.L2SubType.VLAN_ID,
+                instructions);
+        List<Instruction> vlanPcpL2Instructions = findL2Instructions(L2ModificationInstruction.L2SubType.VLAN_PCP,
+                instructions);
+
+        if (!vlanIdL2Instructions.isEmpty()) {
+            sVlanSetVid = (L2ModificationInstruction.ModVlanIdInstruction) vlanIdL2Instructions.get(0);
+        }
+
+        if (!vlanPcpL2Instructions.isEmpty()) {
+            sTagPrioritySet = (L2ModificationInstruction.ModVlanPcpInstruction) vlanPcpL2Instructions.get(0);
+        }
+
+        Instruction output = fetchOutput(fwd, UPSTREAM);
+
+        // ONU
+        Instruction onuUsMeter = fetchMeterById(fwd, fwd.annotations().value(UPSTREAM_ONU));
+        TrafficSelector onuSelector = buildSelector(inPortCriterion, cVlanVidCriterion, cTagPriority);
+        TrafficTreatment onuTreatment = buildTreatment(sVlanSetVid, sTagPrioritySet, onuUsMeter,
+                fetchWriteMetadata(fwd), Instructions.transition(QQ_TABLE));
+
+        FlowRule.Builder onuBuilder = DefaultFlowRule.builder()
+                .fromApp(fwd.appId())
+                .forDevice(deviceId)
+                .makePermanent()
+                .withPriority(fwd.priority())
+                .withSelector(onuSelector)
+                .withTreatment(onuTreatment);
+
+        // OLT
+        Instruction oltUsMeter = fetchMeterById(fwd, fwd.annotations().value(UPSTREAM_OLT));
+        TrafficSelector oltSelector = buildSelector(inPortCriterion, ethSrcCriterion,
+                Criteria.matchVlanId(sVlanSetVid.vlanId()));
+        TrafficTreatment oltTreatment = buildTreatment(oltUsMeter, fetchWriteMetadata(fwd), output);
+
+        FlowRule.Builder oltBuilder = DefaultFlowRule.builder()
+                .fromApp(fwd.appId())
+                .forDevice(deviceId)
+                .forTable(QQ_TABLE)
+                .makePermanent()
+                .withPriority(fwd.priority())
+                .withSelector(oltSelector)
+                .withTreatment(oltTreatment);
+
+        applyRules(fwd, onuBuilder, oltBuilder);
+    }
+
+    private void processDownstreamFttbRules(ForwardingObjective fwd) {
+        TrafficSelector selector = fwd.selector();
+        TrafficTreatment treatment = fwd.treatment();
+
+        // Selectors
+        Criterion inPortCriterion = selector.getCriterion(Criterion.Type.IN_PORT);
+        Criterion sVlanVidCriterion = selector.getCriterion(Criterion.Type.VLAN_VID);
+        Criterion sTagPriority = selector.getCriterion(Criterion.Type.VLAN_PCP);
+        Criterion ethDstCriterion = selector.getCriterion(Criterion.Type.ETH_DST);
+
+        // Instructions
+        L2ModificationInstruction.ModVlanIdInstruction cVlanSetVid = null;
+        L2ModificationInstruction.ModVlanPcpInstruction cTagPrioritySet = null;
+
+        List<Instruction> instructions = treatment.allInstructions();
+        List<Instruction> vlanIdL2Instructions = findL2Instructions(L2ModificationInstruction.L2SubType.VLAN_ID,
+                instructions);
+        List<Instruction> vlanPcpL2Instructions = findL2Instructions(L2ModificationInstruction.L2SubType.VLAN_PCP,
+                instructions);
+
+        if (!vlanIdL2Instructions.isEmpty()) {
+            cVlanSetVid = (L2ModificationInstruction.ModVlanIdInstruction) vlanIdL2Instructions.get(0);
+        }
+
+        if (!vlanPcpL2Instructions.isEmpty()) {
+            cTagPrioritySet = (L2ModificationInstruction.ModVlanPcpInstruction) vlanPcpL2Instructions.get(0);
+        }
+
+        Instruction output = fetchOutput(fwd, DOWNSTREAM);
+
+        // OLT
+        Instruction oltDsMeter = fetchMeterById(fwd, fwd.annotations().value(DOWNSTREAM_OLT));
+        TrafficSelector oltSelector = buildSelector(inPortCriterion, ethDstCriterion,
+                sVlanVidCriterion);
+        TrafficTreatment oltTreatment = buildTreatment(oltDsMeter, fetchWriteMetadata(fwd),
+                Instructions.transition(QQ_TABLE));
+
+        FlowRule.Builder oltBuilder = DefaultFlowRule.builder()
+                .fromApp(fwd.appId())
+                .forDevice(deviceId)
+                .makePermanent()
+                .withPriority(fwd.priority())
+                .withSelector(oltSelector)
+                .withTreatment(oltTreatment);
+
+        // ONU
+        Instruction onuUsMeter = fetchMeterById(fwd, fwd.annotations().value(DOWNSTREAM_ONU));
+        TrafficSelector onuSelector = buildSelector(inPortCriterion, sVlanVidCriterion, sTagPriority, ethDstCriterion);
+        TrafficTreatment onuTreatment = buildTreatment(cVlanSetVid, cTagPrioritySet, onuUsMeter,
+                fetchWriteMetadata(fwd), output);
+
+        FlowRule.Builder onuBuilder = DefaultFlowRule.builder()
+                .fromApp(fwd.appId())
+                .forDevice(deviceId)
+                .forTable(QQ_TABLE)
+                .makePermanent()
+                .withPriority(fwd.priority())
+                .withSelector(onuSelector)
+                .withTreatment(onuTreatment);
+
+        applyRules(fwd, onuBuilder, oltBuilder);
     }
 }
