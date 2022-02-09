@@ -16,8 +16,11 @@
 
 package org.opencord.olt.impl;
 
+import org.onlab.packet.VlanId;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.Port;
+import org.opencord.sadis.SubscriberAndDeviceInformation;
+import org.opencord.sadis.UniTagInformation;
 
 import static org.opencord.olt.impl.OltFlowService.FlowOperation.ADD;
 
@@ -56,5 +59,29 @@ final class OltUtils {
 
     static String completeFlowOpToString(OltFlowService.FlowOperation op) {
         return op == ADD ? "Added" : "Removed";
+    }
+
+    /**
+     * Search and return the matching UniTagInfomation from the list of UniTagInfomation in the
+     * SubscriberAndDeviceInformation.
+     * For the match : cvlan, svlan and tpId are used.
+     *
+     * @param subInfo       Subscriber information.
+     * @param innerVlan     cTag
+     * @param outerVlan     sTag
+     * @param tpId          Techprofile Id
+     * @return UniTagInformation
+     */
+    static UniTagInformation getUniTagInformation(SubscriberAndDeviceInformation subInfo, VlanId innerVlan,
+                                                  VlanId outerVlan, int tpId) {
+        UniTagInformation service = null;
+        for (UniTagInformation tagInfo : subInfo.uniTagList()) {
+            if (innerVlan.equals(tagInfo.getPonCTag()) && outerVlan.equals(tagInfo.getPonSTag())
+                    && tpId == tagInfo.getTechnologyProfileId()) {
+                service = tagInfo;
+                break;
+            }
+        }
+        return service;
     }
 }
