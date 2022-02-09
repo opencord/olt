@@ -631,13 +631,13 @@ public class Olt
             return null;
         }
 
-        UniTagInformation service = null;
-        for (UniTagInformation tagInfo : subInfo.uniTagList()) {
-            if (innerVlan.equals(tagInfo.getPonCTag()) && outerVlan.equals(tagInfo.getPonSTag())
-                    && tpId == tagInfo.getTechnologyProfileId()) {
-                service = tagInfo;
-                break;
-            }
+        UniTagInformation service = OltUtils.getUniTagInformation(subInfo, innerVlan, outerVlan, tpId);
+
+        if (service == null) {
+            // Try again after invalidating cache for the particular port name.
+            subsService.invalidateId(portName);
+            subInfo = subsService.get(portName);
+            service = OltUtils.getUniTagInformation(subInfo, innerVlan, outerVlan, tpId);
         }
 
         if (service == null) {
