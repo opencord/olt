@@ -68,6 +68,7 @@ import org.onosproject.net.meter.MeterId;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
+import org.opencord.olt.impl.fttb.FttbUtils;
 import org.opencord.sadis.BandwidthProfileInformation;
 import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SadisService;
@@ -123,6 +124,11 @@ import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_PPPOE_ON_NNI;
 import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_PPPOE_ON_NNI_DEFAULT;
 import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_PPPOE;
 import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_PPPOE_DEFAULT;
+import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DIRECTION;
+import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DOWNSTREAM;
+import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_UPSTREAM;
+import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_SERVICE_DPU_MGMT_TRAFFIC;
+import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_SERVICE_NAME;
 import static org.opencord.olt.impl.OsgiPropertyConstants.UPSTREAM_OLT;
 import static org.opencord.olt.impl.OsgiPropertyConstants.UPSTREAM_ONU;
 import static org.opencord.olt.impl.OsgiPropertyConstants.WAIT_FOR_REMOVAL;
@@ -856,7 +862,7 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         TrafficTreatment treatment = treatmentBuilder
                 .meter(meterId)
-                .writeMetadata(createTechProfValueForWriteMetadata(
+                .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(
                         vlanId,
                         techProfileId, oltMeterId), 0)
                 .setOutput(PortNumber.CONTROLLER)
@@ -967,21 +973,6 @@ public class OltFlowService implements OltFlowServiceInterface {
             }
         }
         return defaultTechProfileId;
-    }
-
-    protected Long createTechProfValueForWriteMetadata(VlanId cVlan, int techProfileId, MeterId upstreamOltMeterId) {
-        Long writeMetadata;
-
-        if (cVlan == null || VlanId.NONE.equals(cVlan)) {
-            writeMetadata = (long) techProfileId << 32;
-        } else {
-            writeMetadata = ((long) (cVlan.id()) << 48 | (long) techProfileId << 32);
-        }
-        if (upstreamOltMeterId == null) {
-            return writeMetadata;
-        } else {
-            return writeMetadata | upstreamOltMeterId.id();
-        }
     }
 
     private void processLldpFilteringObjective(DeviceId deviceId, Port port, FlowOperation action) {
@@ -1125,16 +1116,28 @@ public class OltFlowService implements OltFlowServiceInterface {
                     .getMeterIdForBandwidthProfile(device.id(), uti.getUpstreamBandwidthProfile());
             MeterId oltUsMeterId = oltMeterService
                     .getMeterIdForBandwidthProfile(device.id(), uti.getUpstreamOltBandwidthProfile());
-            processUpstreamDataFilteringObjects(device.id(), port, nniPort.get(), action, usMeterId,
-                    oltUsMeterId, uti);
+
+            if (FttbUtils.isFttbService(uti)) {
+                processFttbUpstreamDataFilteringObjects(device.id(), port, nniPort.get(), action,
+                        usMeterId, oltUsMeterId, uti, getMacAddress(device.id(), port, uti));
+            } else {
+                processUpstreamDataFilteringObjects(device.id(), port, nniPort.get(), action, usMeterId,
+                        oltUsMeterId, uti);
+            }
 
             // downstream flows
             MeterId dsMeterId = oltMeterService
                     .getMeterIdForBandwidthProfile(device.id(), uti.getDownstreamBandwidthProfile());
             MeterId oltDsMeterId = oltMeterService
                     .getMeterIdForBandwidthProfile(device.id(), uti.getDownstreamOltBandwidthProfile());
-            processDownstreamDataFilteringObjects(device.id(), port, nniPort.get(), action, dsMeterId,
-                    oltDsMeterId, uti, getMacAddress(device.id(), port, uti));
+
+            if (FttbUtils.isFttbService(uti)) {
+                processFttbDownstreamDataFilteringObjects(device.id(), port, nniPort.get(),
+                        action, dsMeterId, oltDsMeterId, uti, getMacAddress(device.id(), port, uti));
+            } else {
+                processDownstreamDataFilteringObjects(device.id(), port, nniPort.get(), action, dsMeterId,
+                        oltDsMeterId, uti, getMacAddress(device.id(), port, uti));
+            }
         });
     }
 
@@ -1159,7 +1162,7 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         if (uti.getTechnologyProfileId() != NONE_TP_ID) {
             treatmentBuilder.writeMetadata(
-                    createTechProfValueForWriteMetadata(uti.getUniTagMatch(),
+                    OltFlowServiceUtils.createTechProfValueForWriteMetadata(uti.getUniTagMatch(),
                             uti.getTechnologyProfileId(), oltMeterId), 0);
         }
 
@@ -1172,14 +1175,35 @@ public class OltFlowService implements OltFlowServiceInterface {
                 .fromApp(appId)
                 .withPriority(MAX_PRIORITY);
 
+        if (FTTB_SERVICE_DPU_MGMT_TRAFFIC.equalsIgnoreCase(uti.getServiceName())) {
+            dhcpBuilder.addCondition(Criteria.matchVlanPcp((byte) uti.getUsPonCTagPriority()));
+        }
+
         //VLAN changes and PCP matching need to happen only in the upstream directions
         if (direction == FlowDirection.UPSTREAM) {
-            treatmentBuilder.setVlanId(uti.getPonCTag());
+            if (FTTB_SERVICE_DPU_MGMT_TRAFFIC.equalsIgnoreCase(uti.getServiceName())) {
+                treatmentBuilder.setVlanId(uti.getPonSTag());
+            } else {
+                treatmentBuilder.setVlanId(uti.getPonCTag());
+            }
             if (!VlanId.vlanId(VlanId.NO_VID).equals(uti.getUniTagMatch())) {
                 dhcpBuilder.addCondition(Criteria.matchVlanId(uti.getUniTagMatch()));
             }
             if (uti.getUsPonCTagPriority() != -1) {
-                treatmentBuilder.setVlanPcp((byte) uti.getUsPonCTagPriority());
+                if (FTTB_SERVICE_DPU_MGMT_TRAFFIC.equalsIgnoreCase(uti.getServiceName())) {
+                    treatmentBuilder.setVlanPcp((byte) uti.getUsPonSTagPriority());
+                } else {
+                    treatmentBuilder.setVlanPcp((byte) uti.getUsPonCTagPriority());
+                }
+            }
+        } else if (direction == FlowDirection.DOWNSTREAM) {
+            // Down stream DHCP vid to be matched if OLT Sadis info contains Vlan id in nniDhcpTrapVid.
+            Device device = deviceService.getDevice(deviceId);
+            SubscriberAndDeviceInformation oltSub = subsService.get(device.serialNumber());
+            VlanId nniDhcpTrapVid = oltSub.nniDhcpTrapVid();
+
+            if (nniDhcpTrapVid != null && !VlanId.vlanId(VlanId.NO_VID).equals(nniDhcpTrapVid)) {
+                dhcpBuilder.addCondition(Criteria.matchVlanId(nniDhcpTrapVid));
             }
         }
 
@@ -1218,7 +1242,7 @@ public class OltFlowService implements OltFlowServiceInterface {
         if (direction == FlowDirection.UPSTREAM) {
 
             if (techProfileId != NONE_TP_ID) {
-                treatmentBuilder.writeMetadata(createTechProfValueForWriteMetadata(null,
+                treatmentBuilder.writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(null,
                         techProfileId, oltMeterId), 0);
             }
 
@@ -1279,7 +1303,8 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         if (techProfileId != NONE_TP_ID) {
-            treatmentBuilder.writeMetadata(createTechProfValueForWriteMetadata(cTag, techProfileId, oltMeterId), 0);
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(cTag, techProfileId,
+                    oltMeterId), 0);
         }
 
         DefaultFilteringObjective.Builder pppoedBuilder = ((action == FlowOperation.ADD)
@@ -1368,33 +1393,8 @@ public class OltFlowService implements OltFlowServiceInterface {
                 treatmentBuilder.build(), MIN_PRIORITY,
                 annotationBuilder.build());
 
-        ObjectiveContext context = new ObjectiveContext() {
-            @Override
-            public void onSuccess(Objective objective) {
-                log.info("{} Upstream Data plane filter for {}.",
-                        completeFlowOpToString(action), sk);
-            }
-
-            @Override
-            public void onError(Objective objective, ObjectiveError error) {
-                log.error("Upstream Data plane filter for {} failed {} because {}.",
-                        sk, action, error);
-                updateConnectPointStatus(sk, null, OltFlowsStatus.ERROR, null, null);
-            }
-        };
-
-        ForwardingObjective flow = null;
-        if (action == FlowOperation.ADD) {
-            flow = flowBuilder.add(context);
-        } else if (action == FlowOperation.REMOVE) {
-            flow = flowBuilder.remove(context);
-        } else {
-            log.error("Flow action not supported: {}", action);
-        }
-
-        if (flow != null) {
-            flowObjectiveService.forward(deviceId, flow);
-        }
+        ObjectiveContext context = getContext(sk, action, FlowDirection.DOWNSTREAM, null, null);
+        addFlow(action, flowBuilder, context, deviceId);
     }
 
     private void processDownstreamDataFilteringObjects(DeviceId deviceId, Port port, Port nniPort,
@@ -1459,36 +1459,8 @@ public class OltFlowService implements OltFlowServiceInterface {
         DefaultForwardingObjective.Builder flowBuilder = createForwardingObjectiveBuilder(selectorBuilder.build(),
                 treatmentBuilder.build(), MIN_PRIORITY, annotationBuilder.build());
 
-        ObjectiveContext context = new ObjectiveContext() {
-            @Override
-            public void onSuccess(Objective objective) {
-                log.info("{} Downstream Data plane filter for {}.",
-                        completeFlowOpToString(action), sk);
-            }
-
-            @Override
-            public void onError(Objective objective, ObjectiveError error) {
-                log.info("Downstream Data plane filter for {} failed {} because {}.",
-                        sk, action, error);
-                updateConnectPointStatus(sk, null, OltFlowsStatus.ERROR, null, null);
-            }
-        };
-
-        ForwardingObjective flow = null;
-        if (action == FlowOperation.ADD) {
-            flow = flowBuilder.add(context);
-        } else if (action == FlowOperation.REMOVE) {
-            flow = flowBuilder.remove(context);
-        } else {
-            log.error("Flow action not supported: {}", action);
-        }
-
-        if (flow != null) {
-            if (log.isTraceEnabled()) {
-                log.trace("Forwarding rule {}", flow);
-            }
-            flowObjectiveService.forward(deviceId, flow);
-        }
+        ObjectiveContext context = getContext(sk, action, FlowDirection.DOWNSTREAM, null, null);
+        addFlow(action, flowBuilder, context, deviceId);
     }
 
     private DefaultForwardingObjective.Builder createForwardingObjectiveBuilder(TrafficSelector selector,
@@ -1691,7 +1663,7 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         protected void updateCpStatus(FlowRuleEvent.Type type, Port port, FlowRule flowRule) {
-            OltFlowsStatus status = flowRuleStatusToOltFlowStatus(type);
+            OltFlowsStatus status = OltFlowServiceUtils.flowRuleStatusToOltFlowStatus(type);
             if (isDefaultEapolFlow(flowRule)) {
                 ServiceKey sk = new ServiceKey(new AccessDevicePort(port),
                         defaultEapolUniTag);
@@ -1872,21 +1844,6 @@ public class OltFlowService implements OltFlowServiceInterface {
             return found.isPresent() ? new ServiceKey(new AccessDevicePort(flowPort), found.get()) : null;
 
         }
-
-        private OltFlowsStatus flowRuleStatusToOltFlowStatus(FlowRuleEvent.Type type) {
-            switch (type) {
-                case RULE_ADD_REQUESTED:
-                    return OltFlowsStatus.PENDING_ADD;
-                case RULE_ADDED:
-                    return OltFlowsStatus.ADDED;
-                case RULE_REMOVE_REQUESTED:
-                    return OltFlowsStatus.PENDING_REMOVE;
-                case RULE_REMOVED:
-                    return OltFlowsStatus.REMOVED;
-                default:
-                    return OltFlowsStatus.NONE;
-            }
-        }
     }
 
     protected void bindSadisService(SadisService service) {
@@ -1899,5 +1856,135 @@ public class OltFlowService implements OltFlowServiceInterface {
         this.subsService = null;
         this.bpService = null;
         log.info("Sadis service is unloaded");
+    }
+
+    private void processFttbUpstreamDataFilteringObjects(DeviceId deviceId, Port port, Port nniPort,
+                                                         FlowOperation action,
+                                                         MeterId upstreamMeterId,
+                                                         MeterId upstreamOltMeterId,
+                                                         UniTagInformation uti,
+                                                         MacAddress macAddress) {
+        ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
+        TrafficSelector.Builder selectorBuilder = DefaultTrafficSelector.builder()
+                .matchInPort(port.number())
+                .matchVlanId(uti.getPonCTag())
+                .matchEthSrc(macAddress);
+
+        if (uti.getUsPonCTagPriority() != -1) {
+            selectorBuilder.matchVlanPcp((byte) uti.getUsPonCTagPriority());
+        }
+
+        TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
+
+        treatmentBuilder.setVlanId(uti.getPonSTag());
+        if (uti.getUsPonSTagPriority() != -1) {
+            treatmentBuilder.setVlanPcp((byte) uti.getUsPonSTagPriority());
+        }
+
+        treatmentBuilder.setOutput(nniPort.number())
+                .writeMetadata(createMetadata(uti.getPonCTag(),
+                        uti.getTechnologyProfileId(), nniPort.number()), 0L);
+
+        DefaultAnnotations.Builder annotationBuilder = DefaultAnnotations.builder();
+        annotationBuilder.set(FTTB_SERVICE_NAME, uti.getServiceName());
+        annotationBuilder.set(FTTB_FLOW_DIRECTION, FTTB_FLOW_UPSTREAM);
+
+        if (upstreamMeterId != null) {
+            treatmentBuilder.meter(upstreamMeterId);
+            annotationBuilder.set(UPSTREAM_ONU, upstreamMeterId.toString());
+        }
+        if (upstreamOltMeterId != null) {
+            treatmentBuilder.meter(upstreamOltMeterId);
+            annotationBuilder.set(UPSTREAM_OLT, upstreamOltMeterId.toString());
+        }
+
+        DefaultForwardingObjective.Builder flowBuilder = createForwardingObjectiveBuilder(selectorBuilder.build(),
+                treatmentBuilder.build(), MIN_PRIORITY,
+                annotationBuilder.build());
+
+        ObjectiveContext context = getContext(sk, action, FlowDirection.UPSTREAM, null, null);
+        addFlow(action, flowBuilder, context, deviceId);
+    }
+
+    private void processFttbDownstreamDataFilteringObjects(DeviceId deviceId, Port port, Port nniPort,
+                                                           FlowOperation action,
+                                                           MeterId downstreamMeterId,
+                                                           MeterId downstreamOltMeterId,
+                                                           UniTagInformation uti,
+                                                           MacAddress macAddress) {
+        ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
+        //subscriberVlan can be any valid Vlan here including ANY to make sure the packet is tagged
+        TrafficSelector.Builder selectorBuilder = DefaultTrafficSelector.builder()
+                .matchVlanId(uti.getPonSTag())
+                .matchInPort(nniPort.number())
+                .matchEthDst(macAddress);
+
+        TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder()
+                .setVlanId(uti.getPonCTag())
+                .setOutput(port.number());
+
+        treatmentBuilder.writeMetadata(createMetadata(uti.getPonCTag(),
+                uti.getTechnologyProfileId(),
+                port.number()), 0);
+
+
+        DefaultAnnotations.Builder annotationBuilder = DefaultAnnotations.builder();
+        annotationBuilder.set(FTTB_SERVICE_NAME, uti.getServiceName());
+        annotationBuilder.set(FTTB_FLOW_DIRECTION, FTTB_FLOW_DOWNSTREAM);
+
+        if (downstreamMeterId != null) {
+            treatmentBuilder.meter(downstreamMeterId);
+            annotationBuilder.set(DOWNSTREAM_ONU, downstreamMeterId.toString());
+        }
+
+        if (downstreamOltMeterId != null) {
+            treatmentBuilder.meter(downstreamOltMeterId);
+            annotationBuilder.set(DOWNSTREAM_OLT, downstreamOltMeterId.toString());
+        }
+
+        DefaultForwardingObjective.Builder flowBuilder = createForwardingObjectiveBuilder(selectorBuilder.build(),
+                treatmentBuilder.build(), MIN_PRIORITY, annotationBuilder.build());
+
+        ObjectiveContext context = getContext(sk, action, FlowDirection.DOWNSTREAM, null, null);
+        addFlow(action, flowBuilder, context, deviceId);
+    }
+
+    private ObjectiveContext getContext(ServiceKey sk, FlowOperation action, FlowDirection flowDirection,
+                                        OltFlowsStatus dhcpStatus, OltFlowsStatus pppoeStatus) {
+        ObjectiveContext context = new ObjectiveContext() {
+            @Override
+            public void onSuccess(Objective objective) {
+                log.info("{} {} Data plane filter for {}.",
+                        completeFlowOpToString(action), flowDirection, sk);
+            }
+
+            @Override
+            public void onError(Objective objective, ObjectiveError error) {
+                log.info("{} Data plane filter for {} failed {} because {}.",
+                        flowDirection, sk, action, error);
+                updateConnectPointStatus(sk, null, OltFlowsStatus.ERROR, dhcpStatus, pppoeStatus);
+            }
+        };
+
+        return context;
+    }
+
+    private void addFlow(FlowOperation action, DefaultForwardingObjective.Builder flowBuilder,
+                         ObjectiveContext context, DeviceId deviceId) {
+        ForwardingObjective flow = null;
+        if (action == FlowOperation.ADD) {
+            flow = flowBuilder.add(context);
+        } else if (action == FlowOperation.REMOVE) {
+            flow = flowBuilder.remove(context);
+        } else {
+            log.error("Flow action not supported: {}", action);
+        }
+
+        if (flow != null) {
+            if (log.isTraceEnabled()) {
+                log.trace("Forwarding rule {}", flow);
+            }
+            flowObjectiveService.forward(deviceId, flow);
+        }
     }
 }

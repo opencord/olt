@@ -81,6 +81,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.onosproject.net.AnnotationKeys.PORT_NAME;
 import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.ERROR;
 import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.NONE;
@@ -130,6 +131,10 @@ public class OltFlowServiceTest extends OltTestHelpers {
         doReturn(Mockito.mock(BaseInformationService.class))
                 .when(component.sadisService).getSubscriberInfoService();
         doReturn(testAppId).when(component.coreService).registerApplication("org.opencord.olt");
+        doReturn(testDevice).when(component.deviceService).getDevice(testDevice.id());
+        when(component.sadisService.getSubscriberInfoService().get(testDevice.serialNumber())).
+                thenReturn(Mockito.mock(SubscriberAndDeviceInformation.class));
+
         component.activate(null);
         component.bindSadisService(component.sadisService);
 
@@ -379,7 +384,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .withMeta(
                         DefaultTrafficTreatment.builder()
                                 .meter(MeterId.meterId(1))
-                                .writeMetadata(component.createTechProfValueForWriteMetadata(
+                                .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(
                                         VlanId.vlanId(eapolDefaultVlan),
                                         component.defaultTechProfileId, MeterId.meterId(1)), 0)
                                 .setOutput(PortNumber.CONTROLLER)
@@ -432,7 +437,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .withMeta(
                         DefaultTrafficTreatment.builder()
                                 .meter(MeterId.meterId(1))
-                                .writeMetadata(component.createTechProfValueForWriteMetadata(
+                                .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(
                                         VlanId.vlanId(eapolDefaultVlan),
                                         component.defaultTechProfileId, MeterId.meterId(1)), 0)
                                 .setOutput(PortNumber.CONTROLLER)
