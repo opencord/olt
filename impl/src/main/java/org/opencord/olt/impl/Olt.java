@@ -554,7 +554,7 @@ public class Olt
                             }
 
                             if (log.isTraceEnabled()) {
-                            log.trace("Processing subscriber {} on port {} with status {}, has subscriber {}",
+                                log.trace("Processing subscriber {} on port {} with status {}, has subscriber {}",
                                      sub, portWithName(sub.port), sub.status, sub.hasSubscriber);
                             }
 
@@ -582,6 +582,10 @@ public class Olt
                                                   portWithName(sub.port));
                                     }
                                     removeSubscriberFromQueue(sub);
+                                } else {
+                                    log.debug("Not handling basic port flows " +
+                                                      "for {}, leaving in the queue",
+                                              portWithName(sub.port));
                                 }
                             }
                         }
@@ -793,7 +797,11 @@ public class Olt
                             //NOTE all the instances will call these methods
                             oltFlowService.purgeDeviceFlows(deviceId);
                             oltMeterService.purgeDeviceMeters(deviceId);
-                            clearQueueForDevice(deviceId);
+                            // cpStatus is a distributed map, thus only master will update it.
+                            if (oltDeviceService.isLocalLeader(deviceId)) {
+                                log.debug("Master, clearing cp status for {}", deviceId);
+                                clearQueueForDevice(deviceId);
+                            }
                         } else {
                             log.info("Device {} availability changed to false, but ports are still available, " +
                                             "assuming temporary disconnection.",
@@ -811,7 +819,10 @@ public class Olt
                         log.info("Device {} Removed, purging meters and flows", deviceId);
                         oltFlowService.purgeDeviceFlows(deviceId);
                         oltMeterService.purgeDeviceMeters(deviceId);
-                        clearQueueForDevice(deviceId);
+                        if (oltDeviceService.isLocalLeader(deviceId)) {
+                            log.debug("Master, clearing cp status for {}", deviceId);
+                            clearQueueForDevice(deviceId);
+                        }
                         return;
                     default:
                         if (log.isTraceEnabled()) {
@@ -830,6 +841,7 @@ public class Olt
                     Map.Entry<ConnectPoint, LinkedBlockingQueue<DiscoveredSubscriber>> entry = iter.next();
                     if (entry.getKey().deviceId().equals(devId)) {
                         eventsQueues.remove(entry.getKey());
+                        log.debug("Removing key from queue {}", entry.getKey());
                     }
                 }
             } finally {

@@ -929,6 +929,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         //Some time to finish the operation
         TimeUnit.MILLISECONDS.sleep(200);
 
+
         OltPortStatus status = component.cpStatus.get(sk1);
         Assert.assertEquals(REMOVED, status.subscriberFlowsStatus);
     }
