@@ -480,6 +480,7 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         // we only need to something if EAPOL is enabled
         if (!enableEapol) {
+            log.debug("Eapol is disabled for {}", portWithName(sub.port));
             return true;
         }
 
@@ -495,7 +496,7 @@ public class OltFlowService implements OltFlowServiceInterface {
     }
 
     private boolean addDefaultFlows(DiscoveredSubscriber sub, String bandwidthProfileId, String oltBandwidthProfileId) {
-
+        log.debug("Adding default flows for {}, status {}", portWithName(sub.port), sub.status);
         if (!oltMeterService.createMeter(sub.device.id(), bandwidthProfileId)) {
             if (log.isTraceEnabled()) {
                 log.trace("waiting on meter for bp {} and sub {}", bandwidthProfileId, sub);
@@ -503,6 +504,8 @@ public class OltFlowService implements OltFlowServiceInterface {
             return false;
         }
         if (hasDefaultEapol(sub.port)) {
+            OltPortStatus status = getOltPortStatus(sub.port, defaultEapolUniTag);
+            log.debug("Eapol is already present for {} with status {}", portWithName(sub.port), status);
             return true;
         }
         return handleEapolFlow(sub, bandwidthProfileId,
@@ -1227,7 +1230,6 @@ public class OltFlowService implements OltFlowServiceInterface {
             if (!VlanId.vlanId(VlanId.NO_VID).equals(unitagMatch)) {
                 filterBuilder.addCondition(Criteria.matchVlanId(unitagMatch));
             }
-
             if (!VlanId.vlanId(VlanId.NO_VID).equals(cTag)) {
                 treatmentBuilder.setVlanId(cTag);
             }
