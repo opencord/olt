@@ -16,6 +16,110 @@
       "message": "Assuming serviceName field to be mandatory, even for non-fttb cases.\nReturning and not installing flow if its not present.\n\nIs is correct to assume so?",
       "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b515369_2b24e7b6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1155,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-21T16:06:55Z",
+      "side": 1,
+      "message": "this is an assumption we have not made up until now and if you have only one service it\u0027s not strictly needed to do so. HW tests will fail because our sadis does not provide this. I\u0027d insert a check only in the case of FTTB",
+      "parentUuid": "ecab8c39_ccc07918",
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ce3d7675_03f4d1cc",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1402,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-21T16:06:55Z",
+      "side": 1,
+      "message": "upstream not downstream",
+      "range": {
+        "startLine": 1402,
+        "startChar": 67,
+        "endLine": 1402,
+        "endChar": 91
+      },
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e73aae04_43d56ce3",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1494,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-21T16:06:55Z",
+      "side": 1,
+      "message": "here you are swapping the order in respect to the OLD implementation, I believe this is fine due to the  |\u003d operator, but just want to make sure.",
+      "range": {
+        "startLine": 1494,
+        "startChar": 12,
+        "endLine": 1494,
+        "endChar": 59
+      },
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a90285f3_ce09a2d7",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1932,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-21T16:06:55Z",
+      "side": 1,
+      "message": "are you sure ? does not seem correct",
+      "range": {
+        "startLine": 1932,
+        "startChar": 54,
+        "endLine": 1932,
+        "endChar": 65
+      },
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6729ddc6_fc86c181",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 698,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-21T16:06:55Z",
+      "side": 1,
+      "message": "please remove",
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
