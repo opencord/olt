@@ -36,6 +36,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f2e2ffa_95ad75db",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1155,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T20:42:07Z",
+      "side": 1,
+      "message": "Removed the null check code block.",
+      "parentUuid": "4b515369_2b24e7b6",
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ce3d7675_03f4d1cc",
@@ -59,6 +77,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f3de582_533d24ee",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1402,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T20:42:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ce3d7675_03f4d1cc",
+      "range": {
+        "startLine": 1402,
+        "startChar": 67,
+        "endLine": 1402,
+        "endChar": 91
+      },
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e73aae04_43d56ce3",
@@ -72,6 +114,30 @@
       "writtenOn": "2022-02-21T16:06:55Z",
       "side": 1,
       "message": "here you are swapping the order in respect to the OLD implementation, I believe this is fine due to the  |\u003d operator, but just want to make sure.",
+      "range": {
+        "startLine": 1494,
+        "startChar": 12,
+        "endLine": 1494,
+        "endChar": 59
+      },
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b44e5b4_96eec02c",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1494,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T20:42:07Z",
+      "side": 1,
+      "message": "Getting same return value,\nTested it with previous and new implementation.",
+      "parentUuid": "e73aae04_43d56ce3",
       "range": {
         "startLine": 1494,
         "startChar": 12,
@@ -107,6 +173,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1e90e07d_91e9948f",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1932,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T20:42:07Z",
+      "side": 1,
+      "message": "ANCP and DPU_MGMT are single tagged,\nSUBSCRIBER packets are double tagged.\n\nSetting the \nvlan to VlanId.NONE, for single tagged,\nand\nvlan to VlanId.ANY, for double tagged.\n\nWe came up with this approach, so that onu can recognize based on this field, if the rule to be applied is for double tag packets or single tag.",
+      "parentUuid": "a90285f3_ce09a2d7",
+      "range": {
+        "startLine": 1932,
+        "startChar": 54,
+        "endLine": 1932,
+        "endChar": 65
+      },
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6729ddc6_fc86c181",
         "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
         "patchSetId": 2
@@ -118,6 +208,24 @@
       "writtenOn": "2022-02-21T16:06:55Z",
       "side": 1,
       "message": "please remove",
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1790378f_d1ba0c19",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 698,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T20:42:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6729ddc6_fc86c181",
       "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
