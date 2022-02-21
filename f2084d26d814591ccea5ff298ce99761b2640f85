@@ -60,6 +60,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9ea453d6_5540156a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1184,
+      "author": {
+        "id": 1000894
+      },
+      "writtenOn": "2022-02-21T08:56:16Z",
+      "side": 1,
+      "message": "A match on the same values is performed in a case sensitive way in other places, such as in isFttbService. Shouldn\u0027t they be consistent?",
+      "range": {
+        "startLine": 1184,
+        "startChar": 45,
+        "endLine": 1184,
+        "endChar": 62
+      },
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2233ac03_5eabcbb0",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 1
