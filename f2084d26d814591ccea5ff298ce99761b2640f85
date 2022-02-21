@@ -67,6 +67,40 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e8b6995f_44e51a0e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1121,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-02-21T13:59:43Z",
+      "side": 1,
+      "message": "At this point, we know it\u0027s FTTB service, but not if it\u0027s management or subscriber traffic. The MAC address is needed only for management traffic, so in my opinion the MAC address should be extracted inside the processFttbUpstreamDataFilteringObjects as and when required",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e8bb414_ac599a49",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1135,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-02-21T13:59:43Z",
+      "side": 1,
+      "message": "Same comment as above regarding the passing of mac address to this function",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "60bc61e7_1a3f1e00",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 1
@@ -102,6 +136,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "08da5c2c_82b8ac83",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1179,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-02-21T13:59:43Z",
+      "side": 1,
+      "message": "Maybe I am missing something here, but I can\u0027t find the condition to match on the vlan. Shouldn\u0027t we be mactching on the PonCTag() ?",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9ea453d6_5540156a",
         "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
         "patchSetId": 1
@@ -119,6 +170,74 @@
         "endLine": 1184,
         "endChar": 62
       },
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "367b12aa_db7c492e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1396,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-02-21T13:59:43Z",
+      "side": 1,
+      "message": "It should be FlowDirection.UPSTREAM I guess",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7bcdcd66_1a76a890",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1397,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-02-21T13:59:43Z",
+      "side": 1,
+      "message": "You call the new function addFlow, how will flow removal work? Ok I see the implementation of addFlow function below and in reality it\u0027s doing both add/remove flows, so you should name the function accordingly",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffe372d1_093ea0fa",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1463,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-02-21T13:59:43Z",
+      "side": 1,
+      "message": "Same comment as above regarding the name of the function",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd103305_1fbee25e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1868,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-02-21T13:59:43Z",
+      "side": 1,
+      "message": "I thought that these functions processFttbUp/Down... has to different matching and setting based on the serviceName, but I don\u0027t see that happening. Am I missing something?",
       "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
