@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecab8c39_ccc07918",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1155,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T11:33:33Z",
+      "side": 1,
+      "message": "Assuming serviceName field to be mandatory, even for non-fttb cases.\nReturning and not installing flow if its not present.\n\nIs is correct to assume so?",
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}

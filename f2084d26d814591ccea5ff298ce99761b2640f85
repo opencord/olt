@@ -41,6 +41,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a762d12_6c8b8887",
+        "filename": "impl/src/main/java/org/opencord/olt/driver/OltPipeline.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1510,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T11:33:33Z",
+      "side": 1,
+      "message": "Moved to FttbUtils",
+      "parentUuid": "60e745c1_c289a5cb",
+      "range": {
+        "startLine": 1503,
+        "startChar": 0,
+        "endLine": 1510,
+        "endChar": 52
+      },
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "60bc61e7_1a3f1e00",
@@ -54,6 +78,24 @@
       "writtenOn": "2022-02-21T08:18:32Z",
       "side": 1,
       "message": "nit: the equals is usually reversed, something that you want to check equals what you know. please reverse all of these constant checks.",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd148719_044f9e46",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1178,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T11:33:33Z",
+      "side": 1,
+      "message": "Updated.\n\nPlease check my query on https://gerrit.opencord.org/c/olt/+/31183/2/impl/src/main/java/org/opencord/olt/impl/OltFlowService.java#1155.\n\n*Previously I used the reverse equals to avoid null checks.",
+      "parentUuid": "60bc61e7_1a3f1e00",
       "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -127,6 +169,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d2b59ac_9b0a33e2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1972,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T11:33:33Z",
+      "side": 1,
+      "message": "Updated",
+      "parentUuid": "250bfa39_e5052e7b",
+      "range": {
+        "startLine": 1972,
+        "startChar": 17,
+        "endLine": 1972,
+        "endChar": 24
+      },
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6e47da01_b051b59c",
@@ -146,6 +212,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a3999648_45475372",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowServiceUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T11:33:33Z",
+      "side": 1,
+      "message": "In FlowRuleService,\nCheckstyle fails if the number of lines \u003e 2000;\n\nTherefore moved some of the helper functions with less global dependency to Utils class.",
+      "parentUuid": "6e47da01_b051b59c",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "69f597ba_cde3ba26",
         "filename": "impl/src/main/java/org/opencord/olt/impl/fttb/FttbUtils.java",
         "patchSetId": 1
@@ -157,6 +241,24 @@
       "writtenOn": "2022-02-21T08:18:32Z",
       "side": 1,
       "message": "missing javadoc for class and methods.",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e116afdc_58018748",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/fttb/FttbUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T11:33:33Z",
+      "side": 1,
+      "message": "Added",
+      "parentUuid": "69f597ba_cde3ba26",
       "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -184,6 +286,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc800772_3ca93b60",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/fttb/FttbUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T11:33:33Z",
+      "side": 1,
+      "message": "Updated",
+      "parentUuid": "342e3888_1565fefa",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 5
+      },
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "04f602aa_7354807d",
@@ -197,6 +323,24 @@
       "writtenOn": "2022-02-21T08:18:32Z",
       "side": 1,
       "message": "please add unit tests for FTTB flows",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f6ef2ac_113e5d59",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-21T11:33:33Z",
+      "side": 1,
+      "message": "Working on it.",
+      "parentUuid": "04f602aa_7354807d",
       "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
