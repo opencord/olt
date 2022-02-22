@@ -195,6 +195,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7fa27bed_9fa20a5e",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1932,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-22T19:39:50Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1e90e07d_91e9948f",
+      "range": {
+        "startLine": 1932,
+        "startChar": 54,
+        "endLine": 1932,
+        "endChar": 65
+      },
+      "revId": "ba370c1209d66038abc0afc57bf64f367c8feb2d",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6729ddc6_fc86c181",

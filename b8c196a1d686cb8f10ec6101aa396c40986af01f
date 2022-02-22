@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a995ff2_7edfa7ce",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-22T19:39:50Z",
+      "side": 1,
+      "message": "minor Nit, overall looks better, still needs to undergo testing",
+      "revId": "b8c196a1d686cb8f10ec6101aa396c40986af01f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63e55b5a_0e6bed37",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowServiceUtils.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-22T19:39:50Z",
+      "side": 1,
+      "message": "TYPO: getMacAddressFromDhcpEnabledUti",
+      "range": {
+        "startLine": 120,
+        "startChar": 29,
+        "endLine": 120,
+        "endChar": 60
+      },
+      "revId": "b8c196a1d686cb8f10ec6101aa396c40986af01f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
