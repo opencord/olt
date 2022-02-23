@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89d775d3_fdbbe6ba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-02-23T09:09:58Z",
+      "side": 1,
+      "message": "LGTM, will test with Sadis when subscriber part is done",
+      "revId": "6ae39e1f2dadd66484e607e86111b4b4428b18a8",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
