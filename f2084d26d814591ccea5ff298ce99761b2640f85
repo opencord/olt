@@ -100,6 +100,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c87bd84_1a037007",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1121,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-23T07:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a724b4b7_fb9cb12c",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3e8bb414_ac599a49",
@@ -131,6 +149,24 @@
       "side": 1,
       "message": "Moved logic to get mac address inside processFttbDownstreamDataFilteringObjects,\nWith checks for ancp and mgmt traffic",
       "parentUuid": "3e8bb414_ac599a49",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b01f1e50_b9a34fae",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1135,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-23T07:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ae1bcbae_25e483e9",
       "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
@@ -205,6 +241,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "be917247_d4913ee6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1179,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-23T07:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a05028c_e0b527a7",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9ea453d6_5540156a",
@@ -218,6 +272,30 @@
       "writtenOn": "2022-02-21T08:56:16Z",
       "side": 1,
       "message": "A match on the same values is performed in a case sensitive way in other places, such as in isFttbService. Shouldn\u0027t they be consistent?",
+      "range": {
+        "startLine": 1184,
+        "startChar": 45,
+        "endLine": 1184,
+        "endChar": 62
+      },
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bd93a90_9c628036",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1184,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-23T07:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ea453d6_5540156a",
       "range": {
         "startLine": 1184,
         "startChar": 45,
@@ -368,6 +446,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3faa6c7_db4c7cb2",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1868,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-23T07:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c6cc6cc_ce2fb7e6",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2233ac03_5eabcbb0",
@@ -381,6 +477,30 @@
       "writtenOn": "2022-02-21T08:18:32Z",
       "side": 1,
       "message": "does not look like a proper method name, please revise. I suggest \"addingFilteringRule\"",
+      "range": {
+        "startLine": 1952,
+        "startChar": 29,
+        "endLine": 1952,
+        "endChar": 39
+      },
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de0e89b0_9be24a60",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1952,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-23T07:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2233ac03_5eabcbb0",
       "range": {
         "startLine": 1952,
         "startChar": 29,
@@ -604,6 +724,24 @@
       "side": 1,
       "message": "Working on it.",
       "parentUuid": "04f602aa_7354807d",
+      "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8bc60e0c_7b16ba7c",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-02-23T07:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f6ef2ac_113e5d59",
       "revId": "f2084d26d814591ccea5ff298ce99761b2640f85",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
