@@ -16,6 +16,24 @@
       "message": "LGTM, will test with Sadis when subscriber part is done",
       "revId": "6ae39e1f2dadd66484e607e86111b4b4428b18a8",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63fc58b4_1d6a12b7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-03-04T09:01:42Z",
+      "side": 1,
+      "message": "Hi Andrea,\n\nI have pushed subscriber handling, as part of patchset 6.\n\nCan you please review?",
+      "parentUuid": "89d775d3_fdbbe6ba",
+      "revId": "6ae39e1f2dadd66484e607e86111b4b4428b18a8",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
