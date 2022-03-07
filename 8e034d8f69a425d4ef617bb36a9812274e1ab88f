@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f8a1e187_5b900a3e",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1185,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-03-07T13:56:25Z",
+      "side": 1,
+      "message": "The \"MC\" passed to this function is compared with the subscriber UniTagInformation\u0027s service name to check if the flow is Multicast (If true -\u003e Flow is not processed for subscriber),\n\nThough, the subscriber UniTagInformation will have service name set to FTTB_SERVICE_SUBSCRIBER_TRAFFIC. (Line 160).\n\n\nThough changing MC to DEFAULT_MCAST_SERVICE_NAME_DEFAULT for consistency.",
+      "parentUuid": "b214ba58_75d70600",
+      "range": {
+        "startLine": 1185,
+        "startChar": 62,
+        "endLine": 1185,
+        "endChar": 66
+      },
+      "revId": "8e034d8f69a425d4ef617bb36a9812274e1ab88f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6ec383cf_704fc799",
         "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
         "patchSetId": 6
@@ -54,6 +78,30 @@
       "writtenOn": "2022-03-07T12:31:59Z",
       "side": 1,
       "message": "I\u0027m not sure this is correct, this identifies multicast",
+      "range": {
+        "startLine": 1282,
+        "startChar": 62,
+        "endLine": 1282,
+        "endChar": 66
+      },
+      "revId": "8e034d8f69a425d4ef617bb36a9812274e1ab88f",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9297cf03_aed90da1",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1282,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-03-07T13:56:25Z",
+      "side": 1,
+      "message": "The \"MC\" passed to this function is compared with the subscriber UniTagInformation\u0027s service name to check if the flow is Multicast (If true -\u003e Flow is not processed for subscriber),\n\nThough, the subscriber UniTagInformation will have service name set to FTTB_SERVICE_SUBSCRIBER_TRAFFIC. (Line 160).\n\n\nThough changing MC to DEFAULT_MCAST_SERVICE_NAME_DEFAULT for consistency.",
+      "parentUuid": "6ec383cf_704fc799",
       "range": {
         "startLine": 1282,
         "startChar": 62,
