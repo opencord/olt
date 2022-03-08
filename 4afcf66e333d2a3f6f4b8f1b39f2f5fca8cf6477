@@ -16,6 +16,52 @@
       "message": "Hi Andrea,\n\nAll the required changes are done from my end.\n\nPlease do let us know, when we are good to go for the merge.\n\nAlso these changes have dependency on Unmerged Sadis changes.(https://gerrit.opencord.org/c/sadis/+/31107).\n\nThanks,\nHarsh.",
       "revId": "4afcf66e333d2a3f6f4b8f1b39f2f5fca8cf6477",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "46dc2b69_55576886",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1826,
+      "author": {
+        "id": 1000894
+      },
+      "writtenOn": "2022-03-08T12:06:18Z",
+      "side": 1,
+      "message": "Same as below",
+      "range": {
+        "startLine": 1825,
+        "startChar": 12,
+        "endLine": 1826,
+        "endChar": 53
+      },
+      "revId": "4afcf66e333d2a3f6f4b8f1b39f2f5fca8cf6477",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff2d791e_f2fd06a1",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1879,
+      "author": {
+        "id": 1000894
+      },
+      "writtenOn": "2022-03-08T12:06:18Z",
+      "side": 1,
+      "message": "An unchecked null value returned here results in a NullPointerException in https://github.com/opennetworkinglab/onos/blob/1a949b3cb60f0020a3ae179de4385c98c1dbcb36/providers/openflow/flow/src/main/java/org/onosproject/provider/of/flow/impl/FlowModBuilder.java#L222-L226\n\nA check should be added to indicate failure of the configuration.\n\n\ninfra/voltha-infra-onos-classic-0[onos-classic]: 09:30:29.867 WARN  [FlowRuleManager] Can\u0027t add missing flow rule:\ninfra/voltha-infra-onos-classic-0[onos-classic]: java.lang.NullPointerException\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.provider.of.flow.impl.FlowModBuilder.buildMatch(FlowModBuilder.java:225)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.provider.of.flow.impl.FlowModBuilderVer13.buildFlowAdd(FlowModBuilderVer13.java:126)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.provider.of.flow.impl.OpenFlowRuleProvider.applyRule(OpenFlowRuleProvider.java:367)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.provider.of.flow.impl.OpenFlowRuleProvider.applyFlowRule(OpenFlowRuleProvider.java:354)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.net.flow.impl.FlowRuleManager$InternalFlowRuleProviderService.flowMissing(FlowRuleManager.java:498)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.net.flow.impl.FlowRuleManager$InternalFlowRuleProviderService.pushFlowMetricsInternal(FlowRuleManager.java:681)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.net.flow.impl.FlowRuleManager$InternalFlowRuleProviderService.pushFlowMetrics(FlowRuleManager.java:598)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.provider.of.flow.impl.OpenFlowRuleProvider$InternalFlowProvider.pushFlowMetrics(OpenFlowRuleProvider.java:746)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.provider.of.flow.impl.OpenFlowRuleProvider$InternalFlowProvider.handleMessage(OpenFlowRuleProvider.java:527)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat org.onosproject.openflow.controller.impl.OpenFlowControllerImpl$OFMessageHandler.run(OpenFlowControllerImpl.java:977)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\ninfra/voltha-infra-onos-classic-0[onos-classic]: \tat java.base/java.lang.Thread.run(Thread.java:834)",
+      "range": {
+        "startLine": 1878,
+        "startChar": 12,
+        "endLine": 1879,
+        "endChar": 53
+      },
+      "revId": "4afcf66e333d2a3f6f4b8f1b39f2f5fca8cf6477",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
