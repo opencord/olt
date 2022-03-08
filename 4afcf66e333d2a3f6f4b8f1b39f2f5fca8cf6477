@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "41ceccda_1833d9ef",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000531
+      },
+      "writtenOn": "2022-03-08T08:48:00Z",
+      "side": 1,
+      "message": "Hi Andrea,\n\nAll the required changes are done from my end.\n\nPlease do let us know, when we are good to go for the merge.\n\nAlso these changes have dependency on Unmerged Sadis changes.(https://gerrit.opencord.org/c/sadis/+/31107).\n\nThanks,\nHarsh.",
+      "revId": "4afcf66e333d2a3f6f4b8f1b39f2f5fca8cf6477",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
