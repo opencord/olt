@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb2d01be_13ba02f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-03-09T08:22:21Z",
+      "side": 1,
+      "message": "generally good, will wait for the openonu-go patch for the subscribers to do one ore final round of testing",
+      "revId": "9188fab30e7fb3f3339ba3c7fb1628f27ee0f649",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
