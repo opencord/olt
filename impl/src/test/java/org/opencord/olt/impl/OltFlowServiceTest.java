@@ -164,22 +164,22 @@ public class OltFlowServiceTest extends OltTestHelpers {
         // cpStatus map for the test
         component.cpStatus = component.storageService.
                 <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
-        OltPortStatus cp1Status = new OltPortStatus(PENDING_ADD, NONE, NONE, NONE);
+        OltPortStatus cp1Status = new OltPortStatus(PENDING_ADD, NONE, NONE, NONE, NONE);
         component.cpStatus.put(sk1, cp1Status);
 
         //check that we only update the provided value
-        component.updateConnectPointStatus(sk1, ADDED, null, null, null);
+        component.updateConnectPointStatus(sk1, ADDED, null, null, null, null);
         OltPortStatus updated = component.cpStatus.get(sk1);
         Assert.assertEquals(ADDED, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
         Assert.assertEquals(NONE, updated.dhcpStatus);
 
         // check that it creates an entry if it does not exist
-        component.updateConnectPointStatus(sk2, PENDING_ADD, NONE, NONE, NONE);
+        component.updateConnectPointStatus(sk2, PENDING_ADD, NONE, NONE, NONE, NONE);
         Assert.assertNotNull(component.cpStatus.get(sk2));
 
         // check that if we create a new entry with null values they're converted to NONE
-        component.updateConnectPointStatus(sk3, null, null, null, null);
+        component.updateConnectPointStatus(sk3, null, null, null, null, null);
         updated = component.cpStatus.get(sk3);
         Assert.assertEquals(NONE, updated.defaultEapolStatus);
         Assert.assertEquals(NONE, updated.subscriberFlowsStatus);
@@ -208,12 +208,12 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
 
         // check that an entry is not created if the only status is pending remove
-        component.updateConnectPointStatus(sk1, null, null, PENDING_REMOVE, null);
+        component.updateConnectPointStatus(sk1, null, null, null, PENDING_REMOVE, null);
         OltPortStatus entry = component.cpStatus.get(sk1);
         Assert.assertNull(entry);
 
         // check that an entry is not created if the only status is ERROR
-        component.updateConnectPointStatus(sk1, null, null, ERROR, null);
+        component.updateConnectPointStatus(sk1, null, null, null, ERROR, null);
         entry = component.cpStatus.get(sk1);
         Assert.assertNull(entry);
     }
@@ -238,12 +238,14 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 OltFlowService.OltFlowsStatus.ADDED,
                 NONE,
                 null,
+                null,
                 null
         );
 
         OltPortStatus portStatusRemoved = new OltPortStatus(
                 REMOVED,
                 NONE,
+                null,
                 null,
                 null
         );
@@ -276,11 +278,13 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 ADDED,
                 NONE,
                 NONE,
+                NONE,
                 NONE
         );
 
         OltPortStatus withDhcp = new OltPortStatus(
                 REMOVED,
+                NONE,
                 NONE,
                 ADDED,
                 NONE
@@ -288,6 +292,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
 
         OltPortStatus withSubFlow = new OltPortStatus(
                 REMOVED,
+                ADDED,
                 ADDED,
                 ADDED,
                 NONE
@@ -845,7 +850,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
 
         // first test that when we remove the EAPOL flow we return false so that the
         // subscriber is not removed from the queue
-        doReturn(true).when(oltFlowService).areSubscriberFlowsPendingRemoval(any(), any());
+        doReturn(true).when(oltFlowService).areSubscriberFlowsPendingRemoval(any(), any(), eq(true));
         boolean res = oltFlowService.removeSubscriberFlows(sub, DEFAULT_BP_ID_DEFAULT, DEFAULT_MCAST_SERVICE_NAME);
         verify(oltFlowService, times(1))
                 .handleSubscriberDhcpFlows(deviceId, port, OltFlowService.FlowOperation.REMOVE, si);
@@ -863,7 +868,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
 
         // then test that if the tagged EAPOL is not there we install the default EAPOL
         // and return true so we remove the subscriber from the queue
-        doReturn(false).when(oltFlowService).areSubscriberFlowsPendingRemoval(any(), any());
+        doReturn(false).when(oltFlowService).areSubscriberFlowsPendingRemoval(any(), any(), eq(true));
         doReturn(port).when(oltFlowService.deviceService).getPort(deviceId, port.number());
         res = oltFlowService.removeSubscriberFlows(sub, DEFAULT_BP_ID_DEFAULT, DEFAULT_MCAST_SERVICE_NAME);
         verify(oltFlowService, times(1))
@@ -916,7 +921,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         // cpStatus map for the test
         component.cpStatus = component.storageService.
                 <ServiceKey, OltPortStatus>consistentMapBuilder().build().asJavaMap();
-        OltPortStatus cp1Status = new OltPortStatus(NONE, PENDING_REMOVE, NONE, NONE);
+        OltPortStatus cp1Status = new OltPortStatus(NONE, NONE, PENDING_REMOVE, NONE, NONE);
         component.cpStatus.put(sk1, cp1Status);
 
         FlowRuleEvent event = new FlowRuleEvent(FlowRuleEvent.Type.RULE_REMOVED, flowRule);

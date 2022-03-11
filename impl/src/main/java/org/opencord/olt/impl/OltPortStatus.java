@@ -24,6 +24,7 @@ import java.util.Objects;
 public class OltPortStatus {
     // TODO consider adding a lastUpdated field, it may help with debugging
     public OltFlowService.OltFlowsStatus defaultEapolStatus;
+    public OltFlowService.OltFlowsStatus subscriberEapolStatus;
     public OltFlowService.OltFlowsStatus subscriberFlowsStatus;
     // NOTE we need to keep track of the DHCP status as that is installed before the other flows
     // if macLearning is enabled (DHCP is needed to learn the MacAddress from the host)
@@ -31,10 +32,12 @@ public class OltPortStatus {
     public OltFlowService.OltFlowsStatus pppoeStatus;
 
     public OltPortStatus(OltFlowService.OltFlowsStatus defaultEapolStatus,
+                         OltFlowService.OltFlowsStatus subscriberEapolStatus,
                          OltFlowService.OltFlowsStatus subscriberFlowsStatus,
                          OltFlowService.OltFlowsStatus dhcpStatus,
                          OltFlowService.OltFlowsStatus pppoeStatus) {
         this.defaultEapolStatus = defaultEapolStatus;
+        this.subscriberEapolStatus = subscriberEapolStatus;
         this.subscriberFlowsStatus = subscriberFlowsStatus;
         this.dhcpStatus = dhcpStatus;
         this.pppoeStatus = pppoeStatus;
@@ -50,19 +53,22 @@ public class OltPortStatus {
         }
         OltPortStatus that = (OltPortStatus) o;
         return defaultEapolStatus == that.defaultEapolStatus
+                && subscriberEapolStatus == that.subscriberEapolStatus
                 && subscriberFlowsStatus == that.subscriberFlowsStatus
                 && dhcpStatus == that.dhcpStatus;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(defaultEapolStatus, subscriberFlowsStatus, dhcpStatus);
+        return Objects.hash(defaultEapolStatus, subscriberEapolStatus,
+                            subscriberFlowsStatus, dhcpStatus);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("OltPortStatus{");
         sb.append("defaultEapolStatus=").append(defaultEapolStatus);
+        sb.append(", subscriberEapolStatus=").append(subscriberEapolStatus);
         sb.append(", subscriberFlowsStatus=").append(subscriberFlowsStatus);
         sb.append(", dhcpStatus=").append(dhcpStatus);
         sb.append('}');
