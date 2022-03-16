@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5a06e7f_1902bd6a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-03-16T10:10:20Z",
+      "side": 1,
+      "message": "we can fully test this when the https://gerrit.opencord.org/c/voltha-openonu-adapter-go/+/31192 gets merged",
+      "revId": "e118831c8a3daeac6ab84d0463dce03e7404e3ea",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
