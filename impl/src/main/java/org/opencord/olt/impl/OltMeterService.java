@@ -418,62 +418,67 @@ public class OltMeterService implements OltMeterServiceInterface {
         if (log.isTraceEnabled()) {
             log.trace("BandwidthProfile: {}", bpInfo);
         }
+        try {
+            List<Band> meterBands = createMeterBands(bpInfo);
 
-        List<Band> meterBands = createMeterBands(bpInfo);
+            log.info("Meter bands {} for bwp {}", meterBands, bpInfo);
 
-        CompletableFuture<Object> meterFuture = new CompletableFuture<>();
+            CompletableFuture<Object> meterFuture = new CompletableFuture<>();
 
-        MeterRequest meterRequest = DefaultMeterRequest.builder()
-                .withBands(meterBands)
-                .withUnit(Meter.Unit.KB_PER_SEC)
-                .withContext(new MeterContext() {
-                    @Override
-                    public void onSuccess(MeterRequest op) {
-                        log.info("Meter for BandwidthProfile {} is installed on the device {}",
-                                 bandwidthProfile, deviceId);
-                        meterFuture.complete(null);
-                    }
+            MeterRequest meterRequest = DefaultMeterRequest.builder()
+                    .withBands(meterBands)
+                    .withUnit(Meter.Unit.KB_PER_SEC)
+                    .withContext(new MeterContext() {
+                        @Override
+                        public void onSuccess(MeterRequest op) {
+                            log.info("Meter for BandwidthProfile {} is installed on the device {}",
+                                     bandwidthProfile, deviceId);
+                            meterFuture.complete(null);
+                        }
 
-                    @Override
-                    public void onError(MeterRequest op, MeterFailReason reason) {
-                        log.error("Failed installing meter on {} for {}",
-                                  deviceId, bandwidthProfile);
-                        meterFuture.complete(reason);
-                    }
-                })
-                .forDevice(deviceId)
-                .fromApp(appId)
-                .burst()
-                .add();
+                        @Override
+                        public void onError(MeterRequest op, MeterFailReason reason) {
+                            log.error("Failed installing meter on {} for {}",
+                                      deviceId, bandwidthProfile);
+                            meterFuture.complete(reason);
+                        }
+                    })
+                    .forDevice(deviceId)
+                    .fromApp(appId)
+                    .burst()
+                    .add();
 
-        // creating the meter
-        Meter meter = meterService.submit(meterRequest);
+            // creating the meter
+            Meter meter = meterService.submit(meterRequest);
 
-        // wait for the meter to be completed
-        meterFuture.thenAccept(error -> {
-            if (error != null) {
-                log.error("Cannot create meter, TODO address me");
-            }
+            // wait for the meter to be completed
+            meterFuture.thenAccept(error -> {
+                if (error != null) {
+                    log.error("Cannot create meter, TODO address me");
+                }
 
-            // then update the map with the MeterId
-            try {
-                programmedMeterWriteLock.lock();
-                programmedMeters.compute(deviceId, (d, entry) -> {
-                    if (entry != null) {
-                        entry.compute(bandwidthProfile, (bp, meterData) -> {
-                            if (meterData != null) {
-                                meterData.setMeterCellId(meter.meterCellId());
-                                meterData.setMeterStatus(MeterState.ADDED);
-                            }
-                            return meterData;
-                        });
-                    }
-                    return entry;
-                });
-            } finally {
-                programmedMeterWriteLock.unlock();
-            }
-        });
+                // then update the map with the MeterId
+                try {
+                    programmedMeterWriteLock.lock();
+                    programmedMeters.compute(deviceId, (d, entry) -> {
+                        if (entry != null) {
+                            entry.compute(bandwidthProfile, (bp, meterData) -> {
+                                if (meterData != null) {
+                                    meterData.setMeterCellId(meter.meterCellId());
+                                    meterData.setMeterStatus(MeterState.ADDED);
+                                }
+                                return meterData;
+                            });
+                        }
+                        return entry;
+                    });
+                } finally {
+                    programmedMeterWriteLock.unlock();
+                }
+            });
+        } catch (Exception e) {
+            log.error("", e);
+        }
     }
 
     private List<Band> createMeterBands(BandwidthProfileInformation bpInfo) {
@@ -481,7 +486,8 @@ public class OltMeterService implements OltMeterServiceInterface {
 
         // add cir
         if (bpInfo.committedInformationRate() != 0) {
-            meterBands.add(createMeterBand(bpInfo.committedInformationRate(), bpInfo.committedBurstSize()));
+            meterBands.add(createMeterBand(bpInfo.committedInformationRate(),
+                                           bpInfo.committedBurstSize(), Band.Type.DROP, null));
         }
 
         // check if both air and gir are set together in sadis
@@ -499,30 +505,36 @@ public class OltMeterService implements OltMeterServiceInterface {
                 (bpInfo.exceededBurstSize() != null ? bpInfo.exceededBurstSize() : 0) +
                         (bpInfo.committedBurstSize() != null ? bpInfo.committedBurstSize() : 0);
 
-        meterBands.add(createMeterBand(pir, pbs));
+        meterBands.add(createMeterBand(pir, pbs, Band.Type.REMARK, (short) 1));
 
         // add gir
+        //We can use DROP here because it GIr will never be equals to cir so rate will always be different.
         if (bpInfo.guaranteedInformationRate() != 0) {
-            meterBands.add(createMeterBand(bpInfo.guaranteedInformationRate(), 0L));
+            meterBands.add(createMeterBand(bpInfo.guaranteedInformationRate(), 0L, Band.Type.DROP, null));
         }
 
         // add air
         // air is used in place of gir only if gir is
         // not present and air is not 0, see line 330.
         // Included for backwards compatibility, will be removed in VOLTHA 2.9.
+        // Using Band.Type.NONE is ok because this will be removed.
         if (bpInfo.assuredInformationRate() != 0) {
-            meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L));
+            meterBands.add(createMeterBand(bpInfo.assuredInformationRate(), 0L, Band.Type.DROP, null));
         }
 
         return meterBands;
     }
 
-    private Band createMeterBand(long rate, Long burst) {
-        return DefaultBand.builder()
+    private Band createMeterBand(long rate, Long burst, Band.Type type, Short precedence) {
+        Band.Builder bandBuilder = DefaultBand.builder()
                 .withRate(rate) //already Kbps
                 .burstSize(burst) // already Kbits
-                .ofType(Band.Type.DROP) // no matter
-                .build();
+                .ofType(type); // no matter
+        if (precedence != null) {
+            bandBuilder.dropPrecedence(precedence);
+        }
+
+        return bandBuilder.build();
     }
 
     private BandwidthProfileInformation getBandwidthProfileInformation(String bandwidthProfile) {
