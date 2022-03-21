@@ -856,10 +856,12 @@ public class OltFlowService implements OltFlowServiceInterface {
         // we can remove it based in the match
         FilteringObjective.Builder eapol;
 
+        // Setting VlanId.NONE as cvlan in the metadata as the packet will be single tagged
+        // and cvlan should not be filled.
         TrafficTreatment treatment = treatmentBuilder
                 .meter(meterId)
                 .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(
-                        vlanId,
+                        VlanId.NONE,
                         techProfileId, oltMeterId), 0)
                 .setOutput(PortNumber.CONTROLLER)
                 .pushVlan()
@@ -1296,8 +1298,9 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         if (techProfileId != NONE_TP_ID) {
-            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(cTag, techProfileId,
-                    oltMeterId), 0);
+            // Setting VlanId.NONE as cvlan as the packet will be single tagged and cvlan should not be filled.
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(VlanId.NONE,
+                    techProfileId, oltMeterId), 0);
         }
 
         DefaultFilteringObjective.Builder pppoedBuilder = ((action == FlowOperation.ADD)

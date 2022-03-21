@@ -887,10 +887,10 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
         TrafficTreatment innerTreatment;
         if (noneValueVlanStatus) {
             innerTreatment = buildTreatment(innerPair.getLeft(), innerPair.getRight(), onuUsMeter,
-                                            fetchWriteMetadata(fwd), innerPbitSet,
+                                            writeMetadataExcludingCVlan(fwd), innerPbitSet,
                                             Instructions.transition(QQ_TABLE));
         } else {
-            innerTreatment = buildTreatment(innerPair.getRight(), onuUsMeter, fetchWriteMetadata(fwd),
+            innerTreatment = buildTreatment(innerPair.getRight(), onuUsMeter, writeMetadataExcludingCVlan(fwd),
                                             innerPbitSet, Instructions.transition(QQ_TABLE));
         }
 
@@ -950,7 +950,8 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
                 .makePermanent()
                 .withPriority(fwd.priority())
                 .withSelector(fwd.selector())
-                .withTreatment(buildTreatment(Instructions.transition(QQ_TABLE), onuUsMeter, fetchWriteMetadata(fwd)));
+                .withTreatment(buildTreatment(Instructions.transition(QQ_TABLE), onuUsMeter,
+                        writeMetadataExcludingCVlan(fwd)));
 
         //match: in port and any-vlan (coming from OLT app.)
         //action: immediate: push:QinQ, vlanId (s-tag), write metadata, meter and output
@@ -1341,6 +1342,27 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
                 fetchWriteMetadata(fwd).metadata() & 0xFFFF00000000L, 0L);
     }
 
+    /**
+     * Creates and returns the metadata excluding cVlan.
+     *
+     * This function can be used for following scenario.
+     *
+     * The cvlan field in the metadata is used to know that the packet is double or single tagged.
+     * For the ONU to know that the incoming packet at UNI is double tagged the innervlan is added in the cvlan field
+     * of the metadata for the upstream table 0 flows.
+     * As of now only FTTB workflows is using the double tagged at UNI. Other workflows, the cvlan should not be filled.
+     * If the cvlan is filled in the metadata the onu adapter will consider double tagged
+     * and configure rules accordingly.
+     *
+     * @param fwd ForwardingObjective
+     * @return Write Metadata Instruction
+     */
+    private Instruction writeMetadataExcludingCVlan(ForwardingObjective fwd) {
+
+        return Instructions.writeMetadata(
+                fetchWriteMetadata(fwd).metadata() & 0xFFFFFFFFFFFFL, 0L);
+    }
+
     private void fail(Objective obj, ObjectiveError error) {
         obj.context().ifPresent(context -> context.onError(obj, error));
     }
@@ -1455,10 +1477,10 @@ public class OltPipeline extends AbstractHandlerBehaviour implements Pipeliner {
         TrafficTreatment innerTreatment;
         if (noneValueVlanStatus) {
             innerTreatment = buildTreatment(innerPair.getLeft(), innerPair.getRight(), onuUsMeter,
-                    fetchWriteMetadata(fwd), innerPbitSet,
+                    writeMetadataExcludingCVlan(fwd), innerPbitSet,
                     Instructions.transition(QQ_TABLE));
         } else {
-            innerTreatment = buildTreatment(innerPair.getRight(), onuUsMeter, fetchWriteMetadata(fwd),
+            innerTreatment = buildTreatment(innerPair.getRight(), onuUsMeter, writeMetadataExcludingCVlan(fwd),
                     innerPbitSet, Instructions.transition(QQ_TABLE));
         }
 
