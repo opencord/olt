@@ -856,10 +856,12 @@ public class OltFlowService implements OltFlowServiceInterface {
         // we can remove it based in the match
         FilteringObjective.Builder eapol;
 
+        // Setting VlanId.NONE as cvlan in the metadata as the packet will be single tagged
+        // and cvlan should not be filled.
         TrafficTreatment treatment = treatmentBuilder
                 .meter(meterId)
                 .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(
-                        vlanId,
+                        VlanId.NONE,
                         techProfileId, oltMeterId), 0)
                 .setOutput(PortNumber.CONTROLLER)
                 .pushVlan()
@@ -1166,12 +1168,9 @@ public class OltFlowService implements OltFlowServiceInterface {
                 .fromApp(appId)
                 .withPriority(MAX_PRIORITY);
 
-        VlanId cVlan = uti.getUniTagMatch();
-
         //VLAN changes and PCP matching need to happen only in the upstream directions
         if (direction == FlowDirection.UPSTREAM) {
             if (serviceName != null && serviceName.equals(FTTB_SERVICE_DPU_MGMT_TRAFFIC)) {
-                cVlan = VlanId.NONE;
                 FttbUtils.addUpstreamDhcpCondition(dhcpBuilder, uti);
                 FttbUtils.addUpstreamDhcpTreatment(treatmentBuilder, uti);
             } else {
@@ -1195,8 +1194,9 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         if (uti.getTechnologyProfileId() != NONE_TP_ID) {
+            // Setting VlanId.NONE as cvlan, as the packet will be single tagged and cvlan should not be filled.
             treatmentBuilder.writeMetadata(
-                    OltFlowServiceUtils.createTechProfValueForWriteMetadata(cVlan,
+                    OltFlowServiceUtils.createTechProfValueForWriteMetadata(VlanId.NONE,
                             uti.getTechnologyProfileId(), oltMeterId), 0);
         }
 
@@ -1296,8 +1296,9 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         if (techProfileId != NONE_TP_ID) {
-            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(cTag, techProfileId,
-                    oltMeterId), 0);
+            // Setting VlanId.NONE as cvlan as the packet will be single tagged and cvlan should not be filled.
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(VlanId.NONE,
+                    techProfileId, oltMeterId), 0);
         }
 
         DefaultFilteringObjective.Builder pppoedBuilder = ((action == FlowOperation.ADD)
