@@ -441,7 +441,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                         DefaultTrafficTreatment.builder()
                                 .meter(MeterId.meterId(1))
                                 .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(
-                                        VlanId.vlanId(eapolDefaultVlan),
+                                        VlanId.NONE,
                                         component.defaultTechProfileId, MeterId.meterId(1)), 0)
                                 .setOutput(PortNumber.CONTROLLER)
                                 .pushVlan()
@@ -494,7 +494,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                         DefaultTrafficTreatment.builder()
                                 .meter(MeterId.meterId(1))
                                 .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(
-                                        VlanId.vlanId(eapolDefaultVlan),
+                                        VlanId.NONE,
                                         component.defaultTechProfileId, MeterId.meterId(1)), 0)
                                 .setOutput(PortNumber.CONTROLLER)
                                 .pushVlan()
