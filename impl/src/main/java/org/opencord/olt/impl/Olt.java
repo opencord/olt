@@ -758,7 +758,6 @@ public class Olt
                     case DEVICE_ADDED:
                         return;
                     case PORT_ADDED:
-                    case PORT_UPDATED:
                     case PORT_REMOVED:
                         if (!isOlt) {
                             log.trace("Ignoring event {}, this is not an OLT device", deviceId);
@@ -770,6 +769,25 @@ public class Olt
                         }
                         // port added, updated and removed are treated in the same way as we only care whether the port
                         // is enabled or not
+                        handleOltPort(event.type(), event.subject(), event.port());
+                        return;
+                    case PORT_UPDATED:
+                        if (!isOlt) {
+                            log.trace("Ignoring event {}, this is not an OLT device", deviceId);
+                            return;
+                        }
+                        // port updated are handled only when the device is available, makes not sense otherwise.
+                        // this also solves an issue with port events and device disconnection events handled
+                        // in sparse order causing failures in the ofagent disconnect test
+                        // (see https://jira.opencord.org/browse/VOL-4669)
+                        if (!deviceService.isAvailable(deviceId)) {
+                            log.debug("Ignoring port event {} on {} as it is disconnected", event, deviceId);
+                            return;
+                        }
+                        if (!oltDeviceService.isLocalLeader(deviceId)) {
+                            log.trace("Device {} is not local to this node", deviceId);
+                            return;
+                        }
                         handleOltPort(event.type(), event.subject(), event.port());
                         return;
                     case DEVICE_AVAILABILITY_CHANGED:
