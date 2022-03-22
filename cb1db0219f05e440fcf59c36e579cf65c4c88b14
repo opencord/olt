@@ -41,6 +41,30 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "80f669b4_f8e9993b",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 781,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-03-22T11:40:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24537ecb_4e478e97",
+      "range": {
+        "startLine": 781,
+        "startChar": 92,
+        "endLine": 781,
+        "endChar": 95
+      },
+      "revId": "cb1db0219f05e440fcf59c36e579cf65c4c88b14",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "02ccb4bc_72969ebc",
@@ -54,6 +78,24 @@
       "writtenOn": "2022-03-22T11:35:17Z",
       "side": 1,
       "message": "maybe you want to rewrite for clarity the if similarly to the DEVICE_AVAIL case:\n\nif (available) {\n   if (!leader) {\n\n   } else {\n\n   }\n\n} else {\n\n}",
+      "revId": "cb1db0219f05e440fcf59c36e579cf65c4c88b14",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f85300ec_b62bcdac",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 782,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-03-22T11:40:30Z",
+      "side": 1,
+      "message": "I think the current code is cleaner for a single is available check, the availability change is a bit more complex. I\u0027ll leave as is.",
+      "parentUuid": "02ccb4bc_72969ebc",
       "revId": "cb1db0219f05e440fcf59c36e579cf65c4c88b14",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
