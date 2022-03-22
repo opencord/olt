@@ -208,6 +208,7 @@ public class OltDeviceListenerTest extends OltTestHelpers {
         si.setUniTagList(uniTagInformationList);
         doReturn(si).when(olt.subsService).get("uni-1");
 
+        doReturn(true).when(olt.deviceService).isAvailable(any());
         oltDeviceListener.event(uniAddedDisabledEvent);
         LinkedBlockingQueue<DiscoveredSubscriber> q = olt.eventsQueues.get(cp);
         assert !q.isEmpty();
