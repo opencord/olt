@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "edfac2a2_ad4c2c9b",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 612,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2022-04-28T18:05:54Z",
+      "side": 1,
+      "message": "I would add an explanation of why we don\u0027t remove the flows if the port is disabled, just so that we remember",
+      "range": {
+        "startLine": 612,
+        "startChar": 8,
+        "endLine": 612,
+        "endChar": 117
+      },
+      "revId": "9cbd8f4e2e75239c40e05214000c4d20ab04f9b6",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
