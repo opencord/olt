@@ -35,6 +35,8 @@ public class DiscoveredSubscriber {
     public enum Status {
         ADDED,
         REMOVED,
+        // Used for the remove subscriber calls from REST/CLI
+        ADMIN_REMOVED,
     }
 
     public Port port;

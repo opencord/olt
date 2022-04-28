@@ -113,6 +113,8 @@ public class OltFlowServiceTest extends OltTestHelpers {
     public static final String PORT_3 = "port-3";
     private OltFlowService component;
     private OltFlowService oltFlowService;
+
+    private DeviceService deviceService;
     OltFlowService.InternalFlowListener internalFlowListener;
     private final ApplicationId testAppId = new DefaultApplicationId(1, "org.opencord.olt.test");
     private final short eapolDefaultVlan = 4091;
@@ -192,6 +194,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         internalFlowListener = spy(component.internalFlowListener);
 
         oltFlowService = spy(component);
+        deviceService = Mockito.mock(DeviceService.class);
     }
 
     @After
@@ -908,6 +911,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
 
         // first test that when we remove the EAPOL flow we return false so that the
         // subscriber is not removed from the queue
+        doReturn(null).when(deviceService).getPort(any());
         doReturn(true).when(oltFlowService).areSubscriberFlowsPendingRemoval(any(), any(), eq(true));
         boolean res = oltFlowService.removeSubscriberFlows(sub, DEFAULT_BP_ID_DEFAULT, DEFAULT_MCAST_SERVICE_NAME);
         verify(oltFlowService, times(1))

@@ -525,7 +525,8 @@ public class OltFlowService implements OltFlowServiceInterface {
         // NOTE that we are taking defaultBandwithProfile as a parameter as that can be configured in the Olt component
         if (sub.status == DiscoveredSubscriber.Status.ADDED) {
             return addSubscriberFlows(sub, defaultBandwidthProfile, multicastServiceName);
-        } else if (sub.status == DiscoveredSubscriber.Status.REMOVED) {
+        } else if (sub.status == DiscoveredSubscriber.Status.REMOVED ||
+                sub.status == DiscoveredSubscriber.Status.ADMIN_REMOVED) {
             return removeSubscriberFlows(sub, defaultBandwidthProfile, multicastServiceName);
         } else {
             log.error("don't know how to handle {}", sub);
@@ -596,44 +597,63 @@ public class OltFlowService implements OltFlowServiceInterface {
                     portWithName(sub.port));
         }
         SubscriberAndDeviceInformation si = sub.subscriberAndDeviceInformation;
-
-        handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.REMOVE, si);
-
-        handleSubscriberPppoeFlows(sub.device.id(), sub.port, FlowOperation.REMOVE, sub.subscriberAndDeviceInformation);
-
+        //If the port has been removed the device service will return null, while it will be true if it's just disabled
+        boolean isPortPresent = deviceService.getPort(new ConnectPoint(sub.device.id(), sub.port.number())) != null;
+        if (log.isTraceEnabled()) {
+            log.trace("Port {} present: ", portWithName(sub.port), isPortPresent);
+        }
+        // Always remove the EAPOL flow in case of port disable,remove or subscriber remove.
         if (enableEapol) {
             // remove the tagged eapol
             handleSubscriberEapolFlows(sub, FlowOperation.REMOVE, si);
+            log.info("Removal of eapol flow for subscriber on {} completed", portWithName(sub.port));
+
         }
-        handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.REMOVE, si, multicastServiceName);
+        // If the port is gone entirely (onu delete) or it's enabled (subscriber remove request) remove all the flows
+        // In the case the port is just disabled we remove only the EAPOL flow because the ONU disable only represents
+        // the UNI side of the ONU going down, either for RG cable detach or for an administrative decision, but the PON
+        // side is still up as nothing changed, so no need to add/remove flows, when and if the UNI comes up
+        // we will re-push the EAPOL flow to require the subscriber to auth again.
+        // When the subscriber is admin removed from REST or CLI we ignore the port status.
+        if (!isPortPresent || sub.port.isEnabled() || sub.status == DiscoveredSubscriber.Status.ADMIN_REMOVED) {
 
-        handleSubscriberIgmpFlows(sub, FlowOperation.REMOVE);
+            handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.REMOVE, si);
 
-        if (enableEapol) {
+            handleSubscriberPppoeFlows(sub.device.id(), sub.port, FlowOperation.REMOVE,
+                    sub.subscriberAndDeviceInformation);
 
-            // if any of the services still has flows, return false
-            Iterator<UniTagInformation> iter = sub.subscriberAndDeviceInformation.uniTagList().iterator();
-            while (iter.hasNext()) {
-                UniTagInformation entry = iter.next();
-                if (areSubscriberFlowsPendingRemoval(sub.port, entry, enableEapol)) {
-                    log.info("Subscriber {} still have flows on service {}, postpone default EAPOL installation.",
-                            portWithName(sub.port), entry.getServiceName());
-                    return false;
+            handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.REMOVE, si, multicastServiceName);
+
+            handleSubscriberIgmpFlows(sub, FlowOperation.REMOVE);
+
+
+            if (enableEapol) {
+
+                // if any of the services still has flows, return false
+                Iterator<UniTagInformation> iter = sub.subscriberAndDeviceInformation.uniTagList().iterator();
+                while (iter.hasNext()) {
+                    UniTagInformation entry = iter.next();
+                    if (areSubscriberFlowsPendingRemoval(sub.port, entry, enableEapol)) {
+                        log.info("Subscriber {} still have flows on service {}, postpone default EAPOL installation.",
+                                portWithName(sub.port), entry.getServiceName());
+                        return false;
+                    }
+                }
+
+                // once the flows are removed add the default one back
+                // (only if the port is ENABLED and still present on the device)
+                if (sub.port.isEnabled() && deviceService.getPort(sub.device.id(), sub.port.number()) != null) {
+
+                    // NOTE we remove the subscriber when the port goes down
+                    // but in that case we don't need to add default eapol
+                    handleEapolFlow(sub, defaultBandwithProfile, defaultBandwithProfile,
+                            FlowOperation.ADD, VlanId.vlanId(EAPOL_DEFAULT_VLAN));
                 }
             }
-
-            // once the flows are removed add the default one back
-            // (only if the port is ENABLED and still present on the device)
-            if (sub.port.isEnabled() && deviceService.getPort(sub.device.id(), sub.port.number()) != null) {
-
-                // NOTE we remove the subscriber when the port goes down
-                // but in that case we don't need to add default eapol
-                handleEapolFlow(sub, defaultBandwithProfile, defaultBandwithProfile,
-                        FlowOperation.ADD, VlanId.vlanId(EAPOL_DEFAULT_VLAN));
-            }
+            // FIXME check the return status of the flow and return accordingly
+            log.info("Removal of subscriber on {} completed", portWithName(sub.port));
+            return true;
         }
-        // FIXME check the return status of the flow and return accordingly
-        log.info("Removal of subscriber on {} completed", portWithName(sub.port));
         return true;
     }
 
@@ -910,17 +930,7 @@ public class OltFlowService implements OltFlowServiceInterface {
         // TODO verify we need an EAPOL flow for EACH service
         AtomicBoolean success = new AtomicBoolean(true);
         si.uniTagList().forEach(u -> {
-            // we assume that if subscriber flows are installed, tagged EAPOL is installed as well
-            boolean hasFlows = hasSubscriberFlows(sub.port, u);
-
-            // if the subscriber flows are present the EAPOL flow is present thus we don't need to install it,
-            // if the subscriber does not have flows the EAPOL flow is not present thus we don't need to remove it
-            if (action == FlowOperation.ADD && hasFlows ||
-                    action == FlowOperation.REMOVE && !hasFlows) {
-                log.debug("Not {} EAPOL on {}({}) as subscriber flow status is {}", flowOpToString(action),
-                        portWithName(sub.port), u.getServiceName(), hasFlows);
-                return;
-            }
+            //Always act on the eapol flow
             log.info("{} EAPOL flows for subscriber {} on {} and service {}",
                     flowOpToString(action), si.id(), portWithName(sub.port), u.getServiceName());
             if (!handleEapolFlow(sub, u.getUpstreamBandwidthProfile(),
@@ -1672,7 +1682,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                 if (log.isTraceEnabled()) {
                     log.trace("update subscriberEapolStatus {} on {}", status, sk);
                 }
-                updateConnectPointStatus(sk, null, status, null, status, null);
+                updateConnectPointStatus(sk, null, status, null, null, null);
             } else if (OltFlowServiceUtils.isDhcpFlow(flowRule)) {
                 ServiceKey sk = getSubscriberKeyFromFlowRule(flowRule, port);
                 if (sk == null) {
