@@ -16,6 +16,24 @@
       "message": "Looks fine. Do we need to bump up the version number?",
       "revId": "f734a2a14f2a02d1b6b954de21e802c95380d2fb",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "41632c42_fc7cabf5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-05-16T12:48:45Z",
+      "side": 1,
+      "message": "unfortunately in ONOS apps the bumbing is not as easy as in VOLTHA. I\u0027d stick with this version.",
+      "parentUuid": "06b39d27_16ce9561",
+      "revId": "f734a2a14f2a02d1b6b954de21e802c95380d2fb",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
