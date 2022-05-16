@@ -178,6 +178,10 @@ public final class FttbUtils {
                         return optHost.get().mac();
                     }
                 }
+            } else if (uniTagInfo.getConfiguredMacAddress() != null &&
+                    !uniTagInfo.getConfiguredMacAddress().isEmpty()) {
+                log.info("Using configured mac address for FTTB {}", uniTagInfo.getConfiguredMacAddress());
+                return MacAddress.valueOf(uniTagInfo.getConfiguredMacAddress());
             }
         }
         return null;
