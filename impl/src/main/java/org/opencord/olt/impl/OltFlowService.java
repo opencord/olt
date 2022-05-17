@@ -1854,7 +1854,7 @@ public class OltFlowService implements OltFlowServiceInterface {
             innerVlan = VlanId.ANY;
         }
 
-        treatmentBuilder.setOutput(nniPort.number()).writeMetadata(OltFlowServiceUtils.createMetadata(innerVlan,
+        treatmentBuilder.setOutput(nniPort.number()).writeMetadata(OltFlowServiceUtils.createMetadata(uti.getPonCTag(),
                 uti.getTechnologyProfileId(), nniPort.number()), 0L);
 
         DefaultForwardingObjective.Builder flowBuilder = createForwardingObjectiveBuilder(selectorBuilder.build(),
@@ -1909,15 +1909,22 @@ public class OltFlowService implements OltFlowServiceInterface {
 
             selectorBuilder.matchEthDst(mac);
             innerVlan = VlanId.NONE;
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(innerVlan,
+                    uti.getTechnologyProfileId(),
+                    port.number()), 0);
+//            log.info("Metadata for single tagged {}", OltFlowServiceUtils.createTechProfValueForWriteMetadata(
+//                    VlanId.NONE,
+//                    uti.getTechnologyProfileId(), downstreamOltMeterId));
+//            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(
+//                    VlanId.NONE,
+//                    uti.getTechnologyProfileId(), downstreamOltMeterId), 0);
 
         } else if (serviceName.equals(FTTB_SERVICE_SUBSCRIBER_TRAFFIC)) {
-            innerVlan = VlanId.ANY;
-            selectorBuilder.matchMetadata(uti.getPonSTag().toShort());
+            selectorBuilder.matchMetadata(uti.getPonCTag().toShort());
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(uti.getPonCTag(),
+                    uti.getTechnologyProfileId(),
+                    port.number()), 0);
         }
-
-        treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(innerVlan,
-                uti.getTechnologyProfileId(),
-                port.number()), 0);
 
         DefaultForwardingObjective.Builder flowBuilder = createForwardingObjectiveBuilder(selectorBuilder.build(),
                 treatmentBuilder.build(), MIN_PRIORITY, annotationBuilder.build());
