@@ -1068,6 +1068,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .setVlanPcp((byte) dpuMgmtUti.getUsPonSTagPriority())
                 .setOutput(PortNumber.CONTROLLER)
                 .meter(usBpMeterId)
+                //TODO why tests use this one and not the other method ?
                 .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(VlanId.NONE,
                         dpuMgmtUti.getTechnologyProfileId(), usOltBpMeterId), 0L).build();
 
@@ -1428,7 +1429,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                         expectedTreatment.setVlanId(uti.getPonSTag())
                                 .setOutput(nniPort.number())
                                 .meter(usBpMeterId)
-                                .writeMetadata(OltFlowServiceUtils.createMetadata(VlanId.ANY,
+                                .writeMetadata(OltFlowServiceUtils.createMetadata(uti.getPonCTag(),
                                         uti.getTechnologyProfileId(), nniPort.number()), 0L).build();
 
                         annotationBuilder.set(UPSTREAM_ONU, usBpMeterId.toString());
@@ -1438,13 +1439,13 @@ public class OltFlowServiceTest extends OltTestHelpers {
                     case FTTB_FLOW_DOWNSTREAM:
                         expectedSelectorBuilder
                                 .matchInPort(nniPort.number())
-                                .matchMetadata(uti.getPonSTag().toShort())
+                                .matchMetadata(uti.getPonCTag().toShort())
                                 .matchVlanId(uti.getPonSTag());
 
                         expectedTreatment.setVlanId(uti.getPonCTag())
                                 .setOutput(addedSub.port.number())
                                 .meter(dsBpMeterId)
-                                .writeMetadata(OltFlowServiceUtils.createMetadata(VlanId.ANY,
+                                .writeMetadata(OltFlowServiceUtils.createMetadata(uti.getPonCTag(),
                                         uti.getTechnologyProfileId(), addedSub.port.number()), 0L).build();
 
                         annotationBuilder.set(DOWNSTREAM_ONU, dsBpMeterId.toString());
@@ -1531,7 +1532,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                         expectedTreatment.setVlanId(uti.getPonSTag())
                                 .setOutput(nniPort.number())
                                 .meter(usBpMeterId)
-                                .writeMetadata(OltFlowServiceUtils.createMetadata(VlanId.ANY,
+                                .writeMetadata(OltFlowServiceUtils.createMetadata(uti.getPonCTag(),
                                         uti.getTechnologyProfileId(), nniPort.number()), 0L).build();
 
                         annotationBuilder.set(UPSTREAM_ONU, usBpMeterId.toString());
@@ -1541,13 +1542,13 @@ public class OltFlowServiceTest extends OltTestHelpers {
                     case FTTB_FLOW_DOWNSTREAM:
                         expectedSelectorBuilder
                                 .matchInPort(nniPort.number())
-                                .matchMetadata(uti.getPonSTag().toShort())
+                                .matchMetadata(uti.getPonCTag().toShort())
                                 .matchVlanId(uti.getPonSTag());
 
                         expectedTreatment.setVlanId(uti.getPonCTag())
                                 .setOutput(removedSub.port.number())
                                 .meter(dsBpMeterId)
-                                .writeMetadata(OltFlowServiceUtils.createMetadata(VlanId.ANY,
+                                .writeMetadata(OltFlowServiceUtils.createMetadata(uti.getPonCTag(),
                                         uti.getTechnologyProfileId(), removedSub.port.number()), 0L).build();
 
                         annotationBuilder.set(DOWNSTREAM_ONU, dsBpMeterId.toString());
