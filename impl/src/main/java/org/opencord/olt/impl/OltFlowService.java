@@ -615,6 +615,7 @@ public class OltFlowService implements OltFlowServiceInterface {
         // side is still up as nothing changed, so no need to add/remove flows, when and if the UNI comes up
         // we will re-push the EAPOL flow to require the subscriber to auth again.
         // When the subscriber is admin removed from REST or CLI we ignore the port status.
+        // Check the admin Status of the port
         if (!isPortPresent || sub.port.isEnabled() || sub.status == DiscoveredSubscriber.Status.ADMIN_REMOVED) {
 
             handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.REMOVE, si);
@@ -1836,7 +1837,7 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         VlanId innerVlan = null;
-
+        treatmentBuilder.setOutput(nniPort.number());
         if (serviceName.equals(FTTB_SERVICE_DPU_MGMT_TRAFFIC) || serviceName.equals(FTTB_SERVICE_DPU_ANCP_TRAFFIC)) {
             MacAddress mac = FttbUtils.getMacAddressFromDhcpEnabledUti(
                     hostService, si, deviceId, port);
@@ -1848,14 +1849,14 @@ public class OltFlowService implements OltFlowServiceInterface {
             }
 
             selectorBuilder.matchEthSrc(mac);
-            innerVlan = VlanId.NONE;
+
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(VlanId.NONE,
+                    uti.getTechnologyProfileId(), nniPort.number()), 0L);
 
         } else if (serviceName.equals(FTTB_SERVICE_SUBSCRIBER_TRAFFIC)) {
-            innerVlan = VlanId.ANY;
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(VlanId.ANY,
+                    uti.getTechnologyProfileId(), nniPort.number()), 0L);
         }
-
-        treatmentBuilder.setOutput(nniPort.number()).writeMetadata(OltFlowServiceUtils.createMetadata(innerVlan,
-                uti.getTechnologyProfileId(), nniPort.number()), 0L);
 
         DefaultForwardingObjective.Builder flowBuilder = createForwardingObjectiveBuilder(selectorBuilder.build(),
                 treatmentBuilder.build(), MIN_PRIORITY,
@@ -1909,15 +1910,16 @@ public class OltFlowService implements OltFlowServiceInterface {
 
             selectorBuilder.matchEthDst(mac);
             innerVlan = VlanId.NONE;
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(innerVlan,
+                    uti.getTechnologyProfileId(),
+                    port.number()), 0);
 
         } else if (serviceName.equals(FTTB_SERVICE_SUBSCRIBER_TRAFFIC)) {
-            innerVlan = VlanId.ANY;
-            selectorBuilder.matchMetadata(uti.getPonSTag().toShort());
+            selectorBuilder.matchMetadata(uti.getPonCTag().toShort());
+            treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(VlanId.ANY,
+                    uti.getTechnologyProfileId(),
+                    port.number()), 0);
         }
-
-        treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(innerVlan,
-                uti.getTechnologyProfileId(),
-                port.number()), 0);
 
         DefaultForwardingObjective.Builder flowBuilder = createForwardingObjectiveBuilder(selectorBuilder.build(),
                 treatmentBuilder.build(), MIN_PRIORITY, annotationBuilder.build());

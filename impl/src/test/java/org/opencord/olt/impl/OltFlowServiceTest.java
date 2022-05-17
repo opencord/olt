@@ -1068,6 +1068,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .setVlanPcp((byte) dpuMgmtUti.getUsPonSTagPriority())
                 .setOutput(PortNumber.CONTROLLER)
                 .meter(usBpMeterId)
+                //TODO why tests use this one and not the other method ?
                 .writeMetadata(OltFlowServiceUtils.createTechProfValueForWriteMetadata(VlanId.NONE,
                         dpuMgmtUti.getTechnologyProfileId(), usOltBpMeterId), 0L).build();
 
@@ -1438,7 +1439,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                     case FTTB_FLOW_DOWNSTREAM:
                         expectedSelectorBuilder
                                 .matchInPort(nniPort.number())
-                                .matchMetadata(uti.getPonSTag().toShort())
+                                .matchMetadata(uti.getPonCTag().toShort())
                                 .matchVlanId(uti.getPonSTag());
 
                         expectedTreatment.setVlanId(uti.getPonCTag())
@@ -1541,7 +1542,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                     case FTTB_FLOW_DOWNSTREAM:
                         expectedSelectorBuilder
                                 .matchInPort(nniPort.number())
-                                .matchMetadata(uti.getPonSTag().toShort())
+                                .matchMetadata(uti.getPonCTag().toShort())
                                 .matchVlanId(uti.getPonSTag());
 
                         expectedTreatment.setVlanId(uti.getPonCTag())
