@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "30922d91_985f0d40",
+        "filename": "impl/src/test/java/org/opencord/olt/impl/OltFlowServiceTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1071,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2022-05-24T17:12:33Z",
+      "side": 1,
+      "message": "The tests were originally copied over from the previous implementation, it\u0027s very possible that this is an artifact of that and it was never refactored.",
+      "range": {
+        "startLine": 1071,
+        "startChar": 16,
+        "endLine": 1071,
+        "endChar": 72
+      },
+      "revId": "7ef8899b7f8bb8975d21afab61eba3156045888c",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
