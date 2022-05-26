@@ -30,6 +30,7 @@ import org.onosproject.net.flow.criteria.PortCriterion;
 import org.onosproject.net.flow.criteria.UdpPortCriterion;
 import org.onosproject.net.flow.instructions.L2ModificationInstruction;
 import org.onosproject.net.meter.MeterId;
+import org.opencord.olt.OltFlowsStatus;
 import org.opencord.sadis.UniTagInformation;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -78,18 +79,18 @@ public final class OltFlowServiceUtils {
      * @param type FlowRuleEvent type
      * @return OltFlowService.OltFlowsStatus
      */
-    public static OltFlowService.OltFlowsStatus flowRuleStatusToOltFlowStatus(FlowRuleEvent.Type type) {
+    public static OltFlowsStatus flowRuleStatusToOltFlowStatus(FlowRuleEvent.Type type) {
         switch (type) {
             case RULE_ADD_REQUESTED:
-                return OltFlowService.OltFlowsStatus.PENDING_ADD;
+                return OltFlowsStatus.PENDING_ADD;
             case RULE_ADDED:
-                return OltFlowService.OltFlowsStatus.ADDED;
+                return OltFlowsStatus.ADDED;
             case RULE_REMOVE_REQUESTED:
-                return OltFlowService.OltFlowsStatus.PENDING_REMOVE;
+                return OltFlowsStatus.PENDING_REMOVE;
             case RULE_REMOVED:
-                return OltFlowService.OltFlowsStatus.REMOVED;
+                return OltFlowsStatus.REMOVED;
             default:
-                return OltFlowService.OltFlowsStatus.NONE;
+                return OltFlowsStatus.NONE;
         }
     }
 

@@ -49,6 +49,52 @@ volt-requested-subscribers (Shows subscribers programmed by the operator. Their 
 
 ```
 
+## REST API
+
+The programmed subscribers information is available through REST API.
+
+The list of programmed subscribers can be found in the endpoint "/onos/olt/oltapp/programmed-subscribers", e.g:
+```sh
+curl 'http://localhost:8181/onos/olt/oltapp/programmed-subscribers'
+```
+
+There are filters by device-id and connect point (device-id and port), e.g:
+```sh
+curl 'http://localhost:8181/onos/olt/oltapp/programmed-subscribers/of%3A00000a0a0a0a0a0a'
+curl 'http://localhost:8181/onos/olt/oltapp/programmed-subscribers/of%3A00000a0a0a0a0a0a/257'
+```
+
+These commands will generate a JSON output with a list of programmed subscribers, e.g:
+```sh
+{
+  "entries": [
+    {
+      "location": "of:00000a0a0a0a0a0a/257",
+      "tagInfo": {
+        "uniTagMatch": 0,
+        "ponCTag": 900,
+        "ponSTag": 900,
+        "usPonCTagPriority": -1,
+        "usPonSTagPriority": -1,
+        "dsPonCTagPriority": -1,
+        "dsPonSTagPriority": -1,
+        "technologyProfileId": 64,
+        "upstreamBandwidthProfile": "Default",
+        "downstreamBandwidthProfile": "Default",
+        "upstreamOltBandwidthProfile": "Default",
+        "downstreamOltBandwidthProfile": "Default",
+        "serviceName": "hsia",
+        "enableMacLearning": false,
+        "configuredMacAddress": "A4:23:05:00:00:00",
+        "isDhcpRequired": true,
+        "isIgmpRequired": false,
+        "isPppoeRequired": false
+      }
+    }
+  ]
+}
+```
+
 ## App Design
 
 The `org.opencord.olt` application internal structure reflects the following diagram:

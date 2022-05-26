@@ -36,6 +36,8 @@ import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceEvent;
 import org.onosproject.net.device.DeviceService;
 import org.onosproject.net.provider.ProviderId;
+import org.opencord.olt.DiscoveredSubscriber;
+import org.opencord.olt.FlowOperation;
 import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 import org.opencord.sadis.UniTagInformation;
@@ -143,7 +145,7 @@ public class OltDeviceListenerTest extends OltTestHelpers {
         // NNI events are straight forward, we can provision the flows directly
         assert olt.eventsQueues.isEmpty();
         verify(olt.oltFlowService, times(1))
-                .handleNniFlows(testDevice, enabledNniPort, OltFlowService.FlowOperation.ADD);
+                .handleNniFlows(testDevice, enabledNniPort, FlowOperation.ADD);
 
         Port disabledNniPort = new OltPort(testDevice, false, PortNumber.portNumber(1048576),
                 DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "nni-1").build());
@@ -153,7 +155,7 @@ public class OltDeviceListenerTest extends OltTestHelpers {
         // when the NNI goes down we ignore the event
         assert olt.eventsQueues.isEmpty();
         verify(olt.oltFlowService, never())
-                .handleNniFlows(testDevice, disabledNniPort, OltFlowService.FlowOperation.REMOVE);
+                .handleNniFlows(testDevice, disabledNniPort, FlowOperation.REMOVE);
 
         // if the NNI is removed we ignore the event
         Port removedNniPort = new OltPort(testDevice, true, PortNumber.portNumber(1048576),
@@ -163,7 +165,7 @@ public class OltDeviceListenerTest extends OltTestHelpers {
 
         assert olt.eventsQueues.isEmpty();
         verify(olt.oltFlowService, never())
-                .handleNniFlows(testDevice, removedNniPort, OltFlowService.FlowOperation.REMOVE);
+                .handleNniFlows(testDevice, removedNniPort, FlowOperation.REMOVE);
     }
 
     @Test

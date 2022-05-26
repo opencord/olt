@@ -24,8 +24,8 @@ import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.net.DeviceIdCompleter;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
-import org.opencord.olt.impl.OltFlowServiceInterface;
-import org.opencord.olt.impl.ServiceKey;
+import org.opencord.olt.OltFlowServiceInterface;
+import org.opencord.olt.ServiceKey;
 
 import java.util.Map;
 import java.util.Set;
