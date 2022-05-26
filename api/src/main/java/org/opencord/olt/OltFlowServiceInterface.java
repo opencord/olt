@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.opencord.olt.impl;
+package org.opencord.olt;
 
 import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
@@ -52,7 +52,7 @@ public interface OltFlowServiceInterface {
      * @param port the NNI port
      * @param action the operatio, ADD or REMOVE.
      */
-    void handleNniFlows(Device device, Port port, OltFlowService.FlowOperation action);
+    void handleNniFlows(Device device, Port port, FlowOperation action);
 
     /**
      * Checks if the default eapol flow is already installed.

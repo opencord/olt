@@ -38,7 +38,14 @@ import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
 import org.opencord.olt.AccessDeviceEvent;
 import org.opencord.olt.AccessDeviceListener;
+import org.opencord.olt.AccessDevicePort;
 import org.opencord.olt.AccessDeviceService;
+import org.opencord.olt.DiscoveredSubscriber;
+import org.opencord.olt.OltDeviceServiceInterface;
+import org.opencord.olt.OltFlowServiceInterface;
+import org.opencord.olt.OltMeterServiceInterface;
+import org.opencord.olt.ServiceKey;
+import org.opencord.olt.FlowOperation;
 import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SadisService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
@@ -879,7 +886,7 @@ public class Olt
 
             if (port.isEnabled()) {
                 if (isNni) {
-                    OltFlowService.FlowOperation action = OltFlowService.FlowOperation.ADD;
+                    FlowOperation action = FlowOperation.ADD;
                     // NOTE the NNI is only disabled if the OLT shuts down (reboot or failure).
                     // In that case the flows are purged anyway, so there's no need to deal with them,
                     // it would actually be counter-productive as the openflow connection is severed and they won't
