@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.opencord.olt.impl;
+package org.opencord.olt;
 
 import org.onosproject.net.meter.MeterCellId;
 import org.onosproject.net.meter.MeterId;
@@ -30,32 +30,69 @@ public class MeterData {
     private MeterState meterStatus;
     private String bandwidthProfileName;
 
+    /**
+     * Creates a MeterData for a given cellid, status and bandwidth profile.
+     *
+     * @param meterCellId       the cell id
+     * @param meterStatus       the status
+     * @param bandwidthProfile  the bandwidth profile
+     */
     public MeterData(MeterCellId meterCellId, MeterState meterStatus, String bandwidthProfile) {
         this.meterCellId = meterCellId;
         this.meterStatus = meterStatus;
         this.bandwidthProfileName = bandwidthProfile;
     }
 
+    /**
+     * Sets the meter cell id.
+     *
+     * @param meterCellId the meter cell id.
+     */
     public void setMeterCellId(MeterCellId meterCellId) {
         this.meterCellId = meterCellId;
     }
 
+    /**
+     * Sets the meter status.
+     *
+     * @param meterStatus the meter status.
+     */
     public void setMeterStatus(MeterState meterStatus) {
         this.meterStatus = meterStatus;
     }
 
+    /**
+     * Gets the meter id.
+     *
+     * @return Meter id.
+     */
     public MeterId getMeterId() {
         return (MeterId) meterCellId;
     }
 
+    /**
+     * Gets the meter cell id.
+     *
+     * @return Meter cell id.
+     */
     public MeterCellId getMeterCellId() {
         return meterCellId;
     }
 
+    /**
+     * Gets the meter status.
+     *
+     * @return Meter status.
+     */
     public MeterState getMeterStatus() {
         return meterStatus;
     }
 
+    /**
+     * Gets the bandwidth profile name.
+     *
+     * @return Bandwidth profile name.
+     */
     public String getBandwidthProfileName() {
         return bandwidthProfileName;
     }

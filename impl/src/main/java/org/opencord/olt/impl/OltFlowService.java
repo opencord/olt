@@ -64,6 +64,16 @@ import org.onosproject.net.meter.MeterId;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
+import org.opencord.olt.AccessDevicePort;
+import org.opencord.olt.DiscoveredSubscriber;
+import org.opencord.olt.OltDeviceServiceInterface;
+import org.opencord.olt.OltFlowServiceInterface;
+import org.opencord.olt.OltMeterServiceInterface;
+import org.opencord.olt.OltPortStatus;
+import org.opencord.olt.ServiceKey;
+import org.opencord.olt.OltFlowsStatus;
+import org.opencord.olt.FlowDirection;
+import org.opencord.olt.FlowOperation;
 import org.opencord.olt.impl.fttb.FttbUtils;
 import org.opencord.sadis.BandwidthProfileInformation;
 import org.opencord.sadis.BaseInformationService;
@@ -261,31 +271,6 @@ public class OltFlowService implements OltFlowServiceInterface {
     protected int defaultTechProfileId = DEFAULT_TP_ID_DEFAULT;
 
     protected boolean waitForRemoval = WAIT_FOR_REMOVAL_DEFAULT;
-
-    public enum FlowOperation {
-        ADD,
-        REMOVE;
-
-
-        @Override
-        public String toString() {
-            return super.toString().toLowerCase();
-        }
-    }
-
-    public enum FlowDirection {
-        UPSTREAM,
-        DOWNSTREAM,
-    }
-
-    public enum OltFlowsStatus {
-        NONE,
-        PENDING_ADD,
-        ADDED,
-        PENDING_REMOVE,
-        REMOVED,
-        ERROR
-    }
 
     protected InternalFlowListener internalFlowListener;
 

@@ -29,6 +29,7 @@ import org.onosproject.net.meter.MeterServiceAdapter;
 import org.onosproject.net.meter.MeterState;
 import org.onosproject.store.service.StorageServiceAdapter;
 import org.onosproject.store.service.TestStorageService;
+import org.opencord.olt.MeterData;
 import org.opencord.sadis.SadisService;
 
 import java.util.HashMap;

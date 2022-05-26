@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.opencord.olt.impl;
+package org.opencord.olt;
 
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.meter.MeterId;

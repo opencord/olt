@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.opencord.olt.impl;
+package org.opencord.olt;
 
 import java.util.Objects;
 
@@ -23,19 +23,28 @@ import java.util.Objects;
  */
 public class OltPortStatus {
     // TODO consider adding a lastUpdated field, it may help with debugging
-    public OltFlowService.OltFlowsStatus defaultEapolStatus;
-    public OltFlowService.OltFlowsStatus subscriberEapolStatus;
-    public OltFlowService.OltFlowsStatus subscriberFlowsStatus;
+    public OltFlowsStatus defaultEapolStatus;
+    public OltFlowsStatus subscriberEapolStatus;
+    public OltFlowsStatus subscriberFlowsStatus;
     // NOTE we need to keep track of the DHCP status as that is installed before the other flows
     // if macLearning is enabled (DHCP is needed to learn the MacAddress from the host)
-    public OltFlowService.OltFlowsStatus dhcpStatus;
-    public OltFlowService.OltFlowsStatus pppoeStatus;
+    public OltFlowsStatus dhcpStatus;
+    public OltFlowsStatus pppoeStatus;
 
-    public OltPortStatus(OltFlowService.OltFlowsStatus defaultEapolStatus,
-                         OltFlowService.OltFlowsStatus subscriberEapolStatus,
-                         OltFlowService.OltFlowsStatus subscriberFlowsStatus,
-                         OltFlowService.OltFlowsStatus dhcpStatus,
-                         OltFlowService.OltFlowsStatus pppoeStatus) {
+    /**
+     * Creates a OltPortStatus from a group of OltFlowsStatus.
+     *
+     * @param defaultEapolStatus     the default
+     * @param subscriberEapolStatus  the status
+     * @param subscriberFlowsStatus  the bandwidth profile
+     * @param dhcpStatus             the bandwidth profile
+     * @param pppoeStatus            the bandwidth profile
+     */
+    public OltPortStatus(OltFlowsStatus defaultEapolStatus,
+                         OltFlowsStatus subscriberEapolStatus,
+                         OltFlowsStatus subscriberFlowsStatus,
+                         OltFlowsStatus dhcpStatus,
+                         OltFlowsStatus pppoeStatus) {
         this.defaultEapolStatus = defaultEapolStatus;
         this.subscriberEapolStatus = subscriberEapolStatus;
         this.subscriberFlowsStatus = subscriberFlowsStatus;

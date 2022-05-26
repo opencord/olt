@@ -22,7 +22,7 @@ import org.onosproject.cli.net.PortNumberCompleter;
 import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.device.DeviceService;
-import org.opencord.olt.impl.OltDeviceServiceInterface;
+import org.opencord.olt.OltDeviceServiceInterface;
 
 import java.util.Collections;
 import java.util.List;

@@ -63,6 +63,11 @@ import org.onosproject.net.host.HostService;
 import org.onosproject.net.meter.MeterId;
 import org.onosproject.net.provider.ProviderId;
 import org.onosproject.store.service.TestStorageService;
+import org.opencord.olt.AccessDevicePort;
+import org.opencord.olt.DiscoveredSubscriber;
+import org.opencord.olt.OltPortStatus;
+import org.opencord.olt.ServiceKey;
+import org.opencord.olt.FlowOperation;
 import org.opencord.olt.impl.fttb.FttbUtils;
 import org.opencord.sadis.BaseInformationService;
 import org.opencord.sadis.SadisService;
@@ -88,12 +93,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.onosproject.net.AnnotationKeys.PORT_NAME;
-import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.ERROR;
-import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.NONE;
-import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.ADDED;
-import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.PENDING_ADD;
-import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.PENDING_REMOVE;
-import static org.opencord.olt.impl.OltFlowService.OltFlowsStatus.REMOVED;
+import static org.opencord.olt.OltFlowsStatus.ERROR;
+import static org.opencord.olt.OltFlowsStatus.NONE;
+import static org.opencord.olt.OltFlowsStatus.ADDED;
+import static org.opencord.olt.OltFlowsStatus.PENDING_ADD;
+import static org.opencord.olt.OltFlowsStatus.PENDING_REMOVE;
+import static org.opencord.olt.OltFlowsStatus.REMOVED;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_BP_ID_DEFAULT;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_NAME;
 import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_MCAST_SERVICE_NAME_DEFAULT;
@@ -294,7 +299,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                                       DefaultAnnotations.builder().set(PORT_NAME, "name-1").build());
 
         OltPortStatus portStatusAdded = new OltPortStatus(
-                OltFlowService.OltFlowsStatus.ADDED,
+                ADDED,
                 NONE,
                 null,
                 null,
@@ -514,7 +519,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
     @Test
     public void testHandleNniFlowsOnlyLldp() {
         component.enableDhcpOnNni = false;
-        component.handleNniFlows(testDevice, nniPort, OltFlowService.FlowOperation.ADD);
+        component.handleNniFlows(testDevice, nniPort, FlowOperation.ADD);
 
         FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
                 .permit()
@@ -535,7 +540,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
     public void testHandleNniFlowsDhcpV4() {
         component.enableDhcpOnNni = true;
         component.enableDhcpV4 = true;
-        component.handleNniFlows(testDevice, nniPort, OltFlowService.FlowOperation.ADD);
+        component.handleNniFlows(testDevice, nniPort, FlowOperation.ADD);
 
         FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
                 .permit()
@@ -561,7 +566,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
     public void testRemoveNniFlowsDhcpV4() {
         component.enableDhcpOnNni = true;
         component.enableDhcpV4 = true;
-        component.handleNniFlows(testDevice, nniPortDisabled, OltFlowService.FlowOperation.REMOVE);
+        component.handleNniFlows(testDevice, nniPortDisabled, FlowOperation.REMOVE);
 
         FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
                 .deny()
@@ -588,7 +593,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         component.enableDhcpOnNni = true;
         component.enableDhcpV4 = false;
         component.enableDhcpV6 = true;
-        component.handleNniFlows(testDevice, nniPort, OltFlowService.FlowOperation.ADD);
+        component.handleNniFlows(testDevice, nniPort, FlowOperation.ADD);
 
         FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
                 .permit()
@@ -614,7 +619,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
     public void testHandleNniFlowsIgmp() {
         component.enableDhcpOnNni = false;
         component.enableIgmpOnNni = true;
-        component.handleNniFlows(testDevice, nniPort, OltFlowService.FlowOperation.ADD);
+        component.handleNniFlows(testDevice, nniPort, FlowOperation.ADD);
 
         FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
                 .permit()
@@ -638,7 +643,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         component.enableDhcpOnNni = false;
         component.enablePppoeOnNni = true;
         component.enablePppoe = true;
-        component.handleNniFlows(testDevice, nniPort, OltFlowService.FlowOperation.ADD);
+        component.handleNniFlows(testDevice, nniPort, FlowOperation.ADD);
 
         FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
                 .permit()
@@ -662,7 +667,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         component.enableDhcpOnNni = false;
         component.enablePppoeOnNni = true;
         component.enablePppoe = true;
-        component.handleNniFlows(testDevice, nniPortDisabled, OltFlowService.FlowOperation.REMOVE);
+        component.handleNniFlows(testDevice, nniPortDisabled, FlowOperation.REMOVE);
 
         FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
                 .deny()
@@ -789,7 +794,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .add();
 
         component.handleSubscriberDhcpFlows(addedSub.device.id(), addedSub.port,
-                OltFlowService.FlowOperation.ADD, si);
+                FlowOperation.ADD, si);
         verify(component.flowObjectiveService, times(1))
                 .filter(eq(addedSub.device.id()), argThat(new FilteringObjectiveMatcher(expectedFilter)));
     }
@@ -839,7 +844,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .add();
 
         component.handleSubscriberPppoeFlows(addedSub.device.id(), addedSub.port,
-                OltFlowService.FlowOperation.ADD, si);
+                FlowOperation.ADD, si);
         verify(component.flowObjectiveService, times(1))
                 .filter(eq(addedSub.device.id()), argThat(new FilteringObjectiveMatcher(expectedFilter)));
     }
@@ -915,17 +920,17 @@ public class OltFlowServiceTest extends OltTestHelpers {
         doReturn(true).when(oltFlowService).areSubscriberFlowsPendingRemoval(any(), any(), eq(true));
         boolean res = oltFlowService.removeSubscriberFlows(sub, DEFAULT_BP_ID_DEFAULT, DEFAULT_MCAST_SERVICE_NAME);
         verify(oltFlowService, times(1))
-                .handleSubscriberDhcpFlows(deviceId, port, OltFlowService.FlowOperation.REMOVE, si);
+                .handleSubscriberDhcpFlows(deviceId, port, FlowOperation.REMOVE, si);
         verify(oltFlowService, times(1))
-                .handleSubscriberEapolFlows(sub, OltFlowService.FlowOperation.REMOVE, si);
+                .handleSubscriberEapolFlows(sub, FlowOperation.REMOVE, si);
         verify(oltFlowService, times(1))
-                .handleSubscriberDataFlows(device, port, OltFlowService.FlowOperation.REMOVE,
+                .handleSubscriberDataFlows(device, port, FlowOperation.REMOVE,
                         si, DEFAULT_MCAST_SERVICE_NAME);
         verify(oltFlowService, times(1))
-                .handleSubscriberIgmpFlows(sub, OltFlowService.FlowOperation.REMOVE);
+                .handleSubscriberIgmpFlows(sub, FlowOperation.REMOVE);
         verify(oltFlowService, never())
                 .handleEapolFlow(any(), any(), any(),
-                        eq(OltFlowService.FlowOperation.ADD), eq(VlanId.vlanId(OltFlowService.EAPOL_DEFAULT_VLAN)));
+                        eq(FlowOperation.ADD), eq(VlanId.vlanId(OltFlowService.EAPOL_DEFAULT_VLAN)));
         Assert.assertFalse(res);
 
         // then test that if the tagged EAPOL is not there we install the default EAPOL
@@ -935,7 +940,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         res = oltFlowService.removeSubscriberFlows(sub, DEFAULT_BP_ID_DEFAULT, DEFAULT_MCAST_SERVICE_NAME);
         verify(oltFlowService, times(1))
                 .handleEapolFlow(any(), any(), any(),
-                        eq(OltFlowService.FlowOperation.ADD), eq(VlanId.vlanId(OltFlowService.EAPOL_DEFAULT_VLAN)));
+                        eq(FlowOperation.ADD), eq(VlanId.vlanId(OltFlowService.EAPOL_DEFAULT_VLAN)));
         Assert.assertTrue(res);
     }
 
@@ -1011,7 +1016,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
         when(component.sadisService.getSubscriberInfoService().get(testDevice.serialNumber())).
                 thenReturn(testOltFttbSadis);
 
-        component.handleNniFlows(testDevice, nniPort, OltFlowService.FlowOperation.ADD);
+        component.handleNniFlows(testDevice, nniPort, FlowOperation.ADD);
 
         FilteringObjective expectedFilter = DefaultFilteringObjective.builder()
                 .permit()
@@ -1087,7 +1092,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .add();
 
         component.handleSubscriberDhcpFlows(addedSub.device.id(), addedSub.port,
-                OltFlowService.FlowOperation.ADD, si);
+                FlowOperation.ADD, si);
         verify(component.flowObjectiveService, times(1))
                 .filter(eq(addedSub.device.id()), argThat(new FilteringObjectiveMatcher(expectedFilter)));
     }
@@ -1144,7 +1149,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                 .add();
 
         component.handleSubscriberDhcpFlows(removedSub.device.id(), removedSub.port,
-                OltFlowService.FlowOperation.REMOVE, si);
+                FlowOperation.REMOVE, si);
         verify(component.flowObjectiveService, times(1))
                 .filter(eq(removedSub.device.id()), argThat(new FilteringObjectiveMatcher(expectedFilter)));
     }
@@ -1251,7 +1256,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                         .add();
 
                 component.handleSubscriberDataFlows(addedSub.device, addedSub.port,
-                        OltFlowService.FlowOperation.ADD, si, DEFAULT_MCAST_SERVICE_NAME_DEFAULT);
+                        FlowOperation.ADD, si, DEFAULT_MCAST_SERVICE_NAME_DEFAULT);
                 verify(component.flowObjectiveService, times(1))
                         .forward(eq(addedSub.device.id()), eq(expected));
             }
@@ -1371,7 +1376,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                         .remove();
 
                 component.handleSubscriberDataFlows(removedSub.device, removedSub.port,
-                        OltFlowService.FlowOperation.REMOVE, si, DEFAULT_MCAST_SERVICE_NAME_DEFAULT);
+                        FlowOperation.REMOVE, si, DEFAULT_MCAST_SERVICE_NAME_DEFAULT);
                 verify(component.flowObjectiveService, times(1))
                         .forward(eq(removedSub.device.id()), eq(expected));
             }
@@ -1467,7 +1472,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                         .add();
 
                 component.handleSubscriberDataFlows(addedSub.device, addedSub.port,
-                        OltFlowService.FlowOperation.ADD, si, DEFAULT_MCAST_SERVICE_NAME_DEFAULT);
+                        FlowOperation.ADD, si, DEFAULT_MCAST_SERVICE_NAME_DEFAULT);
                 verify(component.flowObjectiveService, times(1))
                         .forward(eq(addedSub.device.id()), eq(expected));
             }
@@ -1570,7 +1575,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                         .remove();
 
                 component.handleSubscriberDataFlows(removedSub.device, removedSub.port,
-                        OltFlowService.FlowOperation.REMOVE, si, DEFAULT_MCAST_SERVICE_NAME_DEFAULT);
+                        FlowOperation.REMOVE, si, DEFAULT_MCAST_SERVICE_NAME_DEFAULT);
                 verify(component.flowObjectiveService, times(1))
                         .forward(eq(removedSub.device.id()), eq(expected));
             }

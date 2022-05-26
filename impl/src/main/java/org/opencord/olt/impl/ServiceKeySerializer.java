@@ -23,6 +23,8 @@ import com.esotericsoftware.kryo.Serializer;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
+import org.opencord.olt.AccessDevicePort;
+import org.opencord.olt.ServiceKey;
 import org.opencord.sadis.UniTagInformation;
 
 /**

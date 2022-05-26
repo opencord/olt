@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package org.opencord.olt.impl;
+package org.opencord.olt;
 
+import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.Device;
 import org.onosproject.net.Port;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 
 import java.util.Objects;
-
-import static org.opencord.olt.impl.OltUtils.portWithName;
 
 /**
  * Contains a subscriber's information and status for a specific device and port.
@@ -69,7 +68,7 @@ public class DiscoveredSubscriber {
      * @return the port name.
      */
     public String portName() {
-        return OltUtils.getPortName(port);
+        return getPortName(port);
     }
 
     @Override
@@ -99,5 +98,15 @@ public class DiscoveredSubscriber {
     @Override
     public int hashCode() {
         return Objects.hash(port, device, status, hasSubscriber, subscriberAndDeviceInformation);
+    }
+
+    private String portWithName(Port port) {
+        return port.element().id().toString() + '/' +
+                port.number() + '[' +
+                getPortName(port) + ']';
+    }
+    private String getPortName(Port port) {
+        String name = port.annotations().value(AnnotationKeys.PORT_NAME);
+        return name == null ? "" : name;
     }
 }

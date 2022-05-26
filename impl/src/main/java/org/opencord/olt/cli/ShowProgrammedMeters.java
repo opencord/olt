@@ -20,8 +20,8 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.DeviceId;
-import org.opencord.olt.impl.MeterData;
-import org.opencord.olt.impl.OltMeterServiceInterface;
+import org.opencord.olt.MeterData;
+import org.opencord.olt.OltMeterServiceInterface;
 
 import java.util.Map;
 /**

@@ -15,14 +15,19 @@
  */
 package org.opencord.olt.rest;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.onlab.packet.VlanId;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
 import org.onosproject.rest.AbstractWebResource;
 import org.opencord.olt.AccessDeviceService;
-import org.slf4j.Logger;
+import org.opencord.olt.OltFlowServiceInterface;
+import org.opencord.olt.ServiceKey;
+import org.opencord.sadis.UniTagInformation;
 
+import org.slf4j.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -33,7 +38,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -44,8 +52,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Path("oltapp")
 public class OltWebResource extends AbstractWebResource {
+    private final ObjectNode root = mapper().createObjectNode();
+    private final ArrayNode node = root.putArray("entries");
     private final Logger log = getLogger(getClass());
-
+    private static final String LOCATION = "location";
+    private static final String TAG_INFO = "tagInfo";
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -230,5 +241,80 @@ public class OltWebResource extends AbstractWebResource {
             return ok("").build();
         }
         return Response.noContent().build();
+    }
+
+    /**
+     * Gets subscribers programmed in the dataplane.
+     *
+     * @return 200 OK
+     */
+    @GET
+    @Path("programmed-subscribers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getProgrammedSubscribers() {
+        return getProgrammedSubscribers(null, null);
+    }
+
+    /**
+     * Gets subscribers programmed in the dataplane.
+     *
+     * @param deviceId  device-id to filter the results.
+     *
+     * @return 200 OK
+     */
+    @GET
+    @Path("programmed-subscribers/{deviceId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getProgrammedSubscribersByDeviceId(@PathParam("deviceId") String deviceId) {
+        return getProgrammedSubscribers(deviceId, null);
+    }
+
+    /*
+     * Gets subscribers programmed in the dataplane.
+     *
+     * @param deviceId  device-id to filter the results.
+     * @param port      port to filter the results.
+     *
+     * @return 200 OK
+     */
+    @GET
+    @Path("programmed-subscribers/{deviceId}/{port}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getProgrammedSubscribersByConnectPoint(@PathParam("deviceId") String deviceId,
+                                                           @PathParam("port") String port) {
+        return getProgrammedSubscribers(deviceId, port);
+    }
+
+    private Response getProgrammedSubscribers(String deviceId, String port) {
+        OltFlowServiceInterface service = get(OltFlowServiceInterface.class);
+        Map<ServiceKey, UniTagInformation> info = service.getProgrammedSubscribers();
+        Set<Map.Entry<ServiceKey, UniTagInformation>> entries = info.entrySet();
+        if (deviceId != null && !deviceId.isEmpty()) {
+            entries = entries.stream().filter(entry -> entry.getKey().getPort().connectPoint().deviceId()
+                    .equals(DeviceId.deviceId(deviceId))).collect(Collectors.toSet());
+        }
+
+        if (port != null && !port.isEmpty()) {
+            PortNumber portNumber = PortNumber.portNumber(port);
+            entries = entries.stream().filter(entry -> entry.getKey().getPort().connectPoint().port()
+                    .equals(portNumber)).collect(Collectors.toSet());
+        }
+
+        try {
+            entries.forEach(entry -> {
+                ConnectPoint location = entry.getKey().getPort().connectPoint();
+                UniTagInformation tagInfo = entry.getValue();
+                ObjectNode encodedTagInfo = codec(UniTagInformation.class).encode(tagInfo, this);
+                ObjectNode encodedEntry = mapper().createObjectNode();
+                encodedEntry.put(LOCATION, location.toString())
+                        .set(TAG_INFO, encodedTagInfo);
+                node.add(encodedEntry);
+            });
+
+            return ok(mapper().writeValueAsString(root)).build();
+        } catch (Exception e) {
+            log.error("Error while fetching programmed subscriber list through REST API: {}", e.getMessage());
+            return Response.status(INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

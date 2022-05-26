@@ -25,9 +25,9 @@ import org.onosproject.cli.net.DeviceIdCompleter;
 import org.onosproject.cli.net.PortNumberCompleter;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
-import org.opencord.olt.impl.OltFlowServiceInterface;
-import org.opencord.olt.impl.OltPortStatus;
-import org.opencord.olt.impl.ServiceKey;
+import org.opencord.olt.OltFlowServiceInterface;
+import org.opencord.olt.OltPortStatus;
+import org.opencord.olt.ServiceKey;
 import org.opencord.sadis.UniTagInformation;
 
 import java.util.HashMap;

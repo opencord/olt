@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencord.olt.impl;
+package org.opencord.olt;
 
+import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.Port;
 
@@ -35,7 +36,7 @@ public class AccessDevicePort {
      */
     public AccessDevicePort(Port port) {
         this.cp = ConnectPoint.deviceConnectPoint(port.element().id() + "/" + port.number().toLong());
-        this.name = OltUtils.getPortName(port);
+        this.name = getPortName(port);
     }
 
     /**
@@ -88,5 +89,10 @@ public class AccessDevicePort {
     @Override
     public int hashCode() {
         return Objects.hash(cp, name);
+    }
+
+    private String getPortName(Port port) {
+        String name = port.annotations().value(AnnotationKeys.PORT_NAME);
+        return name == null ? "" : name;
     }
 }

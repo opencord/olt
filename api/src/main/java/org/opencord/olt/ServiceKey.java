@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.opencord.olt.impl;
+package org.opencord.olt;
 
 import org.opencord.sadis.UniTagInformation;
 
@@ -26,6 +26,7 @@ import java.util.Objects;
 public class ServiceKey {
     private AccessDevicePort port;
     private UniTagInformation service;
+
 
     public ServiceKey(AccessDevicePort port, UniTagInformation service) {
         this.port = port;
