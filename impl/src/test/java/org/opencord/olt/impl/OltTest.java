@@ -39,6 +39,7 @@ import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceService;
 import org.onosproject.net.provider.ProviderId;
 import org.onosproject.store.service.TestStorageService;
+import org.opencord.olt.DiscoveredSubscriber;
 import org.opencord.sadis.SadisService;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 import org.opencord.sadis.UniTagInformation;

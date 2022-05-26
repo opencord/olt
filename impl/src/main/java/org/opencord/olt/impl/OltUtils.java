@@ -19,15 +19,14 @@ package org.opencord.olt.impl;
 import org.onlab.packet.VlanId;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.Port;
+import org.opencord.olt.FlowOperation;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 import org.opencord.sadis.UniTagInformation;
-
-import static org.opencord.olt.impl.OltFlowService.FlowOperation.ADD;
 
 /**
  * Utility class for OLT app.
  */
-final class OltUtils {
+public final class OltUtils {
 
     private OltUtils() {
     }
@@ -37,7 +36,7 @@ final class OltUtils {
      * @param port the port
      * @return the annotated port name
      */
-    static String getPortName(Port port) {
+    public static String getPortName(Port port) {
         String name = port.annotations().value(AnnotationKeys.PORT_NAME);
         return name == null ? "" : name;
     }
@@ -47,18 +46,18 @@ final class OltUtils {
      * @param port the port
      * @return the formatted string
      */
-    static String portWithName(Port port) {
+    public static String portWithName(Port port) {
         return port.element().id().toString() + '/' +
                 port.number() + '[' +
                 getPortName(port) + ']';
     }
 
-    static String flowOpToString(OltFlowService.FlowOperation op) {
-        return op == ADD ? "Adding" : "Removing";
+    public static String flowOpToString(FlowOperation op) {
+        return op == FlowOperation.ADD ? "Adding" : "Removing";
     }
 
-    static String completeFlowOpToString(OltFlowService.FlowOperation op) {
-        return op == ADD ? "Added" : "Removed";
+    public static String completeFlowOpToString(FlowOperation op) {
+        return op == FlowOperation.ADD ? "Added" : "Removed";
     }
 
     /**
@@ -72,7 +71,7 @@ final class OltUtils {
      * @param tpId          Techprofile Id
      * @return UniTagInformation
      */
-    static UniTagInformation getUniTagInformation(SubscriberAndDeviceInformation subInfo, VlanId innerVlan,
+    public static UniTagInformation getUniTagInformation(SubscriberAndDeviceInformation subInfo, VlanId innerVlan,
                                                   VlanId outerVlan, int tpId) {
         UniTagInformation service = null;
         for (UniTagInformation tagInfo : subInfo.uniTagList()) {

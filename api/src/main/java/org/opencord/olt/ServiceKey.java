@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.opencord.olt.impl;
+package org.opencord.olt;
 
 import org.opencord.sadis.UniTagInformation;
 
