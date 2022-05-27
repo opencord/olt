@@ -98,6 +98,24 @@
       "parentUuid": "02ccb4bc_72969ebc",
       "revId": "cb1db0219f05e440fcf59c36e579cf65c4c88b14",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b735ae7_e9a7af4c",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 782,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2022-05-27T13:07:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f85300ec_b62bcdac",
+      "revId": "cb1db0219f05e440fcf59c36e579cf65c4c88b14",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
