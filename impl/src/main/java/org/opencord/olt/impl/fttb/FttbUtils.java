@@ -31,6 +31,7 @@ import org.opencord.sadis.UniTagInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -158,24 +159,36 @@ public final class FttbUtils {
     /**
      * Returns mac address from the Dhcp Enabled UniTagInformation for a FTTB service.
      *
-     * @param hostService   Service for interacting with the inventory of end-station hosts
-     * @param si            Information about a subscriber
-     * @param deviceId      Device id for mac lookup.
-     * @param port          Uni port on the device for mac lookup.
+     * @param hostService    Service for interacting with the inventory of end-station hosts
+     * @param si             Information about a subscriber
+     * @param deviceId       Device id for mac lookup.
+     * @param port           Uni port on the device for mac lookup.
+     * @param localAddresses Map of the addresses that this app has locally
      * @return Mac address of the subscriber.
      */
     public static MacAddress getMacAddressFromDhcpEnabledUti(HostService hostService,
                                                              SubscriberAndDeviceInformation si,
                                                              DeviceId deviceId,
-                                                             Port port) {
+                                                             Port port,
+                                                             Map<ConnectPoint, MacAddress> localAddresses) {
         for (UniTagInformation uniTagInfo : si.uniTagList()) {
             boolean isMacLearningEnabled = uniTagInfo.getEnableMacLearning();
             if (isMacLearningEnabled) {
-                Optional<Host> optHost = hostService.getConnectedHosts(new ConnectPoint(deviceId, port.number()))
+                ConnectPoint cp = new ConnectPoint(deviceId, port.number());
+                Optional<Host> optHost = hostService.getConnectedHosts(cp)
                         .stream().filter(host -> host.vlan().equals(uniTagInfo.getPonSTag())).findFirst();
                 if (optHost.isPresent()) {
-                    if (optHost.get().mac() != null) {
-                        return optHost.get().mac();
+                    MacAddress learntMac = optHost.get().mac();
+                    if (learntMac != null) {
+                        localAddresses.put(cp, learntMac);
+                        log.info("Stored mac {} locally for connectPoint {}", learntMac, cp);
+                        return learntMac;
+                    }
+                } else {
+                    MacAddress localMac = localAddresses.get(new ConnectPoint(deviceId, port.number()));
+                    if (localMac != null) {
+                        log.debug("Returning local mac {} for connectPoint {}", localMac, cp);
+                        return localMac;
                     }
                 }
             } else if (uniTagInfo.getConfiguredMacAddress() != null &&

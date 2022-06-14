@@ -231,6 +231,13 @@ public class OltFlowService implements OltFlowServiceInterface {
     private final Lock provisionedSubscribersReadLock = provisionedSubscribersLock.readLock();
 
     /**
+     * For storing the mapping of ConnectPoints to FTTB DPU MAC addresses.
+     */
+    protected Map<ConnectPoint, MacAddress> fttbMacAddresses;
+    private final ReentrantReadWriteLock fttbMacAddressesLock = new ReentrantReadWriteLock();
+    private final Lock fttbMacAddressesWriteLock = fttbMacAddressesLock.writeLock();
+
+    /**
      * Create DHCP trap flow on NNI port(s).
      */
     protected boolean enableDhcpOnNni = ENABLE_DHCP_ON_NNI_DEFAULT;
@@ -303,6 +310,18 @@ public class OltFlowService implements OltFlowServiceInterface {
                 .withName("volt-provisioned-subscriber")
                 .withApplicationId(appId)
                 .withSerializer(Serializer.using(serializer))
+                .build().asJavaMap();
+
+        KryoNamespace fttbMacSerializer = KryoNamespace.newBuilder()
+                .register(KryoNamespaces.API)
+                .register(ConnectPoint.class)
+                .register(MacAddress.class)
+                .build();
+
+        fttbMacAddresses = storageService.<ConnectPoint, MacAddress>consistentMapBuilder()
+                .withName("fttb-mac-addresses")
+                .withApplicationId(appId)
+                .withSerializer(Serializer.using(fttbMacSerializer))
                 .build().asJavaMap();
 
         flowRuleService.addListener(internalFlowListener);
@@ -1824,8 +1843,10 @@ public class OltFlowService implements OltFlowServiceInterface {
         VlanId innerVlan = null;
         treatmentBuilder.setOutput(nniPort.number());
         if (serviceName.equals(FTTB_SERVICE_DPU_MGMT_TRAFFIC) || serviceName.equals(FTTB_SERVICE_DPU_ANCP_TRAFFIC)) {
+            fttbMacAddressesWriteLock.lock();
             MacAddress mac = FttbUtils.getMacAddressFromDhcpEnabledUti(
-                    hostService, si, deviceId, port);
+                    hostService, si, deviceId, port, fttbMacAddresses);
+            fttbMacAddressesWriteLock.unlock();
 
             if (mac == null) {
                 log.error("Mac address not found port:{}, vlan:{}, service:{}",
@@ -1884,8 +1905,10 @@ public class OltFlowService implements OltFlowServiceInterface {
         VlanId innerVlan = null;
 
         if (serviceName.equals(FTTB_SERVICE_DPU_MGMT_TRAFFIC) || serviceName.equals(FTTB_SERVICE_DPU_ANCP_TRAFFIC)) {
+            fttbMacAddressesWriteLock.lock();
             MacAddress mac = FttbUtils.getMacAddressFromDhcpEnabledUti(
-                    hostService, si, deviceId, port);
+                    hostService, si, deviceId, port, fttbMacAddresses);
+            fttbMacAddressesWriteLock.unlock();
 
             if (mac == null) {
                 log.error("Mac address not found port:{}, vlan:{}, service:{}",
