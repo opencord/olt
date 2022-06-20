@@ -1444,7 +1444,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                     case FTTB_FLOW_DOWNSTREAM:
                         expectedSelectorBuilder
                                 .matchInPort(nniPort.number())
-                                .matchMetadata(uti.getPonCTag().toShort())
+                                .matchMetadata(uti.getPonSTag().toShort())
                                 .matchVlanId(uti.getPonSTag());
 
                         expectedTreatment.setVlanId(uti.getPonCTag())
@@ -1547,7 +1547,7 @@ public class OltFlowServiceTest extends OltTestHelpers {
                     case FTTB_FLOW_DOWNSTREAM:
                         expectedSelectorBuilder
                                 .matchInPort(nniPort.number())
-                                .matchMetadata(uti.getPonCTag().toShort())
+                                .matchMetadata(uti.getPonSTag().toShort())
                                 .matchVlanId(uti.getPonSTag());
 
                         expectedTreatment.setVlanId(uti.getPonCTag())

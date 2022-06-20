@@ -1923,7 +1923,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                     port.number()), 0);
 
         } else if (serviceName.equals(FTTB_SERVICE_SUBSCRIBER_TRAFFIC)) {
-            selectorBuilder.matchMetadata(uti.getPonCTag().toShort());
+            selectorBuilder.matchMetadata(uti.getPonSTag().toShort());
             treatmentBuilder.writeMetadata(OltFlowServiceUtils.createMetadata(VlanId.ANY,
                     uti.getTechnologyProfileId(),
                     port.number()), 0);
