@@ -111,34 +111,13 @@ import static org.opencord.olt.impl.OltUtils.completeFlowOpToString;
 import static org.opencord.olt.impl.OltUtils.flowOpToString;
 import static org.opencord.olt.impl.OltUtils.getPortName;
 import static org.opencord.olt.impl.OltUtils.portWithName;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_TP_ID;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DEFAULT_TP_ID_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DOWNSTREAM_OLT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.DOWNSTREAM_ONU;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_DHCP_ON_NNI;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_DHCP_ON_NNI_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_DHCP_V4;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_DHCP_V4_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_DHCP_V6;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_DHCP_V6_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_EAPOL;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_EAPOL_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_IGMP_ON_NNI;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_IGMP_ON_NNI_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_PPPOE_ON_NNI;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_PPPOE_ON_NNI_DEFAULT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_PPPOE;
-import static org.opencord.olt.impl.OsgiPropertyConstants.ENABLE_PPPOE_DEFAULT;
+import static org.opencord.olt.impl.OsgiPropertyConstants.*;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DIRECTION;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DOWNSTREAM;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_UPSTREAM;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_SERVICE_DPU_ANCP_TRAFFIC;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_SERVICE_DPU_MGMT_TRAFFIC;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_SERVICE_NAME;
-import static org.opencord.olt.impl.OsgiPropertyConstants.UPSTREAM_OLT;
-import static org.opencord.olt.impl.OsgiPropertyConstants.UPSTREAM_ONU;
-import static org.opencord.olt.impl.OsgiPropertyConstants.WAIT_FOR_REMOVAL;
-import static org.opencord.olt.impl.OsgiPropertyConstants.WAIT_FOR_REMOVAL_DEFAULT;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_SERVICE_SUBSCRIBER_TRAFFIC;
 
 @Component(immediate = true, property = {
@@ -151,7 +130,8 @@ import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_SERVICE_SUBSCRIBER_TRAFF
         ENABLE_PPPOE + ":Boolean=" + ENABLE_PPPOE_DEFAULT,
         DEFAULT_TP_ID + ":Integer=" + DEFAULT_TP_ID_DEFAULT,
         // FIXME remove this option as potentially dangerous in production
-        WAIT_FOR_REMOVAL + ":Boolean=" + WAIT_FOR_REMOVAL_DEFAULT
+        WAIT_FOR_REMOVAL + ":Boolean=" + WAIT_FOR_REMOVAL_DEFAULT,
+        REMOVE_FLOWS_ON_DISABLE + ":Boolean=" + REMOVE_FLOWS_ON_DISABLE_DEFAULT
 })
 public class OltFlowService implements OltFlowServiceInterface {
 
@@ -278,6 +258,11 @@ public class OltFlowService implements OltFlowServiceInterface {
     protected int defaultTechProfileId = DEFAULT_TP_ID_DEFAULT;
 
     protected boolean waitForRemoval = WAIT_FOR_REMOVAL_DEFAULT;
+
+    /**
+     * Removes all the flows on an ONU disable.
+     **/
+    protected boolean removeFlowsOnDisable = REMOVE_FLOWS_ON_DISABLE_DEFAULT;
 
     protected InternalFlowListener internalFlowListener;
 
@@ -620,7 +605,8 @@ public class OltFlowService implements OltFlowServiceInterface {
         // we will re-push the EAPOL flow to require the subscriber to auth again.
         // When the subscriber is admin removed from REST or CLI we ignore the port status.
         // Check the admin Status of the port
-        if (!isPortPresent || sub.port.isEnabled() || sub.status == DiscoveredSubscriber.Status.ADMIN_REMOVED) {
+        if ((!isPortPresent || sub.port.isEnabled() || sub.status == DiscoveredSubscriber.Status.ADMIN_REMOVED)
+                || removeFlowsOnDisable) {
 
             handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.REMOVE, si);
 
