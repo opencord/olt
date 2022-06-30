@@ -111,6 +111,7 @@ import static org.opencord.olt.impl.OltUtils.completeFlowOpToString;
 import static org.opencord.olt.impl.OltUtils.flowOpToString;
 import static org.opencord.olt.impl.OltUtils.getPortName;
 import static org.opencord.olt.impl.OltUtils.portWithName;
+import static org.opencord.olt.impl.OltUtils.getProgrammedSubscriber;
 import static org.opencord.olt.impl.OsgiPropertyConstants.*;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DIRECTION;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DOWNSTREAM;
@@ -270,7 +271,7 @@ public class OltFlowService implements OltFlowServiceInterface {
     public void activate(ComponentContext context) {
         cfgService.registerProperties(getClass());
         appId = coreService.registerApplication(APP_NAME);
-        internalFlowListener = new InternalFlowListener();
+        internalFlowListener = new InternalFlowListener(this);
 
         modified(context);
 
@@ -586,6 +587,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                     portWithName(sub.port));
         }
         SubscriberAndDeviceInformation si = sub.subscriberAndDeviceInformation;
+
         //If the port has been removed the device service will return null, while it will be true if it's just disabled
         boolean isPortPresent = deviceService.getPort(new ConnectPoint(sub.device.id(), sub.port.number())) != null;
         if (log.isTraceEnabled()) {
@@ -1599,6 +1601,13 @@ public class OltFlowService implements OltFlowServiceInterface {
     }
 
     protected class InternalFlowListener implements FlowRuleListener {
+
+        private OltFlowServiceInterface oltFlowService;
+
+        public InternalFlowListener(OltFlowServiceInterface oltFlowService) {
+            this.oltFlowService = oltFlowService;
+        }
+
         @Override
         public void event(FlowRuleEvent event) {
             if (appId.id() != (event.subject().appId())) {
@@ -1726,7 +1735,11 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         private ServiceKey getSubscriberKeyFromFlowRule(FlowRule flowRule, Port flowPort) {
-            SubscriberAndDeviceInformation si = subsService.get(getPortName(flowPort));
+            AccessDevicePort accessDevicePort = new AccessDevicePort(flowPort);
+            SubscriberAndDeviceInformation si = getProgrammedSubscriber(oltFlowService, accessDevicePort);
+            if (si == null) {
+                si = subsService.get(getPortName(flowPort));
+            }
 
             Boolean isNni = oltDeviceService.isNniPort(deviceService.getDevice(flowRule.deviceId()), flowPort.number());
             if (si == null && !isNni) {
