@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ede29514_9b3d4b4d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2022-06-30T01:34:46Z",
+      "side": 1,
+      "message": "I haven\u0027t had time to fully test this fix, but the issue is that `OltFlowService.getSubscriberKeyFromFlowRule` was not checking in the programmedSuscribers to match the removed Subscriber flow, so the operation never completed and the default EAPOL couldn\u0027t be installed.\n\nI changed `OltFlowService.getProgrammedSubscribers` to return also the subscriber that are in pending remove, and this should fix it, but as said haven\u0027t had time to fully test it.\n\nIf you have a chance to test it that would be greatly appreciated",
+      "revId": "7e933022140fa347c27ccdfbbfc3d3bebe097dc0",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
