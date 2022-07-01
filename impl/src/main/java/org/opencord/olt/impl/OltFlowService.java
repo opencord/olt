@@ -369,11 +369,16 @@ public class OltFlowService implements OltFlowServiceInterface {
         String tpId = get(properties, DEFAULT_TP_ID);
         defaultTechProfileId = isNullOrEmpty(tpId) ? DEFAULT_TP_ID_DEFAULT : Integer.parseInt(tpId.trim());
 
+        Boolean removeOnDisable = Tools.isPropertyEnabled(properties, REMOVE_FLOWS_ON_DISABLE);
+        if (removeOnDisable != null) {
+            removeFlowsOnDisable = removeOnDisable;
+        }
+
         log.info("Modified. Values = enableDhcpOnNni: {}, enableDhcpV4: {}, " + "enableDhcpV6:{}, " +
-                        "enableIgmpOnNni:{}, " + "enableEapol:{}, enablePppoeOnNni: {}, enablePppoe:{}, " +
-                        "defaultTechProfileId:{}," + "waitForRemoval:{}",
+                        "enableIgmpOnNni:{}, enableEapol:{}, enablePppoeOnNni: {}, enablePppoe:{}, " +
+                        "defaultTechProfileId:{}, waitForRemoval:{}, removeFlowsOnDisable:{}",
                 enableDhcpOnNni, enableDhcpV4, enableDhcpV6, enableIgmpOnNni, enableEapol,
-                enablePppoeOnNni, enablePppoe, defaultTechProfileId, waitForRemoval);
+                enablePppoeOnNni, enablePppoe, defaultTechProfileId, waitForRemoval, removeOnDisable);
     }
 
     @Override
