@@ -111,6 +111,7 @@ import static org.opencord.olt.impl.OltUtils.completeFlowOpToString;
 import static org.opencord.olt.impl.OltUtils.flowOpToString;
 import static org.opencord.olt.impl.OltUtils.getPortName;
 import static org.opencord.olt.impl.OltUtils.portWithName;
+import static org.opencord.olt.impl.OltUtils.getProgrammedSubscriber;
 import static org.opencord.olt.impl.OsgiPropertyConstants.*;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DIRECTION;
 import static org.opencord.olt.impl.fttb.FttbUtils.FTTB_FLOW_DOWNSTREAM;
@@ -270,7 +271,7 @@ public class OltFlowService implements OltFlowServiceInterface {
     public void activate(ComponentContext context) {
         cfgService.registerProperties(getClass());
         appId = coreService.registerApplication(APP_NAME);
-        internalFlowListener = new InternalFlowListener();
+        internalFlowListener = new InternalFlowListener(this);
 
         modified(context);
 
@@ -401,16 +402,13 @@ public class OltFlowService implements OltFlowServiceInterface {
             cpStatusReadLock.lock();
 
             cpStatus.forEach((sk, status) -> {
-                if (
-                    // not NNI Port
-                        !oltDeviceService.isNniPort(deviceService.getDevice(sk.getPort().connectPoint().deviceId()),
-                                sk.getPort().connectPoint().port()) &&
-                                // not EAPOL flow
-                                !sk.getService().equals(defaultEapolUniTag) &&
-                                !status.subscriberFlowsStatus.equals(OltFlowsStatus.PENDING_REMOVE)
-                                && !status.subscriberFlowsStatus.equals(OltFlowsStatus.REMOVED)
-
-                ) {
+                ConnectPoint cp = sk.getPort().connectPoint();
+                Device device = deviceService.getDevice(cp.deviceId());
+                boolean notNni = !oltDeviceService.isNniPort(device, cp.port());
+                boolean notEapol = !sk.getService().equals(defaultEapolUniTag);
+                boolean hasHsia = status.subscriberFlowsStatus.hasFlow();
+                boolean hasDhcp = status.dhcpStatus.hasFlow();
+                if (notNni && notEapol && (hasHsia || hasDhcp)) {
                     subscribers.put(sk, sk.getService());
                 }
             });
@@ -1601,6 +1599,13 @@ public class OltFlowService implements OltFlowServiceInterface {
     }
 
     protected class InternalFlowListener implements FlowRuleListener {
+
+        private OltFlowServiceInterface oltFlowService;
+
+        public InternalFlowListener(OltFlowServiceInterface oltFlowService) {
+            this.oltFlowService = oltFlowService;
+        }
+
         @Override
         public void event(FlowRuleEvent event) {
             if (appId.id() != (event.subject().appId())) {
@@ -1728,7 +1733,12 @@ public class OltFlowService implements OltFlowServiceInterface {
         }
 
         private ServiceKey getSubscriberKeyFromFlowRule(FlowRule flowRule, Port flowPort) {
-            SubscriberAndDeviceInformation si = subsService.get(getPortName(flowPort));
+            AccessDevicePort accessDevicePort = new AccessDevicePort(flowPort);
+            SubscriberAndDeviceInformation si = getProgrammedSubscriber(oltFlowService, accessDevicePort);
+            if (si == null) {
+                log.debug("si not found in programmedSubscribers, getting it from sadis.");
+                si = subsService.get(getPortName(flowPort));
+            }
 
             Boolean isNni = oltDeviceService.isNniPort(deviceService.getDevice(flowRule.deviceId()), flowPort.number());
             if (si == null && !isNni) {

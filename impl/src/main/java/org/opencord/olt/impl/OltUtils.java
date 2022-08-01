@@ -19,9 +19,16 @@ package org.opencord.olt.impl;
 import org.onlab.packet.VlanId;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.Port;
+import org.opencord.olt.AccessDevicePort;
 import org.opencord.olt.FlowOperation;
+import org.opencord.olt.OltFlowServiceInterface;
+import org.opencord.olt.ServiceKey;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 import org.opencord.sadis.UniTagInformation;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for OLT app.
@@ -82,5 +89,22 @@ public final class OltUtils {
             }
         }
         return service;
+    }
+
+    public static SubscriberAndDeviceInformation getProgrammedSubscriber(
+            OltFlowServiceInterface service, AccessDevicePort accessDevicePort) {
+        List<Map.Entry<ServiceKey, UniTagInformation>> entries =
+                service.getProgrammedSubscribers().entrySet().stream()
+                        .filter(entry -> entry.getKey().getPort().equals(accessDevicePort))
+                        .collect(Collectors.toList());
+        if (!entries.isEmpty()) {
+            List<UniTagInformation> programmedList = entries.stream()
+                    .map(entry -> entry.getKey().getService())
+                    .collect(Collectors.toList());
+            SubscriberAndDeviceInformation si = new SubscriberAndDeviceInformation();
+            si.setUniTagList(programmedList);
+            return si;
+        }
+        return null;
     }
 }

@@ -68,6 +68,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -85,6 +86,7 @@ import static org.onlab.util.Tools.get;
 import static org.onlab.util.Tools.groupedThreads;
 import static org.opencord.olt.impl.OltUtils.getPortName;
 import static org.opencord.olt.impl.OltUtils.portWithName;
+import static org.opencord.olt.impl.OltUtils.getProgrammedSubscriber;
 import static org.opencord.olt.impl.OsgiPropertyConstants.*;
 
 /**
@@ -374,14 +376,20 @@ public class Olt
                 return false;
             }
 
-            SubscriberAndDeviceInformation si = subsService.get(getPortName(port));
+            //First check if the subscriber is in the programmed subscriber map, if not fallback to sadis
+            SubscriberAndDeviceInformation si = getProgrammedSubscriber(oltFlowService, accessDevicePort);
             if (si == null) {
-                log.error("Subscriber information not found in sadis for port {}",
+                si = subsService.get(getPortName(port));
+            }
+            // if it's still null we can't proceed
+            if (si == null) {
+                log.error("Subscriber information not found in programmed subscribers or sadis for port {}",
                         accessDevicePort);
                 // NOTE that we are returning true so that the subscriber is removed from the queue
                 // and we can move on provisioning others
                 return false;
             }
+
             DiscoveredSubscriber sub = new DiscoveredSubscriber(device, port,
                     DiscoveredSubscriber.Status.ADMIN_REMOVED, true, si);
 
@@ -413,7 +421,7 @@ public class Olt
         }
 
         SubscriberAndDeviceInformation si = new SubscriberAndDeviceInformation();
-        UniTagInformation specificService = getUniTagInformation(getPortName(port), cTag, sTag, tpId);
+        UniTagInformation specificService = getUniTagInformation(port, cTag, sTag, tpId);
         if (specificService == null) {
             log.error("Can't find Information for subscriber on {}, with cTag {}, " +
                     "stag {}, tpId {}", cp, cTag, sTag, tpId);
@@ -453,7 +461,7 @@ public class Olt
         }
 
         SubscriberAndDeviceInformation si = new SubscriberAndDeviceInformation();
-        UniTagInformation specificService = getUniTagInformation(getPortName(port), cTag, sTag, tpId);
+        UniTagInformation specificService = getUniTagInformation(port, cTag, sTag, tpId);
         if (specificService == null) {
             log.error("Can't find Information for subscriber on {}, with cTag {}, " +
                     "stag {}, tpId {}", cp, cTag, sTag, tpId);
@@ -616,16 +624,30 @@ public class Olt
      * using the pon c tag, pon s tag and the technology profile id
      * May return Optional<null>
      *
-     * @param portName  port of the subscriber
+     * @param port  port of the subscriber
      * @param innerVlan pon c tag
      * @param outerVlan pon s tag
      * @param tpId      the technology profile id
      * @return the found uni tag information
      */
-    private UniTagInformation getUniTagInformation(String portName, VlanId innerVlan,
+    private UniTagInformation getUniTagInformation(Port port, VlanId innerVlan,
                                                    VlanId outerVlan, int tpId) {
+        String portName = portWithName(port);
         log.debug("Getting uni tag information for {}, innerVlan: {}, outerVlan: {}, tpId: {}",
                 portName, innerVlan, outerVlan, tpId);
+        //First check if the subscriber is in the programmed subscriber map, if not fallback to sadis
+        //there should be only one sub service with these characteristics.
+        Optional<Map.Entry<ServiceKey, UniTagInformation>> service = oltFlowService.getProgrammedSubscribers()
+                .entrySet().stream()
+                .filter(entry -> entry.getKey().getPort().equals(new AccessDevicePort(port))
+                        && entry.getValue().getPonSTag().equals(outerVlan)
+                        && entry.getValue().getPonCTag().equals(innerVlan))
+                .findFirst();
+        if (service.isPresent()) {
+            log.debug("Subscriber was programmed with uni tag info for {}, innerVlan: {}, outerVlan: {}, tpId: {}",
+                    portName, innerVlan, outerVlan, tpId);
+            return service.get().getValue();
+        }
         SubscriberAndDeviceInformation subInfo = subsService.get(portName);
         if (subInfo == null) {
             log.warn("Subscriber information doesn't exist for {}", portName);
@@ -638,22 +660,22 @@ public class Olt
             return null;
         }
 
-        UniTagInformation service = OltUtils.getUniTagInformation(subInfo, innerVlan, outerVlan, tpId);
+        UniTagInformation uniTagInformation = OltUtils.getUniTagInformation(subInfo, innerVlan, outerVlan, tpId);
+        if (uniTagInformation == null) {
 
-        if (service == null) {
             // Try again after invalidating cache for the particular port name.
             subsService.invalidateId(portName);
             subInfo = subsService.get(portName);
-            service = OltUtils.getUniTagInformation(subInfo, innerVlan, outerVlan, tpId);
+            uniTagInformation = OltUtils.getUniTagInformation(subInfo, innerVlan, outerVlan, tpId);
         }
 
-        if (service == null) {
+        if (uniTagInformation == null) {
             log.warn("SADIS doesn't include the service with ponCtag {} ponStag {} and tpId {} on {}",
                     innerVlan, outerVlan, tpId, portName);
             return null;
         }
 
-        return service;
+        return uniTagInformation;
     }
 
     protected void bindSadisService(SadisService service) {
@@ -883,6 +905,7 @@ public class Olt
                 log.debug("Ignoring PORT_ADD on UNI port {}", portWithName(port));
                 return;
             }
+            AccessDevicePort accessDevicePort = new AccessDevicePort(port);
 
             if (port.isEnabled()) {
                 if (isNni) {
@@ -902,18 +925,22 @@ public class Olt
                     // NOTE if the subscriber was previously provisioned,
                     // then add it back to the queue to be re-provisioned
                     boolean provisionSubscriber = oltFlowService.
-                            isSubscriberServiceProvisioned(new AccessDevicePort(port));
-                    SubscriberAndDeviceInformation si = subsService.get(getPortName(port));
+                            isSubscriberServiceProvisioned(accessDevicePort);
+
+                    SubscriberAndDeviceInformation si;
+                    DiscoveredSubscriber.Status status = DiscoveredSubscriber.Status.ADDED;
+                    if (type == DeviceEvent.Type.PORT_REMOVED) {
+                        status = DiscoveredSubscriber.Status.REMOVED;
+                        si = getProgrammedSubscriber(oltFlowService, accessDevicePort);
+                    } else {
+                        si = subsService.get(getPortName(port));
+                    }
+
                     if (si == null) {
                         //NOTE this should not happen given that the subscriber was provisioned before
                         log.error("Subscriber information not found in sadis for port {}",
                                 portWithName(port));
                         return;
-                    }
-
-                    DiscoveredSubscriber.Status status = DiscoveredSubscriber.Status.ADDED;
-                    if (type == DeviceEvent.Type.PORT_REMOVED) {
-                        status = DiscoveredSubscriber.Status.REMOVED;
                     }
 
                     DiscoveredSubscriber sub =
@@ -948,7 +975,12 @@ public class Olt
                         addSubscriberToQueue(sub);
 
                     } else if (oltFlowService.isSubscriberServiceProvisioned(new AccessDevicePort(port))) {
-                        SubscriberAndDeviceInformation si = subsService.get(getPortName(port));
+                        //First check if the subscriber is in the programmed subscriber map, if not fallback to sadis
+                        SubscriberAndDeviceInformation si = getProgrammedSubscriber(oltFlowService, accessDevicePort);
+                        if (si == null) {
+                            si = subsService.get(getPortName(port));
+                        }
+                        // if it's still null we can't proceed
                         if (si == null) {
                             //NOTE this should not happen given that the subscriber was provisioned before
                             log.error("Subscriber information not found in sadis for port {}",
