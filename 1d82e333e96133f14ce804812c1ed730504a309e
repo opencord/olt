@@ -18,6 +18,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6823271_af3a1ac7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000740
+      },
+      "writtenOn": "2022-08-09T17:57:21Z",
+      "side": 1,
+      "message": "Sure, thanks for the review.",
+      "parentUuid": "82ed4d08_d64644da",
+      "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "485fa966_1150184a",
@@ -35,6 +53,24 @@
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d113353_892ad7e6",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1000740
+      },
+      "writtenOn": "2022-08-09T17:57:21Z",
+      "side": 1,
+      "message": "Oh, my bad. Somehow, Matteo\u0027s change overwrote the work done on VOL-4714 and I didn\u0027t notice.\n\nThe latest patchset should solve it.",
+      "parentUuid": "485fa966_1150184a",
+      "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e00c2ea5_dd082907",
@@ -48,6 +84,24 @@
       "writtenOn": "2022-08-09T07:27:42Z",
       "side": 1,
       "message": "Can understand the need for this change. Can you please help explain?",
+      "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac257032_62ca8801",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1000740
+      },
+      "writtenOn": "2022-08-09T17:57:21Z",
+      "side": 1,
+      "message": "That piece of code basically means that from now on, a service is still counted in on the programmed subscriber map when HSIA or DHCP flows aren\u0027t REMOVED.\n\nI had to change it otherwise the HSIA flow status eventually would not get updated from PENDING_REMOVE to REMOVED status, therefore the EAPOL installation would get stuck in an infinite loop with the following log:\n\n\"INFO [OltFlowService] Subscriber of:00000a0a0a0a0a0a/256[BBSM000a0001-1] still have flows on service hsia, postpone default EAPOL installation.\".\n\nIn order to understand how these subjects are bound, I suggest to take a look at the \"flow rule listener\", which is responsible for updating that flow status. You\u0027ll  notice how the function \"updateCpStatus\" depends on the programmed subscriber list when defining the ServiceKey to update the flow status later on.",
+      "parentUuid": "e00c2ea5_dd082907",
       "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
