@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82ed4d08_d64644da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-08-09T07:27:42Z",
+      "side": 1,
+      "message": "Hi Gustavo, sorry for the delay in looking into the changes. I have a couple of questions. Can you please help clarify?",
+      "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "485fa966_1150184a",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-08-09T07:27:42Z",
+      "side": 1,
+      "message": "Any specific reason why the RemoveFlowsOnDisable property has been removed?",
+      "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e00c2ea5_dd082907",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-08-09T07:27:42Z",
+      "side": 1,
+      "message": "Can understand the need for this change. Can you please help explain?",
+      "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
