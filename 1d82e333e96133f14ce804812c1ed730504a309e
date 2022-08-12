@@ -104,6 +104,24 @@
       "parentUuid": "e00c2ea5_dd082907",
       "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b0cdeeb_3486aee4",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1000097
+      },
+      "writtenOn": "2022-08-12T09:51:41Z",
+      "side": 1,
+      "message": "Hi Gustavo,\n\nI have concern on using the dhcpStatus here. If we take the case of DT workflow, DHCP is not used and so the dhcpStatus will always be NONE, which means that this condition will always be true and so all the subscribers including REMOVED flows will be returned by this function.\n\nI think the intention of your change is to not select the REMOVED flows.\n\nCan you please cross check if my understanding is not correct? We can discuss on the slack channels depending on your answers.",
+      "parentUuid": "ac257032_62ca8801",
+      "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
