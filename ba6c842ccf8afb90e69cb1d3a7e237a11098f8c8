@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63b533fd_3b48f7ef",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 648,
+      "author": {
+        "id": 1000404
+      },
+      "writtenOn": "2022-08-12T08:21:49Z",
+      "side": 1,
+      "message": "please fix the typo here. unit -\u003e uni\nIt might also be better using the portName in the log for debugging purposes.",
+      "revId": "ba6c842ccf8afb90e69cb1d3a7e237a11098f8c8",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
