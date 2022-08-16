@@ -16,6 +16,24 @@
       "message": "please fix the typo here. unit -\u003e uni\nIt might also be better using the portName in the log for debugging purposes.",
       "revId": "ba6c842ccf8afb90e69cb1d3a7e237a11098f8c8",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecfa3f55_c371f759",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/Olt.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 648,
+      "author": {
+        "id": 1000740
+      },
+      "writtenOn": "2022-08-16T14:40:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "63b533fd_3b48f7ef",
+      "revId": "ba6c842ccf8afb90e69cb1d3a7e237a11098f8c8",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }

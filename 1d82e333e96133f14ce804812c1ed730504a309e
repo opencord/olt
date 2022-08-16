@@ -122,6 +122,24 @@
       "parentUuid": "ac257032_62ca8801",
       "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3bf406c5_34c22cb1",
+        "filename": "impl/src/main/java/org/opencord/olt/impl/OltFlowService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1000740
+      },
+      "writtenOn": "2022-08-16T14:40:01Z",
+      "side": 1,
+      "message": "Hi, Amit!\n\nI understood your point, you\u0027re right. Please take a look at my latest patchset, it should address the issue you pointed out. I also reorganized the code so it\u0027s a bit more intelligible than before.",
+      "parentUuid": "ac257032_62ca8801",
+      "revId": "1d82e333e96133f14ce804812c1ed730504a309e",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
