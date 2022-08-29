@@ -17,12 +17,18 @@
 package org.opencord.olt.impl;
 
 import com.google.common.collect.ImmutableMap;
+import org.onlab.util.Identifier;
 import org.onlab.util.KryoNamespace;
 import org.onlab.util.Tools;
 import org.onosproject.cfg.ComponentConfigService;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.net.DeviceId;
+import org.onosproject.net.flow.FlowEntry;
+import org.onosproject.net.flow.FlowRule;
+import org.onosproject.net.flow.FlowRuleService;
+import org.onosproject.net.flow.TrafficTreatment;
+import org.onosproject.net.flow.instructions.Instructions;
 import org.onosproject.net.meter.Band;
 import org.onosproject.net.meter.DefaultBand;
 import org.onosproject.net.meter.DefaultMeterRequest;
@@ -57,6 +63,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,6 +78,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.StreamSupport;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.onlab.util.Tools.get;
@@ -92,6 +100,9 @@ public class OltMeterService implements OltMeterServiceInterface {
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     protected StorageService storageService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    protected FlowRuleService flowRuleService;
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL,
             bind = "bindSadisService",
@@ -585,9 +596,16 @@ public class OltMeterService implements OltMeterServiceInterface {
                              meter.id(), meter.deviceId());
                     incrementMeterCount(meter.deviceId(), key);
                     if (pendingRemoveMeters.get(meter.deviceId())
-                            .get(key).get() == zeroReferenceMeterCount) {
+                            .get(key).get() >= zeroReferenceMeterCount) {
                         // only delete the meters if the app is configured to do so
                         if (deleteMeters) {
+                            // Check if there's any pending flow referencing that meter.
+                            if (isUsedByPendingAddFlow(meter)) {
+                                log.info("Meter {} is still being referenced by pending flows, avoiding removal.",
+                                        meter.id());
+                                removeMeterCount(meter, key);
+                                return;
+                            }
                             log.info("Meter {} on device {} is unused, removing it", meter.id(), meter.deviceId());
                             deleteMeter(meter.deviceId(), meter.id());
                         }
@@ -600,6 +618,18 @@ public class OltMeterService implements OltMeterServiceInterface {
             });
         }
 
+        private boolean isUsedByPendingAddFlow(Meter meter) {
+            Long meterId = meter.id().id();
+            Iterable<FlowEntry> pendingAddFlows = flowRuleService.getFlowEntriesByState(meter.deviceId(),
+                    FlowEntry.FlowEntryState.PENDING_ADD);
+            return StreamSupport.stream(pendingAddFlows.spliterator(), true)
+                    .map(FlowRule::treatment)
+                    .map(TrafficTreatment::meters)
+                    .flatMap(Collection::parallelStream)
+                    .map(Instructions.MeterInstruction::meterId)
+                    .map(Identifier::id)
+                    .anyMatch(meterId::equals);
+        }
         private void removeMeterCount(Meter meter, MeterKey key) {
             pendingRemoveMeters.computeIfPresent(meter.deviceId(),
                                                  (id, meters) -> {
