@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8216ce5e_b268ae7c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000643
+      },
+      "writtenOn": "2022-08-31T07:40:33Z",
+      "side": 1,
+      "message": "Checked the corresponding image here:\nhttps://jenkins.opencord.org/view/VOLTHA-2.X-Tests/job/periodic-voltha-unitag-subscriber-tt-test-bbsim/350/\nDue Girish already checked it in https://jenkins.opencord.org/view/All%20Jobs/job/periodic-voltha-dt-test-bbsim/ in #195 - #197, both pipelines now are working fine!\nGreat Job Gustavo",
+      "revId": "3b5a5511beb93bbb671c837c06f86bd1060a764a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
