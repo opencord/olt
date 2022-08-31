@@ -16,6 +16,23 @@
       "message": "Checked the corresponding image here:\nhttps://jenkins.opencord.org/view/VOLTHA-2.X-Tests/job/periodic-voltha-unitag-subscriber-tt-test-bbsim/350/\nDue Girish already checked it in https://jenkins.opencord.org/view/All%20Jobs/job/periodic-voltha-dt-test-bbsim/ in #195 - #197, both pipelines now are working fine!\nGreat Job Gustavo",
       "revId": "3b5a5511beb93bbb671c837c06f86bd1060a764a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4e218b6_a9f71bc7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2022-08-31T22:54:36Z",
+      "side": 1,
+      "message": "This is great!\nOnce the patch is merged, we should release the ONOS image with the app. I think that will need a patch to voltha-onos repo to update the version of olt app. I have not personally dealt with that before, but we can figure that out.",
+      "revId": "3b5a5511beb93bbb671c837c06f86bd1060a764a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
