@@ -51,6 +51,23 @@
       "parentUuid": "8216ce5e_b268ae7c",
       "revId": "3b5a5511beb93bbb671c837c06f86bd1060a764a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e083478d_f522dfa2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2022-09-01T17:36:34Z",
+      "side": 1,
+      "message": "Interestingly I do not have merge permissions for this repo. If any one of you have it, please go ahead and merge. Else ping Joey (ONF) and he should be able grant one or more of you permissions. May be Amit and/or Gustavo?",
+      "revId": "3b5a5511beb93bbb671c837c06f86bd1060a764a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
