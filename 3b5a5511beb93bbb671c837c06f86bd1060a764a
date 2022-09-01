@@ -33,6 +33,24 @@
       "message": "This is great!\nOnce the patch is merged, we should release the ONOS image with the app. I think that will need a patch to voltha-onos repo to update the version of olt app. I have not personally dealt with that before, but we can figure that out.",
       "revId": "3b5a5511beb93bbb671c837c06f86bd1060a764a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f309adc_1619b597",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000643
+      },
+      "writtenOn": "2022-09-01T08:10:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8216ce5e_b268ae7c",
+      "revId": "3b5a5511beb93bbb671c837c06f86bd1060a764a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
