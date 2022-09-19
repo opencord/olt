@@ -656,11 +656,8 @@ public class OltFlowService implements OltFlowServiceInterface {
     @Override
     public boolean hasDefaultEapol(Port port) {
         OltPortStatus status = getOltPortStatus(port, defaultEapolUniTag);
-        // NOTE we consider ERROR as a present EAPOL flow as ONOS
-        // will keep trying to add it
         return status != null && (status.defaultEapolStatus == OltFlowsStatus.ADDED ||
-                status.defaultEapolStatus == OltFlowsStatus.PENDING_ADD ||
-                status.defaultEapolStatus == OltFlowsStatus.ERROR);
+                status.defaultEapolStatus == OltFlowsStatus.PENDING_ADD);
     }
 
     private OltPortStatus getOltPortStatus(Port port, UniTagInformation uniTagInformation) {
