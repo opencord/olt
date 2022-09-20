@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18891f16_3a555d52",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2022-09-20T18:56:52Z",
+      "side": 1,
+      "message": "I do not have +2 and merge permissions for this repo. If no one has those permissions here, you should request Joey for that (one or more of you need that going ahead).",
+      "revId": "4c305b396a6ddb2b794cfe3a4a6b3e8953a49e82",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
