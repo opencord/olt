@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f9084db_094cdd11",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000127
+      },
+      "writtenOn": "2022-10-06T20:23:11Z",
+      "side": 1,
+      "message": "Can you please rebase the patch.\nAlso I think this will need an app release? If so, we need to go through the process I mentioned in the chat.",
+      "revId": "f33447e08e556c9fe85c608394856282ca7e76d4",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
