@@ -466,7 +466,7 @@ public class OltFlowService implements OltFlowServiceInterface {
         if (enablePppoeOnNni) {
             log.debug("{} PPPoE flow on NNI {} for device {}", flowOpToString(action), port.number(), device.id());
             processPPPoEDFilteringObjectives(device.id(), port, action, FlowDirection.DOWNSTREAM,
-                    null, null, NONE_TP_ID, VlanId.NONE, VlanId.ANY, null);
+                    null, null, NONE_TP_ID, VlanId.NONE, VlanId.ANY, null, nniUniTag);
         }
     }
 
@@ -1075,7 +1075,7 @@ public class OltFlowService implements OltFlowServiceInterface {
             if (enablePppoe) {
                 processPPPoEDFilteringObjectives(deviceId, port, action, FlowDirection.UPSTREAM, meterId, oltMeterId,
                         uti.getTechnologyProfileId(), uti.getPonCTag(), uti.getUniTagMatch(),
-                        (byte) uti.getUsPonCTagPriority());
+                        (byte) uti.getUsPonCTagPriority(), uti);
             }
         });
     }
@@ -1292,8 +1292,17 @@ public class OltFlowService implements OltFlowServiceInterface {
     private void processPPPoEDFilteringObjectives(DeviceId deviceId, Port port,
                                                   FlowOperation action, FlowDirection direction,
                                                   MeterId meterId, MeterId oltMeterId, int techProfileId,
-                                                  VlanId cTag, VlanId unitagMatch, Byte vlanPcp) {
+                                                  VlanId cTag, VlanId unitagMatch, Byte vlanPcp, UniTagInformation uti) {
 
+        ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
+        log.info("{} PPPoE filtering objectives on {}", flowOpToString(action), sk);
+                                                                                        
+        //String serviceName = uti.getServiceName();
+                                                                                        
+        OltFlowsStatus status = action.equals(FlowOperation.ADD) ?
+            OltFlowsStatus.PENDING_ADD : OltFlowsStatus.PENDING_REMOVE;
+        updateConnectPointStatus(sk, null, null, null, null, status);
+                                            
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
 
@@ -1551,15 +1560,20 @@ public class OltFlowService implements OltFlowServiceInterface {
                                             OltFlowsStatus pppoeStatus) {
         if (log.isTraceEnabled()) {
             log.trace("Updating cpStatus {} with values: eapolFlow={}, " +
-                              "subscriberEapolStatus={}, subscriberFlows={}, dhcpFlow={}",
-                      key, eapolStatus, subscriberEapolStatus, subscriberFlowsStatus, dhcpStatus);
+                              "subscriberEapolStatus={}, subscriberFlows={}, dhcpFlow={}, pppoeFlow={}",
+                      key, eapolStatus, subscriberEapolStatus, subscriberFlowsStatus, dhcpStatus, pppoeStatus);
+
         }
         try {
+            log.info("Updating cpStatus {} with values: eapolFlow={}, " +
+                              "subscriberEapolStatus={}, subscriberFlows={}, dhcpFlow={}, pppoeFlow={}",
+                      key, eapolStatus, subscriberEapolStatus, subscriberFlowsStatus, dhcpStatus, pppoeStatus);
             cpStatusWriteLock.lock();
             OltPortStatus status = cpStatus.get(key);
 
 
             if (status == null) {
+                log.info("updateConnectionPointStatus: in status == null");
                 // if we don't have status for the connectPoint
                 // and we're only updating status to PENDING_REMOVE or ERROR
                 // do not create it. This is because this case will only happen when a device is removed
@@ -1586,6 +1600,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                         pppoeStatus != null ? pppoeStatus : OltFlowsStatus.NONE
                 );
             } else {
+                log.info("updateConnectionPointStatus: in else, so status != null")
                 if (eapolStatus != null) {
                     status.defaultEapolStatus = eapolStatus;
                 }
@@ -1595,8 +1610,12 @@ public class OltFlowService implements OltFlowServiceInterface {
                 if (dhcpStatus != null) {
                     status.dhcpStatus = dhcpStatus;
                 }
+                if (pppoeStatus != null) {
+                    status.pppoeStatus = pppoeStatus;
+                    log.info("updateConnectionPointStatus: in status == null");
+                }
             }
-
+            log.info("Before Put in cpStatus");
             cpStatus.put(key, status);
         } finally {
             cpStatusWriteLock.unlock();
