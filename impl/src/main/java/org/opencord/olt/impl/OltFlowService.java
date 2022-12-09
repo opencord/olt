@@ -209,61 +209,53 @@ public class OltFlowService implements OltFlowServiceInterface {
     private final ReentrantReadWriteLock provisionedSubscribersLock = new ReentrantReadWriteLock();
     private final Lock provisionedSubscribersWriteLock = provisionedSubscribersLock.writeLock();
     private final Lock provisionedSubscribersReadLock = provisionedSubscribersLock.readLock();
-
     /**
      * For storing the mapping of ConnectPoints to FTTB DPU MAC addresses.
      */
     protected Map<ConnectPoint, MacAddress> fttbMacAddresses;
     private final ReentrantReadWriteLock fttbMacAddressesLock = new ReentrantReadWriteLock();
     private final Lock fttbMacAddressesWriteLock = fttbMacAddressesLock.writeLock();
-
+    /**
+     * For storing the mapping of ConnectioPoint to Downstram Mac addresses.
+     */
+    protected Map<ConnectPoint, MacAddress> downstreamFlowsMacAddresses;
     /**
      * Create DHCP trap flow on NNI port(s).
      */
     protected boolean enableDhcpOnNni = ENABLE_DHCP_ON_NNI_DEFAULT;
-
     /**
      * Enable flows for DHCP v4 if dhcp is required in sadis config.
      **/
     protected boolean enableDhcpV4 = ENABLE_DHCP_V4_DEFAULT;
-
     /**
      * Enable flows for DHCP v6 if dhcp is required in sadis config.
      **/
     protected boolean enableDhcpV6 = ENABLE_DHCP_V6_DEFAULT;
-
     /**
      * Create IGMP trap flow on NNI port(s).
      **/
     protected boolean enableIgmpOnNni = ENABLE_IGMP_ON_NNI_DEFAULT;
-
     /**
      * Send EAPOL authentication trap flows before subscriber provisioning.
      **/
     protected boolean enableEapol = ENABLE_EAPOL_DEFAULT;
-
     /**
      * Send PPPoED authentication trap flows before subscriber provisioning.
      **/
     protected boolean enablePppoeOnNni = ENABLE_PPPOE_ON_NNI_DEFAULT;
-
     /**
      * Enable flows for PPPoE if it is required in sadis config.
      **/
     protected boolean enablePppoe = ENABLE_PPPOE_DEFAULT;
-
     /**
      * Default technology profile id that is used for authentication trap flows.
      **/
     protected int defaultTechProfileId = DEFAULT_TP_ID_DEFAULT;
-
     protected boolean waitForRemoval = WAIT_FOR_REMOVAL_DEFAULT;
-
     /**
      * Removes all the flows on an ONU disable.
      **/
     protected boolean removeFlowsOnDisable = REMOVE_FLOWS_ON_DISABLE_DEFAULT;
-
     protected InternalFlowListener internalFlowListener;
 
     @Activate
@@ -284,29 +276,35 @@ public class OltFlowService implements OltFlowServiceInterface {
                 .register(new ServiceKeySerializer(), ServiceKey.class)
                 .register(UniTagInformation.class)
                 .build();
-
         cpStatus = storageService.<ServiceKey, OltPortStatus>consistentMapBuilder()
                 .withName("volt-cp-status")
                 .withApplicationId(appId)
                 .withSerializer(Serializer.using(serializer))
                 .build().asJavaMap();
-
         provisionedSubscribers = storageService.<ServiceKey, Boolean>consistentMapBuilder()
                 .withName("volt-provisioned-subscriber")
                 .withApplicationId(appId)
                 .withSerializer(Serializer.using(serializer))
                 .build().asJavaMap();
-
         KryoNamespace fttbMacSerializer = KryoNamespace.newBuilder()
                 .register(KryoNamespaces.API)
                 .register(ConnectPoint.class)
                 .register(MacAddress.class)
                 .build();
-
         fttbMacAddresses = storageService.<ConnectPoint, MacAddress>consistentMapBuilder()
                 .withName("fttb-mac-addresses")
                 .withApplicationId(appId)
                 .withSerializer(Serializer.using(fttbMacSerializer))
+                .build().asJavaMap();
+        KryoNamespace downMacSerializer = KryoNamespace.newBuilder()
+                .register(KryoNamespaces.API)
+                .register(ConnectPoint.class)
+                .register(MacAddress.class)
+                .build();
+        downstreamFlowsMacAddresses = storageService.<ConnectPoint, MacAddress>consistentMapBuilder()
+                .withName("downstream-mac-addresses")
+                .withApplicationId(appId)
+                .withSerializer(Serializer.using(downMacSerializer))
                 .build().asJavaMap();
 
         flowRuleService.addListener(internalFlowListener);
@@ -466,7 +464,7 @@ public class OltFlowService implements OltFlowServiceInterface {
         if (enablePppoeOnNni) {
             log.debug("{} PPPoE flow on NNI {} for device {}", flowOpToString(action), port.number(), device.id());
             processPPPoEDFilteringObjectives(device.id(), port, action, FlowDirection.DOWNSTREAM,
-                    null, null, NONE_TP_ID, VlanId.NONE, VlanId.ANY, null, nniUniTag);
+                    null, null, NONE_TP_ID, VlanId.NONE, VlanId.ANY, null, null);
         }
     }
 
@@ -560,6 +558,8 @@ public class OltFlowService implements OltFlowServiceInterface {
         // NOTE we need to add the DHCP flow regardless so that the host can be discovered and the MacAddress added
         handleSubscriberDhcpFlows(sub.device.id(), sub.port, FlowOperation.ADD,
                 sub.subscriberAndDeviceInformation);
+        // NOTE we need to add the PPPoE flow regardless so that the host can be discovered and the MacAddress added
+        handleSubscriberPppoeFlows(sub.device.id(), sub.port, FlowOperation.ADD, sub.subscriberAndDeviceInformation);
 
         if (isMacLearningEnabled(sub.subscriberAndDeviceInformation)
                 && !isMacAddressAvailable(sub.device.id(), sub.port,
@@ -571,8 +571,6 @@ public class OltFlowService implements OltFlowServiceInterface {
         // NOTE that the EAPOL flows handling is based on the data-plane flows status
         // always process them before
         handleSubscriberEapolFlows(sub, FlowOperation.ADD, sub.subscriberAndDeviceInformation);
-
-        handleSubscriberPppoeFlows(sub.device.id(), sub.port, FlowOperation.ADD, sub.subscriberAndDeviceInformation);
 
         handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.ADD,
                 sub.subscriberAndDeviceInformation, multicastServiceName);
@@ -1128,7 +1126,6 @@ public class OltFlowService implements OltFlowServiceInterface {
                 processUpstreamDataFilteringObjects(device.id(), port, nniPort.get(), action, usMeterId,
                         oltUsMeterId, uti);
             }
-
             // downstream flows
             MeterId dsMeterId = oltMeterService
                     .getMeterIdForBandwidthProfile(device.id(), uti.getDownstreamBandwidthProfile());
@@ -1153,7 +1150,6 @@ public class OltFlowService implements OltFlowServiceInterface {
         log.debug("{} DHCP filtering objectives on {}", flowOpToString(action), sk);
 
         String serviceName = uti.getServiceName();
-
         OltFlowsStatus status = action.equals(FlowOperation.ADD) ?
                 OltFlowsStatus.PENDING_ADD : OltFlowsStatus.PENDING_REMOVE;
         updateConnectPointStatus(sk, null, null, null, status, null);
@@ -1292,17 +1288,16 @@ public class OltFlowService implements OltFlowServiceInterface {
     private void processPPPoEDFilteringObjectives(DeviceId deviceId, Port port,
                                                   FlowOperation action, FlowDirection direction,
                                                   MeterId meterId, MeterId oltMeterId, int techProfileId,
-                                                  VlanId cTag, VlanId unitagMatch, Byte vlanPcp, UniTagInformation uti) {
-
-        ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
-        log.info("{} PPPoE filtering objectives on {}", flowOpToString(action), sk);
-                                                                                        
-        //String serviceName = uti.getServiceName();
-                                                                                        
-        OltFlowsStatus status = action.equals(FlowOperation.ADD) ?
-            OltFlowsStatus.PENDING_ADD : OltFlowsStatus.PENDING_REMOVE;
-        updateConnectPointStatus(sk, null, null, null, null, status);
-                                            
+                                                  VlanId cTag, VlanId unitagMatch, Byte vlanPcp,
+                                                  UniTagInformation uti) {
+        if (uti != null) {
+            ServiceKey sk = new ServiceKey(new AccessDevicePort(port), uti);
+            log.info("{} PPPoE filtering objectives on {}", flowOpToString(action), sk);
+            //String serviceName = uti.getServiceName();
+            OltFlowsStatus status = action.equals(FlowOperation.ADD) ?
+                OltFlowsStatus.PENDING_ADD : OltFlowsStatus.PENDING_REMOVE;
+            updateConnectPointStatus(sk, null, null, null, null, status);
+        }
         DefaultFilteringObjective.Builder builder = DefaultFilteringObjective.builder();
         TrafficTreatment.Builder treatmentBuilder = DefaultTrafficTreatment.builder();
 
@@ -1545,12 +1540,20 @@ public class OltFlowService implements OltFlowServiceInterface {
         if (configuredMac) {
             return MacAddress.valueOf(uniTagInfo.getConfiguredMacAddress());
         } else if (uniTagInfo.getEnableMacLearning()) {
+            log.info("enable Mac Leraning: {}", uniTagInfo.getEnableMacLearning());
             Optional<Host> optHost = hostService.getConnectedHosts(new ConnectPoint(deviceId, port.number()))
                     .stream().filter(host -> host.vlan().equals(uniTagInfo.getPonCTag())).findFirst();
             if (optHost.isPresent() && optHost.get().mac() != null) {
+                log.info("Dentro if isPresent() e != null: {} {} {}", deviceId, port.number(), optHost.get().mac());
+                downstreamFlowsMacAddresses.put(new ConnectPoint(deviceId, port.number()), optHost.get().mac());
                 return optHost.get().mac();
+            } else if (downstreamFlowsMacAddresses.get(new ConnectPoint(deviceId, port.number())) != null) {
+                log.info("Ti ho fregato! Vediamo se ci sta il Mac nella mappa: {}",
+                downstreamFlowsMacAddresses.get(new ConnectPoint(deviceId, port.number())));
+                return downstreamFlowsMacAddresses.get(new ConnectPoint(deviceId, port.number()));
             }
         }
+        log.info("Non ci sta il MAC! Ritornato NULL");
         return null;
     }
 
@@ -1565,9 +1568,6 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         }
         try {
-            log.info("Updating cpStatus {} with values: eapolFlow={}, " +
-                              "subscriberEapolStatus={}, subscriberFlows={}, dhcpFlow={}, pppoeFlow={}",
-                      key, eapolStatus, subscriberEapolStatus, subscriberFlowsStatus, dhcpStatus, pppoeStatus);
             cpStatusWriteLock.lock();
             OltPortStatus status = cpStatus.get(key);
 
@@ -1600,7 +1600,7 @@ public class OltFlowService implements OltFlowServiceInterface {
                         pppoeStatus != null ? pppoeStatus : OltFlowsStatus.NONE
                 );
             } else {
-                log.info("updateConnectionPointStatus: in else, so status != null")
+                log.info("updateConnectionPointStatus: in else, so status != null");
                 if (eapolStatus != null) {
                     status.defaultEapolStatus = eapolStatus;
                 }
@@ -1612,10 +1612,12 @@ public class OltFlowService implements OltFlowServiceInterface {
                 }
                 if (pppoeStatus != null) {
                     status.pppoeStatus = pppoeStatus;
-                    log.info("updateConnectionPointStatus: in status == null");
                 }
             }
             log.info("Before Put in cpStatus");
+            log.info("Updating cpStatus {} with values: eapolFlow={}, " +
+                              "subscriberEapolStatus={}, subscriberFlows={}, dhcpFlow={}, pppoeFlow={}",
+                      key, eapolStatus, subscriberEapolStatus, subscriberFlowsStatus, dhcpStatus, pppoeStatus);
             cpStatus.put(key, status);
         } finally {
             cpStatusWriteLock.unlock();

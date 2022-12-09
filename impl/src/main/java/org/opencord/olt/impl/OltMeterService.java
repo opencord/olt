@@ -274,8 +274,8 @@ public class OltMeterService implements OltMeterServiceInterface {
             pendingMeters.put(serviceName, new LinkedList<>());
             String usBp = uniTagInfo.getUpstreamBandwidthProfile();
             String dsBp = uniTagInfo.getDownstreamBandwidthProfile();
-            String oltBp = usBp;
-            String oltDsBP = dsBp;
+            String oltUBp = usBp;
+            String oltDsBp = dsBp;
             //String oltUBp = uniTagInfo.getDownstreamOltBandwidthProfile();
             //String oltDsBp = uniTagInfo.getUpstreamOltBandwidthProfile();
             if (!createMeter(deviceId, usBp)) {
