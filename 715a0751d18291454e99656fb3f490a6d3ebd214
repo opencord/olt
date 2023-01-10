@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe7b6551_2bd89fd5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000948
+      },
+      "writtenOn": "2023-01-10T08:16:47Z",
+      "side": 1,
+      "message": "rev sadis version again: 5.9.0 -\u003e 5.10.0",
+      "revId": "715a0751d18291454e99656fb3f490a6d3ebd214",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
