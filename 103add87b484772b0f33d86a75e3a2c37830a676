@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "29215e3f_6d82165a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000948
+      },
+      "writtenOn": "2023-01-10T08:39:23Z",
+      "side": 1,
+      "message": "Bump component version and build for release.",
+      "revId": "103add87b484772b0f33d86a75e3a2c37830a676",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
