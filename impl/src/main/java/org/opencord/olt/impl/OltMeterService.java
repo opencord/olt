@@ -274,22 +274,24 @@ public class OltMeterService implements OltMeterServiceInterface {
             pendingMeters.put(serviceName, new LinkedList<>());
             String usBp = uniTagInfo.getUpstreamBandwidthProfile();
             String dsBp = uniTagInfo.getDownstreamBandwidthProfile();
-            String oltUBp = uniTagInfo.getDownstreamOltBandwidthProfile();
-            String oltDsBp = uniTagInfo.getUpstreamOltBandwidthProfile();
+            String oltUBp = usBp;
+            String oltDsBp = dsBp;
+            //String oltUBp = uniTagInfo.getDownstreamOltBandwidthProfile();
+            //String oltDsBp = uniTagInfo.getUpstreamOltBandwidthProfile();
             if (!createMeter(deviceId, usBp)) {
                 pendingMeters.get(serviceName).add(usBp);
                 waitingOnMeter.set(true);
             }
             if (!createMeter(deviceId, dsBp)) {
-                pendingMeters.get(serviceName).add(usBp);
+                pendingMeters.get(serviceName).add(dsBp);
                 waitingOnMeter.set(true);
             }
             if (!createMeter(deviceId, oltUBp)) {
-                pendingMeters.get(serviceName).add(usBp);
+                pendingMeters.get(serviceName).add(oltUBp);
                 waitingOnMeter.set(true);
             }
             if (!createMeter(deviceId, oltDsBp)) {
-                pendingMeters.get(serviceName).add(usBp);
+                pendingMeters.get(serviceName).add(oltDsBp);
                 waitingOnMeter.set(true);
             }
         });
