@@ -35,7 +35,7 @@
     <description>OLT Application</description>
     <url>http://onosproject.org</url>
     <properties>
-        <sadis.api.version>5.11.1</sadis.api.version>
+        <sadis.api.version>5.12.2</sadis.api.version>
         <olt.api.version>5.2.5-SNAPSHOT</olt.api.version>
     </properties>
     <dependencies>
