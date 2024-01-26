@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3eaf3fb_845e427e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000948
+      },
+      "writtenOn": "2024-01-26T19:00:14Z",
+      "side": 1,
+      "message": "Off to the races: merge will publish release artifact version.",
+      "revId": "b76a1be2632759b7c84d7c4be72f55d170f64063",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    }
+  ]
+}
