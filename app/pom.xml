@@ -20,13 +20,13 @@
     <parent>
         <artifactId>olt</artifactId>
         <groupId>org.opencord</groupId>
-        <version>5.2.5</version>
+        <version>5.2.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opencord</groupId>
     <artifactId>olt-app</artifactId>
-    <version>5.2.5</version>
+    <version>5.2.6-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>OLT application for CORD</description>
     <properties>
