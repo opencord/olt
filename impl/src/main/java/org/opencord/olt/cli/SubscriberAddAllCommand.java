@@ -51,7 +51,7 @@ public class SubscriberAddAllCommand extends AbstractShellCommand {
             if (p.isEnabled()) {
                 PortNumber port = p.number();
                 ConnectPoint connectPoint = new ConnectPoint(deviceId, port);
-                service.provisionSubscriber(connectPoint);
+                service.provisionSubscriber(connectPoint, null);
             }
         });
     }

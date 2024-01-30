@@ -19,6 +19,7 @@ package org.opencord.olt;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.Device;
 import org.onosproject.net.Port;
+import org.onosproject.net.PortNumber;
 import org.opencord.sadis.SubscriberAndDeviceInformation;
 
 import java.util.Objects;
@@ -44,6 +45,10 @@ public class DiscoveredSubscriber {
     public boolean hasSubscriber;
     public SubscriberAndDeviceInformation subscriberAndDeviceInformation;
 
+    //optional field if a specific uplink port should be used, otherwise standard port is used
+    public PortNumber uplinkport;
+
+
     /**
      * Creates the class with the proper information.
      *
@@ -60,7 +65,31 @@ public class DiscoveredSubscriber {
         this.status = status;
         this.hasSubscriber = hasSubscriber;
         subscriberAndDeviceInformation = si;
+        this.uplinkport = null; // set to null if not used
     }
+
+
+    /**
+     * Creates the class with the proper information.
+     *
+     * @param device        the device of the subscriber
+     * @param port          the port
+     * @param status        the status for this specific subscriber
+     * @param hasSubscriber is the subscriber present
+     * @param si            the information about the tags/dhcp and other info.
+     * @param nniPort      specified nni port for subscriber
+     */
+    public DiscoveredSubscriber(Device device, Port port, Status status, boolean hasSubscriber,
+                                SubscriberAndDeviceInformation si, PortNumber nniPort) {
+        this.device = device;
+        this.port = port;
+        this.status = status;
+        this.hasSubscriber = hasSubscriber;
+        subscriberAndDeviceInformation = si;
+        this.uplinkport = nniPort;
+
+    }
+
 
     /**
      * Returns the port name for the subscriber.
