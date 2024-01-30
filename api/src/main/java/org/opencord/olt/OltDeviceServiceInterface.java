@@ -50,6 +50,14 @@ public interface OltDeviceServiceInterface {
     Optional<Port> getNniPort(Device device);
 
     /**
+     * Returns the NNi port fo the OLT device if present.
+     * @param device the device
+     * @param port get specific NNI Port
+     * @return the nni Port, if present
+     */
+    Optional<Port> getNniPort(Device device, PortNumber port);
+
+    /**
      * Returns true if the instance is leader for the OLT device.
      * @param deviceId the device
      * @return true if master, false otherwise.

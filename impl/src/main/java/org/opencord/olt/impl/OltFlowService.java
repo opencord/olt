@@ -572,8 +572,13 @@ public class OltFlowService implements OltFlowServiceInterface {
 
         handleSubscriberPppoeFlows(sub.device.id(), sub.port, FlowOperation.ADD, sub.subscriberAndDeviceInformation);
 
-        handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.ADD,
+        if (sub.uplinkport != null) {
+            handleSubscriberDataFlowsNni(sub.device, sub.port, FlowOperation.ADD,
+                sub.subscriberAndDeviceInformation, multicastServiceName, sub.uplinkport);
+        } else { // if uplinkport is null no NNI interface is set, use the first
+            handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.ADD,
                 sub.subscriberAndDeviceInformation, multicastServiceName);
+        }
 
         handleSubscriberIgmpFlows(sub, FlowOperation.ADD);
 
@@ -616,7 +621,13 @@ public class OltFlowService implements OltFlowServiceInterface {
             handleSubscriberPppoeFlows(sub.device.id(), sub.port, FlowOperation.REMOVE,
                     sub.subscriberAndDeviceInformation);
 
-            handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.REMOVE, si, multicastServiceName);
+            if (sub.uplinkport != null) {
+                handleSubscriberDataFlowsNni(sub.device, sub.port, FlowOperation.REMOVE, si,
+                multicastServiceName, sub.uplinkport);
+            } else {
+                handleSubscriberDataFlows(sub.device, sub.port, FlowOperation.REMOVE, si,
+                multicastServiceName);
+            }
 
             handleSubscriberIgmpFlows(sub, FlowOperation.REMOVE);
 
@@ -1079,8 +1090,21 @@ public class OltFlowService implements OltFlowServiceInterface {
     protected void handleSubscriberDataFlows(Device device, Port port,
                                              FlowOperation action,
                                              SubscriberAndDeviceInformation si, String multicastServiceName) {
+        handleSubscriberDataFlowsNni(device, port, action, si, multicastServiceName, null);
+    }
 
-        Optional<Port> nniPort = oltDeviceService.getNniPort(device);
+    // FIXME return boolean, if this fails we need to retry
+    protected void handleSubscriberDataFlowsNni(Device device, Port port,
+                                             FlowOperation action,
+                                             SubscriberAndDeviceInformation si, String multicastServiceName,
+                                             PortNumber selectedNniPort) {
+        Optional<Port> nniPort;
+        if (selectedNniPort != null) {
+            nniPort = oltDeviceService.getNniPort(device, selectedNniPort);
+        } else {
+            nniPort = oltDeviceService.getNniPort(device);
+        }
+
         if (nniPort == null || nniPort.isEmpty()) {
             log.error("Cannot configure DP flows as upstream port is not configured for subscriber {} on {}",
                     si.id(), portWithName(port));

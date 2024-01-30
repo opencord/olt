@@ -121,6 +121,28 @@ public class OltDeviceService implements OltDeviceServiceInterface {
                 .findFirst();
     }
 
+    //additional getNniPort function to NOT get the nni defined in sadis, rather the port with specified port number
+    @Override
+    public Optional<Port> getNniPort(Device device, PortNumber port) {
+        if (port == null) {
+            // use classic getNniPort if
+            // volt-add-subscriber-access is called without uplink port
+            return getNniPort(device);
+        }
+        SubscriberAndDeviceInformation deviceInfo = getOltInfo(device);
+        if (deviceInfo == null) {
+            return Optional.empty();
+        }
+        List<Port> ports = deviceService.getPorts(device.id());
+        if (log.isTraceEnabled()) {
+            log.trace("Get NNI Port looks for NNI in: {}", ports);
+        }
+        //matching passed argument port instead of deviceInfo.uplinkPort()
+        return ports.stream()
+                .filter(p -> p.number().toLong() == port.toLong())
+                .findFirst();
+    }
+
     protected void bindSadisService(SadisService service) {
         this.subsService = service.getSubscriberInfoService();
         log.info("Sadis service is loaded");

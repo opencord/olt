@@ -314,9 +314,13 @@ public class Olt
                 REQUEUE_DELAY, requeueDelay);
     }
 
-
     @Override
     public boolean provisionSubscriber(ConnectPoint cp) {
+        return this.provisionSubscriber(cp, null);
+    }
+
+    @Override
+    public boolean provisionSubscriber(ConnectPoint cp, PortNumber uplinkport) {
         subscriberExecutor.submit(() -> {
             Device device = deviceService.getDevice(cp.deviceId());
             Port port = deviceService.getPort(device.id(), cp.port());
@@ -339,8 +343,10 @@ public class Olt
                 log.error("Subscriber information not found in sadis for port {}", accessDevicePort);
                 return false;
             }
-            DiscoveredSubscriber sub = new DiscoveredSubscriber(device, port,
-                    DiscoveredSubscriber.Status.ADDED, true, si);
+            DiscoveredSubscriber sub;
+
+            sub = new DiscoveredSubscriber(device, port,
+                    DiscoveredSubscriber.Status.ADDED, true, si, uplinkport);
 
             // NOTE we need to keep a list of the subscribers that are provisioned on a port,
             // regardless of the flow status
@@ -358,6 +364,11 @@ public class Olt
 
     @Override
     public boolean removeSubscriber(ConnectPoint cp) {
+        return this.removeSubscriber(cp, null);
+    }
+
+    @Override
+    public boolean removeSubscriber(ConnectPoint cp, PortNumber uplinkport) {
         subscriberExecutor.submit(() -> {
             Device device = deviceService.getDevice(DeviceId.deviceId(cp.deviceId().toString()));
             Port port = deviceService.getPort(device.id(), cp.port());
@@ -391,7 +402,7 @@ public class Olt
             }
 
             DiscoveredSubscriber sub = new DiscoveredSubscriber(device, port,
-                    DiscoveredSubscriber.Status.ADMIN_REMOVED, true, si);
+                    DiscoveredSubscriber.Status.ADMIN_REMOVED, true, si, uplinkport);
 
             // NOTE we need to keep a list of the subscribers that are provisioned on a port,
             // regardless of the flow status
@@ -409,6 +420,11 @@ public class Olt
 
     @Override
     public boolean provisionSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId) {
+        return this.provisionSubscriber(cp, cTag, sTag, tpId, null);
+    }
+
+    @Override
+    public boolean provisionSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId, PortNumber uplinkport) {
         log.debug("Provisioning subscriber on {}, with cTag {}, stag {}, tpId {}",
                 cp, cTag, sTag, tpId);
         Device device = deviceService.getDevice(cp.deviceId());
@@ -431,7 +447,7 @@ public class Olt
         uniTagInformationList.add(specificService);
         si.setUniTagList(uniTagInformationList);
         DiscoveredSubscriber sub = new DiscoveredSubscriber(device, port,
-                DiscoveredSubscriber.Status.ADDED, true, si);
+                DiscoveredSubscriber.Status.ADDED, true, si, uplinkport);
 
         // NOTE we need to keep a list of the subscribers that are provisioned on a port,
         // regardless of the flow status
@@ -448,6 +464,11 @@ public class Olt
 
     @Override
     public boolean removeSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId) {
+        return this.removeSubscriber(cp, cTag, sTag, tpId, null);
+    }
+
+    @Override
+    public boolean removeSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId, PortNumber uplinkport) {
         log.debug("Un-provisioning subscriber on {} with cTag {}, stag {}, tpId {}",
                 cp, cTag, sTag, tpId);
         Device device = deviceService.getDevice(cp.deviceId());
@@ -471,7 +492,7 @@ public class Olt
         uniTagInformationList.add(specificService);
         si.setUniTagList(uniTagInformationList);
         DiscoveredSubscriber sub = new DiscoveredSubscriber(device, port,
-                DiscoveredSubscriber.Status.ADMIN_REMOVED, true, si);
+                DiscoveredSubscriber.Status.ADMIN_REMOVED, true, si, uplinkport);
 
         // NOTE we need to keep a list of the subscribers that are provisioned on a port,
         // regardless of the flow status

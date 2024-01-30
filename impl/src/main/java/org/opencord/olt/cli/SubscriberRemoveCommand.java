@@ -45,13 +45,24 @@ public class SubscriberRemoveCommand extends AbstractShellCommand {
     @Completion(OltUniPortCompleter.class)
     private String strPort = null;
 
+    @Argument(index = 2, name = "uplinkport", description = "OLT uplink port number",
+    required = false, multiValued = false)
+    @Completion(OltUplinkPortCompleter.class)
+    private String strUplinkPort = null;
+
     @Override
     protected void doExecute() {
         AccessDeviceService service = AbstractShellCommand.get(AccessDeviceService.class);
         DeviceId deviceId = DeviceId.deviceId(strDeviceId);
         PortNumber port = PortNumber.portNumber(strPort);
+        PortNumber uplinkport;
+        if (strUplinkPort != null) {
+                uplinkport = PortNumber.portNumber(strUplinkPort);
+        } else {
+                uplinkport = null;
+        }
         ConnectPoint connectPoint = new ConnectPoint(deviceId, port);
 
-        service.removeSubscriber(connectPoint);
+        service.removeSubscriber(connectPoint, uplinkport);
     }
 }

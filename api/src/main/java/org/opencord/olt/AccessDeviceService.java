@@ -20,6 +20,7 @@ import org.onlab.packet.VlanId;
 import org.onosproject.event.ListenerService;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
+import org.onosproject.net.PortNumber;
 
 import java.util.List;
 
@@ -32,6 +33,25 @@ public interface AccessDeviceService extends ListenerService<AccessDeviceEvent, 
      * @return true if the request is accepted (does not guarantee the subscriber is provisioned)
      */
     boolean provisionSubscriber(ConnectPoint cp);
+
+
+    /**
+     * Provisions connectivity for a subscriber on an access device.
+     * It installs flows for all uni tag information
+     *
+     * @param cp subscriber's connection point
+     * @param uplinkport custom uplink for for OLT
+     * @return true if the request is accepted (does not guarantee the subscriber is provisioned)
+     */
+    boolean provisionSubscriber(ConnectPoint cp, PortNumber uplinkport);
+
+    /**
+     * Removes subscriber flows from a given ConnectPoint.
+     * @param cp subscriber's connect point
+     * @param uplinkport custom uplink for for OLT
+     * @return true if the request is accepted (does not guarantee the subscriber is removed)
+     */
+    boolean removeSubscriber(ConnectPoint cp, PortNumber uplinkport);
 
     /**
      * Removes subscriber flows from a given ConnectPoint.
@@ -51,6 +71,17 @@ public interface AccessDeviceService extends ListenerService<AccessDeviceEvent, 
     boolean provisionSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId);
 
     /**
+     * Provisions connectivity for a particular service for a subscriber.
+     * @param cp subscriber's connect point
+     * @param cTag service's cTag
+     * @param sTag service's sTag
+     * @param tpId service's Technology Profile ID
+     * @param uplinkport custom uplink for for OLT
+     * @return true if the request is accepted (does not guarantee the subscriber is provisioned)
+     */
+    boolean provisionSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId, PortNumber uplinkport);
+
+    /**
      * Removes connectivity for a particular service for a subscriber.
      * @param cp subscriber's connect point
      * @param cTag service's cTag
@@ -59,6 +90,17 @@ public interface AccessDeviceService extends ListenerService<AccessDeviceEvent, 
      * @return true if the request is accepted (does not guarantee the subscriber is removed)
      */
     boolean removeSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId);
+
+    /**
+     * Removes connectivity for a particular service for a subscriber.
+     * @param cp subscriber's connect point
+     * @param cTag service's cTag
+     * @param sTag service's sTag
+     * @param tpId service's Technology Profile ID
+     * @param uplinkport custom uplink for for OLT
+     * @return true if the request is accepted (does not guarantee the subscriber is removed)
+     */
+    boolean removeSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId, PortNumber uplinkport);
 
     /**
      * Returns a list of connected OLT devices ID.
