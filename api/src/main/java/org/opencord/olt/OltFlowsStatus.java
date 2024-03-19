@@ -41,13 +41,5 @@ public enum OltFlowsStatus {
     /**
      * An error occurred.
      */
-    ERROR;
-
-    /**
-     * Checks if this status means the flow is still available or in progress to be available.
-     * @return true if the status represents an available flow.
-     */
-    public boolean hasFlow() {
-        return !OltFlowsStatus.NONE.equals(this) && !OltFlowsStatus.REMOVED.equals(this);
-    }
+    ERROR
 }
