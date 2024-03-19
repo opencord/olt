@@ -401,7 +401,7 @@ public class Olt
 
     @Override
     public boolean provisionSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId) {
-        log.debug("Provisioning subscriber on {}, with cTag {}, stag {}, tpId {}",
+        log.info("Provisioning subscriber on {}, with cTag {}, stag {}, tpId {}",
                 cp, cTag, sTag, tpId);
         Device device = deviceService.getDevice(cp.deviceId());
         Port port = deviceService.getPort(device.id(), cp.port());
@@ -440,7 +440,7 @@ public class Olt
 
     @Override
     public boolean removeSubscriber(ConnectPoint cp, VlanId cTag, VlanId sTag, Integer tpId) {
-        log.debug("Un-provisioning subscriber on {} with cTag {}, stag {}, tpId {}",
+        log.info("Un-provisioning subscriber on {} with cTag {}, stag {}, tpId {}",
                 cp, cTag, sTag, tpId);
         Device device = deviceService.getDevice(cp.deviceId());
         Port port = deviceService.getPort(device.id(), cp.port());
