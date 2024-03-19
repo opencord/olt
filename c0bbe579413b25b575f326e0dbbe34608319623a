@@ -33,6 +33,24 @@
       "message": "Does ERROR require a trailing semicolon here ?",
       "revId": "c0bbe579413b25b575f326e0dbbe34608319623a",
       "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "93e108cd_385a053e",
+        "filename": "api/src/main/java/org/opencord/olt/OltFlowsStatus.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000948
+      },
+      "writtenOn": "2024-03-19T21:17:43Z",
+      "side": 1,
+      "message": "Not needed",
+      "parentUuid": "ef251d14_e0f67fe8",
+      "revId": "c0bbe579413b25b575f326e0dbbe34608319623a",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388"
     }
   ]
 }
